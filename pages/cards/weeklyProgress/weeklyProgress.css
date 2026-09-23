@@ -1,0 +1,686 @@
+/* ============================================================
+   Card: Progresso Semanal (página completa)
+   ============================================================ */
+
+.weekly {
+  position: relative;
+  padding: 1.25rem 0.75rem 2rem;
+  font-family: 'Manrope', sans-serif;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.weekly::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -30%;
+  width: 80%;
+  height: 60%;
+  background: radial-gradient(
+    ellipse at 70% 30%,
+    rgba(212, 175, 55, 0.10) 0%,
+    rgba(212, 175, 55, 0) 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.weekly > * { position: relative; z-index: 1; }
+
+/* Header */
+.weekly__header {
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.weekly__title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.55rem;
+  font-weight: 400;
+  color: #d4af37;
+  margin: 0 0 0.25rem;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
+.weekly__sub {
+  font-size: 0.82rem;
+  color: #b8b0a4;
+  margin: 0;
+}
+
+/* Hero card */
+.weekly__hero {
+  position: relative;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.weekly__hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -30%;
+  width: 90%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 70% 50%,
+    rgba(212, 175, 55, 0.28) 0%,
+    rgba(212, 175, 55, 0.10) 35%,
+    rgba(212, 175, 55, 0) 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.weekly__hero-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.weekly__hero-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.weekly__hero-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.weekly__hero-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+}
+
+.weekly__hero-score {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-bottom: 1.15rem;
+}
+
+.weekly__hero-score-value {
+  font-family: 'Cinzel', serif;
+  font-size: 3rem;
+  font-weight: 500;
+  color: #d4af37;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.weekly__hero-score-label {
+  font-size: 0.78rem;
+  color: #b8b0a4;
+}
+
+/* 4 métricas */
+.weekly__hero-metrics {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.14);
+  gap: 0.25rem;
+}
+
+.weekly__hero-metric {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.3rem;
+  border-right: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.weekly__hero-metric:last-child { border-right: 0; }
+
+.weekly__hero-metric-value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #d4af37;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.weekly__hero-metric-label {
+  font-size: 0.6rem;
+  color: #b8b0a4;
+  letter-spacing: 0.02em;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.weekly__hero-metric--up .weekly__hero-metric-value {
+  color: #9ecc8f;
+}
+
+.weekly__hero-metric--down .weekly__hero-metric-value {
+  color: #d4665a;
+}
+
+.weekly__hero-metric--empty .weekly__hero-metric-value {
+  color: #b8b0a4;
+}
+
+/* Loading */
+.weekly__loading {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #b8b0a4;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Mobile */
+@media (max-width: 479px) {
+  .weekly__title { font-size: 1.3rem; }
+  .weekly__hero { padding: 1rem; }
+  .weekly__hero-score-value { font-size: 2.4rem; }
+  .weekly__hero-metric-value { font-size: 0.95rem; }
+  .weekly__hero-metric-label { font-size: 0.55rem; }
+}
+
+/* ============================================================
+   Secções genéricas
+   ============================================================ */
+
+.weekly__section {
+  padding: 0 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.weekly__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.25rem 0.75rem;
+}
+
+.weekly__section-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.weekly__section-total {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #b8b0a4;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Gráfico */
+.weekly__chart-wrap {
+  border-radius: 0.85rem;
+  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  border: 1px solid rgba(212, 175, 55, 0.14);
+  padding: 1rem 0.75rem 0.75rem;
+}
+
+.weekly__chart-wrap .lumiere-bar-chart__value {
+  fill: #b8b0a4;
+  font-size: 10px;
+}
+
+@media (max-width: 479px) {
+  .weekly__chart-wrap {
+    padding: 0.75rem 0.5rem 0.5rem;
+  }
+
+  .weekly__chart-wrap .lumiere-bar-chart__value {
+    font-size: 9px;
+  }
+}
+
+/* ============================================================
+   Maior actividade
+   ============================================================ */
+
+.weekly__section-empty {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  color: #b8b0a4;
+  text-align: center;
+  padding: 1.25rem 0.5rem;
+  margin: 0;
+}
+
+.weekly__best-card {
+  display: grid;
+  grid-template-columns: 38px 1fr 16px;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+.weekly__best-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 175, 55, 0.12);
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.weekly__best-icon svg {
+  width: 55%;
+  height: 55%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.weekly__best-text { min-width: 0; }
+
+.weekly__best-day {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f0e6d2;
+  line-height: 1.2;
+  margin-bottom: 0.15rem;
+}
+
+.weekly__best-score {
+  font-size: 0.75rem;
+  color: #d4af37;
+  line-height: 1.2;
+  margin-bottom: 0.15rem;
+}
+
+.weekly__best-hint {
+  font-size: 0.66rem;
+  color: #b8b0a4;
+  font-style: italic;
+  line-height: 1.2;
+}
+
+.weekly__best-chevron {
+  color: #b8b0a4;
+  font-size: 1.1rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+/* ============================================================
+   Resumo (3 mini barras)
+   ============================================================ */
+
+.weekly__resumo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0.4rem 0;
+}
+
+.weekly__resumo-row {
+  display: grid;
+  grid-template-columns: 26px 1fr auto auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.weekly__resumo-icon {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.weekly__resumo-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.weekly__resumo-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.weekly__resumo-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  line-height: 1.2;
+}
+
+.weekly__resumo-bar-wrap {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.1);
+  overflow: hidden;
+}
+
+.weekly__resumo-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: #d4af37;
+  transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.weekly__resumo-pct {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #d4af37;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: right;
+}
+
+.weekly__resumo-count {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.68rem;
+  color: #b8b0a4;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* FIX tema claro */
+.weekly__best-day,
+.weekly__resumo-label { color: #f0e6d2; }
+.weekly__best-score,
+.weekly__resumo-pct { color: #d4af37; }
+.weekly__best-hint,
+.weekly__best-chevron,
+.weekly__resumo-count,
+.weekly__section-empty { color: #b8b0a4; }
+
+/* Mobile */
+@media (max-width: 479px) {
+  .weekly__best-card {
+    grid-template-columns: 34px 1fr 14px;
+    gap: 0.7rem;
+    padding: 0.9rem 0.85rem;
+  }
+
+  .weekly__best-icon { width: 34px; height: 34px; }
+  .weekly__best-day { font-size: 0.85rem; }
+  .weekly__best-score { font-size: 0.7rem; }
+
+  .weekly__resumo-row {
+    grid-template-columns: 22px 1fr auto;
+    gap: 0.6rem;
+  }
+
+  .weekly__resumo-count { display: none; }
+  .weekly__resumo-label { font-size: 0.76rem; }
+}
+
+/* ============================================================
+   Estado vazio
+   ============================================================ */
+
+.weekly__empty-card {
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  padding: 2rem 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.weekly__empty-icon {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  margin-bottom: 0.25rem;
+}
+
+.weekly__empty-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+  stroke-width: 1.4;
+}
+
+.weekly__empty-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f0e6d2;
+  margin: 0;
+  line-height: 1.3;
+  max-width: 300px;
+}
+
+.weekly__empty-text {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #b8b0a4;
+  margin: 0;
+  max-width: 300px;
+}
+
+.weekly__empty-hint {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #b8b0a4;
+  opacity: 0.7;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Secção O QUE VAIS VER AQUI */
+.weekly__info {
+  padding: 0 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.weekly__info-header {
+  padding: 0 0.25rem 0.85rem;
+}
+
+.weekly__info-header-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin: 0;
+}
+
+.weekly__info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.weekly__info-tile {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  border: 1px solid rgba(212, 175, 55, 0.16);
+}
+
+.weekly__info-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.weekly__info-icon svg {
+  width: 55%;
+  height: 55%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.weekly__info-text { min-width: 0; }
+
+.weekly__info-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  line-height: 1.2;
+  margin-bottom: 0.15rem;
+}
+
+.weekly__info-sub {
+  font-size: 0.7rem;
+  color: #b8b0a4;
+  line-height: 1.2;
+}
+
+/* Tip */
+.weekly__tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #0d0a07 0%, #0a0806 100%);
+  border: 1px solid rgba(212, 175, 55, 0.14);
+  padding: 1rem 1.1rem;
+  margin: 0 0.25rem 1rem;
+}
+
+.weekly__tip-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: #d4af37;
+  margin-top: 1px;
+}
+
+.weekly__tip-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.weekly__tip-text {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #b8b0a4;
+  margin: 0;
+  font-style: italic;
+}
+
+/* FIX tema claro */
+.weekly__empty-card,
+.weekly__empty-card *,
+.weekly__info-tile,
+.weekly__info-tile * {
+  color: #f0e6d2;
+}
+
+.weekly__empty-icon,
+.weekly__info-header-title,
+.weekly__info-icon {
+  color: #d4af37;
+}
+
+.weekly__empty-text,
+.weekly__empty-hint,
+.weekly__info-sub,
+.weekly__tip-text {
+  color: #b8b0a4;
+}
+
+/* Mobile */
+@media (max-width: 479px) {
+  .weekly__empty-icon { width: 50px; height: 50px; }
+  .weekly__empty-title { font-size: 0.98rem; }
+  .weekly__empty-text { font-size: 0.76rem; }
+  .weekly__info-title { font-size: 0.82rem; }
+}
+
+/* FIX tema claro — forçar cores com !important */
+.weekly__resumo-label,
+.weekly__best-day,
+.weekly__info-title,
+.weekly__empty-title {
+  color: #f0e6d2 !important;
+}
+
+.weekly__section-title,
+.weekly__best-score,
+.weekly__resumo-pct,
+.weekly__info-header-title {
+  color: #d4af37 !important;
+}
+
+.weekly__section-total,
+.weekly__section-empty,
+.weekly__best-hint,
+.weekly__resumo-count,
+.weekly__empty-text,
+.weekly__empty-hint,
+.weekly__info-sub,
+.weekly__tip-text,
+.weekly__best-chevron {
+  color: #b8b0a4 !important;
+}

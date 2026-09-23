@@ -1,0 +1,752 @@
+/* ============================================================
+   Card: Visão Geral Rápida — full width (sem quadro)
+   Classes com prefixo "overview__" para não colidir com outros componentes.
+   ============================================================ */
+
+.overview {
+  padding: 1rem 0.25rem;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Greeting — saudação premium */
+.overview__greeting {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  padding: 0 0.5rem;
+}
+
+.overview__greeting-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.overview__greeting-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.672rem;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--color-text-primary, #f0e6d2);
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.01em;
+}
+
+.overview__greeting-name {
+  color: var(--color-gold, #d4af37);
+  font-weight: 500;
+}
+
+.overview__greeting-sub {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.836rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary, #888);
+  margin: 0;
+}
+
+.overview__greeting-quote {
+  flex: 0 0 auto;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.43rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-gold, #d4af37);
+  text-align: right;
+  line-height: 1.6;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-gold, #d4af37);
+  max-width: 130px;
+}
+
+/* [BLOCO 3] Ring dentro do card evolução — limitar tamanho */
+.overview__evolution-ring {
+  flex-shrink: 0;
+  width: 120px !important;
+  max-width: 120px !important;
+}
+
+.overview__evolution-ring .lumiere-ring__svg {
+  width: 120px !important;
+  height: 120px !important;
+  max-width: 120px !important;
+  display: block;
+}
+
+/* [BLOCO 2 — legacy, remover depois] Círculo CSS puro */
+.overview__evolution-circle {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overview__evolution-circle-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.overview__evolution-circle-value {
+  position: relative;
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: var(--color-gold, #d4af37);
+  letter-spacing: -0.02em;
+  z-index: 1;
+}
+
+@media (max-width: 479px) {
+  .overview__greeting {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .overview__greeting-title {
+    font-size: 1.408rem;
+  }
+
+  .overview__greeting-quote {
+    align-self: flex-end;
+    font-size: 0.39rem;
+    letter-spacing: 0.2em;
+  }
+
+  .overview__evolution {
+    padding: 1.1rem;
+  }
+
+  .overview__evolution-body {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .overview__evolution-divider {
+    display: none;
+  }
+
+  .overview__evolution-circle {
+    width: 120px;
+    height: 120px;
+  }
+
+  .overview__evolution-circle-value {
+    font-size: 1.5rem;
+  }
+
+  .overview__evolution-ring,
+  .overview__evolution-ring .lumiere-ring__svg {
+    width: 110px !important;
+    height: 110px !important;
+    max-width: 110px !important;
+  }
+
+  .overview__evolution-right {
+    width: 100%;
+    text-align: center;
+    align-items: center;
+  }
+
+  .overview__evolution-text {
+    font-size: 0.85rem;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .overview__today-card {
+    padding: 0.9rem 0.9rem 0.3rem;
+  }
+
+  .overview__today-row {
+    grid-template-columns: 20px 20px 1fr auto;
+    gap: 0.5rem;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+  }
+
+  .overview__today-time {
+    display: none;
+  }
+
+  .overview__today-chevron {
+    display: none;
+  }
+
+  .overview__today-title {
+    font-size: 0.82rem;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+  }
+
+  .overview__today-meta {
+    font-size: 0.64rem;
+  }
+
+  .overview__today-badge {
+    font-size: 0.58rem;
+    padding: 0.18rem 0.5rem;
+    align-self: flex-start;
+  }
+
+  .overview__today-toggle {
+    margin-top: 1px;
+  }
+}
+
+@media (max-width: 359px) {
+  .overview__greeting-title {
+    font-size: 1.232rem;
+  }
+}
+
+/* Card — A TUA EVOLUÇÃO */
+.overview__evolution {
+  position: relative;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  padding: 1.25rem 1.25rem 1.4rem;
+  margin-bottom: 1.75rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.overview__evolution::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -30%;
+  width: 90%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 70% 50%,
+    rgba(212, 175, 55, 0.32) 0%,
+    rgba(212, 175, 55, 0.12) 35%,
+    rgba(212, 175, 55, 0) 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.overview__evolution-header {
+  margin-bottom: 1.1rem;
+}
+
+.overview__evolution-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37 !important;
+  margin: 0;
+}
+
+.overview__evolution-body {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.overview__evolution-divider {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(212, 175, 55, 0.22);
+  margin: 0.5rem 0;
+}
+
+.overview__evolution-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.overview__evolution-text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #f0e6d2 !important;
+  margin: 0;
+}
+
+/* Card — HOJE */
+.overview__today-card {
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #0d0a07 0%, #0a0806 100%);
+  border: 1px solid rgba(212, 175, 55, 0.14);
+  padding: 1rem 1.1rem 0.4rem;
+  margin-bottom: 1.75rem;
+}
+
+.overview__today-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+  margin-bottom: 0.25rem;
+}
+
+.overview__today-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.overview__today-header-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold, #d4af37);
+  flex-shrink: 0;
+}
+
+.overview__today-header-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.overview__today-header-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold, #d4af37);
+  margin: 0;
+}
+
+.overview__today-see-all {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  color: #b8b0a4 !important;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.overview__today-see-all:hover {
+  color: var(--color-gold, #d4af37);
+}
+
+.overview__today-empty {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.8rem;
+  color: #b8b0a4 !important;
+  text-align: center;
+  padding: 1rem 0.5rem 1.2rem;
+  margin: 0;
+}
+
+.overview__today-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview__today-row {
+  display: grid;
+  grid-template-columns: 22px 22px 1fr auto auto 14px;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+}
+
+.overview__today-row:last-child {
+  border-bottom: 0;
+}
+
+.overview__today-row.is-completed .overview__today-title {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.overview__today-toggle {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.overview__today-toggle:hover {
+  border-color: var(--color-gold, #d4af37);
+}
+
+.overview__today-row.is-completed .overview__today-toggle {
+  background: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, #d4af37);
+}
+
+.overview__today-row.is-completed .overview__today-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 4px;
+  height: 8px;
+  border-right: 1.5px solid #0a0806;
+  border-bottom: 1.5px solid #0a0806;
+  transform: rotate(45deg);
+}
+
+.overview__today-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold, #d4af37);
+}
+
+.overview__today-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+}
+
+.overview__today-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.overview__today-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #f0e6d2 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.overview__today-meta {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.68rem;
+  color: #b8b0a4 !important;
+  line-height: 1.2;
+}
+
+.overview__today-badge {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.overview__today-badge--urgent {
+  background: rgba(190, 60, 45, 0.9);
+  color: #f8f0dc;
+}
+
+.overview__today-badge--high {
+  background: rgba(212, 175, 55, 0.85);
+  color: #0a0806;
+}
+
+.overview__today-badge--medium {
+  background: rgba(212, 175, 55, 0.22);
+  color: var(--color-gold, #d4af37);
+}
+
+.overview__today-badge--low {
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--color-text-secondary, #888);
+}
+
+.overview__today-time {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #f0e6d2 !important;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.overview__today-chevron {
+  color: #b8b0a4 !important;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Card — VISÃO DAS ÁREAS */
+.overview__areas {
+  margin-bottom: 1.5rem;
+}
+
+.overview__areas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.25rem 0.85rem;
+}
+
+.overview__areas-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.overview__areas-header-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold, #d4af37);
+  flex-shrink: 0;
+}
+
+.overview__areas-header-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+}
+
+.overview__areas-header-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold, #d4af37);
+  margin: 0;
+}
+
+.overview__areas-see-all {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  color: #b8b0a4 !important;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.overview__areas-see-all:hover {
+  color: var(--color-gold, #d4af37);
+}
+
+.overview__areas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0 0.25rem;
+}
+
+.overview__area-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.8rem 0.7rem 0.7rem;
+  border-radius: 0.8rem;
+  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  border: 1px solid rgba(212, 175, 55, 0.16);
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Manrope', sans-serif;
+  transition: border-color 150ms ease, transform 150ms ease;
+  min-width: 0;
+}
+
+.overview__area-tile:hover {
+  border-color: rgba(212, 175, 55, 0.42);
+  transform: translateY(-1px);
+}
+
+.overview__area-tile:active {
+  transform: translateY(0);
+}
+
+.overview__area-tile-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--color-gold, #d4af37);
+  flex-shrink: 0;
+}
+
+.overview__area-tile-icon svg {
+  width: 55%;
+  height: 55%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.overview__area-tile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.overview__area-tile-name {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #f0e6d2 !important;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.overview__area-tile-value {
+  font-size: 0.6rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #b8b0a4 !important;
+}
+
+.overview__area-tile-value--good    { color: #9ecc8f; }
+.overview__area-tile-value--warning { color: var(--color-gold, #d4af37); }
+.overview__area-tile-value--bad     { color: #d4665a; }
+.overview__area-tile-value--empty   { color: #6d6660; }
+
+.overview__area-tile-chevron {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.6rem;
+  color: #b8b0a4 !important;
+  font-size: 0.95rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.overview__list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--color-border, #4a3f38);
+  padding: 0 0.5rem;
+}
+
+.overview__footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.overview__link {
+  background: transparent;
+  border: 0;
+  color: var(--color-text-secondary, #888);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.overview__link:hover {
+  color: var(--color-gold, #d4af37);
+}
+
+.overview__loading {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--color-text-secondary, #888);
+  font-family: 'Manrope', sans-serif;
+}
+
+
+/* ============================================================
+   FIX universal — cor clara forçada nos cards escuros
+   Evita colisões com o tema claro (lumiere) que inverte as variáveis
+   ============================================================ */
+
+.overview__evolution,
+.overview__evolution *,
+.overview__today-card,
+.overview__today-card *,
+.overview__areas,
+.overview__areas *,
+.overview__area-tile,
+.overview__area-tile * {
+  color: #f0e6d2 !important;
+}
+
+.overview__evolution-title,
+.overview__today-header-title,
+.overview__areas-header-title,
+.overview__signal-title,
+.overview__area-tile-value--good,
+.overview__area-tile-value--warning,
+.overview__area-tile-value--bad,
+.overview__evolution-circle-value,
+.overview__greeting-name {
+  color: #d4af37 !important;
+}
+
+.overview__evolution-text,
+.overview__today-meta,
+.overview__today-see-all,
+.overview__areas-see-all,
+.overview__today-empty,
+.overview__area-tile-value,
+.overview__area-tile-value--empty,
+.overview__today-chevron,
+.overview__area-tile-chevron {
+  color: #b8b0a4 !important;
+}
+
+.overview__today-badge--high {
+  color: #0a0806 !important;
+}
+
+.overview__today-badge--urgent {
+  color: #f8f0dc !important;
+}

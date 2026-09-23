@@ -1,0 +1,90 @@
+/* ============================================================
+   Bar Chart — gráfico de barras verticais SVG
+   ============================================================ */
+
+.lumiere-bar-chart {
+  width: 100%;
+  font-family: 'Manrope', sans-serif;
+}
+
+.lumiere-bar-chart__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.lumiere-bar-chart__bar {
+  transition: opacity 180ms ease;
+}
+
+.lumiere-bar-chart__bar.is-highlight {
+  opacity: 1;
+}
+
+.lumiere-bar-chart__value {
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--color-text-secondary, #9f7f20);
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.lumiere-bar-chart__value.is-highlight {
+  fill: var(--color-gold, #d4af37);
+}
+
+.lumiere-bar-chart__label {
+  font-size: 11px;
+  font-weight: 500;
+  fill: var(--color-text-secondary, #888);
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.lumiere-bar-chart__label.is-highlight {
+  fill: var(--color-gold, #d4af37);
+  font-weight: 700;
+}
+
+.lumiere-bar-chart__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  color: var(--color-text-secondary, #888);
+}
+
+.lumiere-bar-chart__text {
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.lumiere-bar-chart__spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(212, 175, 55, 0.2);
+  border-top-color: var(--color-gold, #d4af37);
+  border-radius: 50%;
+  animation: lumiere-bar-chart-spin 800ms linear infinite;
+}
+
+@keyframes lumiere-bar-chart-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Linha da média (opcional) */
+.lumiere-bar-chart__avg-line {
+  stroke: rgba(212, 175, 55, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.lumiere-bar-chart__avg-label {
+  font-size: 9px;
+  font-weight: 500;
+  fill: var(--color-text-secondary, #888);
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}

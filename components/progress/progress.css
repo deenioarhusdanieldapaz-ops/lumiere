@@ -1,0 +1,92 @@
+/**
+ * Progress Component - Estilos
+ * Usa tokens do sistema visual. Fallbacks fornecidos.
+ */
+
+.lumiere-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 4px);
+  width: 100%;
+}
+
+.lumiere-progress__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-muted, #a0a0a0);
+}
+
+.lumiere-progress__percent {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-gold, #d4af37);
+  font-weight: 600;
+}
+
+.lumiere-progress__track {
+  position: relative;
+  width: 100%;
+  background: var(--color-track, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-sm, 4px);
+  overflow: hidden;
+}
+
+.lumiere-progress__fill {
+  height: 100%;
+  width: 0;
+  background: var(--color-gold, #d4af37);
+  transition: width 0.4s ease;
+  border-radius: inherit;
+}
+
+/* Tamanhos */
+.lumiere-progress--sm .lumiere-progress__track { height: 4px; }
+.lumiere-progress--md .lumiere-progress__track { height: 8px; }
+.lumiere-progress--lg .lumiere-progress__track { height: 12px; }
+
+/* Estado: loading */
+.lumiere-progress--loading .lumiere-progress__fill {
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-gold, #d4af37) 50%,
+    transparent 100%
+  );
+  animation: lumiere-progress-indeterminate 1.4s linear infinite;
+}
+
+@keyframes lumiere-progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+/* Estado: empty (sem dados ≠ zero) */
+.lumiere-progress--empty .lumiere-progress__fill {
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-track, rgba(255, 255, 255, 0.08)),
+    var(--color-track, rgba(255, 255, 255, 0.08)) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+/* Estado: error */
+.lumiere-progress--error .lumiere-progress__fill {
+  width: 100%;
+  background: var(--color-error, #c0392b);
+  opacity: 0.35;
+}
+
+.lumiere-progress--error .lumiere-progress__label {
+  color: var(--color-error, #c0392b);
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .lumiere-progress__fill { transition: none; }
+  .lumiere-progress--loading .lumiere-progress__fill { animation: none; }
+}

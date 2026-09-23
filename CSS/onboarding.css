@@ -1,0 +1,16 @@
+/* Reset mínimo para o onboarding */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; background: #0a0a0a; color: #f5f0eb; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1rem; }
+#app { width: 100%; max-width: 480px; }
+.onboarding { background: #1a1715; border-radius: 24px; padding: 2rem 1.5rem; border: 1px solid #b8956a; box-shadow: 0 8px 32px rgba(184, 149, 106, 0.15); }
+.onboarding h1 { font-size: 2.2rem; font-weight: 300; letter-spacing: 2px; text-align: center; color: #d4af37; margin-bottom: 0.5rem; }
+.onboarding .subtitle { text-align: center; color: #b8956a; font-size: 0.9rem; margin-bottom: 2rem; }
+.step { display: none; }
+.step.active { display: block; }
+.step label { display: block; font-size: 0.85rem; color: #b8956a; margin-bottom: 0.4rem; }
+.step input, .step select { width: 100%; padding: 0.75rem; background: #2a2521; border: 1px solid #4a3f38; border-radius: 12px; color: #f5f0eb; font-size: 1rem; margin-bottom: 1.2rem; }
+.step button { width: 100%; padding: 0.9rem; background: #d4af37; color: #0a0a0a; border: none; border-radius: 40px; font-weight: 700; font-size: 1rem; letter-spacing: 0.5px; cursor: pointer; transition: background 0.2s; }
+.step button:hover { background: #e6c34a; }
+.step .error { color: #e74c3c; font-size: 0.8rem; margin-top: -0.8rem; margin-bottom: 1rem; display: none; }
+.summary-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #2a2521; }
+.summary-item span:first-child { color: #b8956a; }

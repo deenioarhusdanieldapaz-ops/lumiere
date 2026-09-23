@@ -1,0 +1,91 @@
+/* ============================================================
+   Fontes do Lumière Life Manager
+   Carregadas localmente (offline-first).
+   Ficheiros em: assets/fonts/{manrope,cinzel}/
+   ============================================================ */
+
+/* ============================================================
+   Manrope — fonte principal (UI, corpo de texto)
+   ============================================================ */
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('../assets/fonts/manrope/manrope-v20-latin-300.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/manrope/manrope-v20-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/manrope/manrope-v20-latin-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/manrope/manrope-v20-latin-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/manrope/manrope-v20-latin-700.woff2') format('woff2');
+}
+
+/* ============================================================
+   Cinzel — fonte serifada (wordmark, branding)
+   Usada em: splash wordmark "LUMIÈRE"
+   ============================================================ */
+
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/cinzel/cinzel-v26-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/cinzel/cinzel-v26-latin-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/cinzel/cinzel-v26-latin-600.woff2') format('woff2');
+}
+
+
+/* ============================================================
+   Great Vibes — assinatura manuscrita (rodapé do Dashboard)
+   ============================================================ */
+
+@font-face {
+  font-family: 'Great Vibes';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/great-vibes/great-vibes-v21-latin-regular.woff2') format('woff2');
+}

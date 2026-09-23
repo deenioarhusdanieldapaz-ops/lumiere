@@ -1,0 +1,21 @@
+<svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="lgLgo" x1="0" y1="0" x2="0.3" y2="1">
+<stop offset="0%" stop-color="#f5d76e"/>
+<stop offset="50%" stop-color="#d4af37"/>
+<stop offset="100%" stop-color="#9f7f20"/>
+</linearGradient>
+<mask id="mLgo">
+<rect width="512" height="512" fill="#000"/>
+<circle cx="240" cy="256" r="200" fill="#fff"/>
+<circle cx="292" cy="256" r="178" fill="#000"/>
+</mask>
+</defs>
+<g transform="translate(20,10) scale(0.35)">
+<rect width="512" height="512" fill="url(#lgLgo)" mask="url(#mLgo)"/>
+<path d="M 268 130 C 340 220 345 320 310 375 C 275 425 225 425 195 380 C 165 335 175 275 220 235 C 240 262 268 268 288 262 C 305 232 302 180 268 130 Z" fill="url(#lgLgo)"/>
+</g>
+<text x="240" y="95" font-family="Manrope, Inter, sans-serif" font-size="56" font-weight="300" fill="#d4af37" letter-spacing="6">LUMIÈRE</text>
+<line x1="240" y1="118" x2="380" y2="118" stroke="#9f7f20" stroke-width="1"/>
+<text x="240" y="145" font-family="Manrope, Inter, sans-serif" font-size="18" font-weight="400" fill="#cccccc" letter-spacing="8">LIFE MANAGER</text>
+</svg>

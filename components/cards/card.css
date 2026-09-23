@@ -1,0 +1,96 @@
+/**
+ * Card Component - Estilos
+ * Usa tokens do sistema visual. Fallbacks fornecidos.
+ */
+
+.lumiere-card {
+  background: var(--color-surface, #1a1a1a);
+  color: var(--color-text, #f5f5f5);
+  border: 1px solid var(--color-border, rgba(212, 175, 55, 0.15));
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-md, 16px);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.3));
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 8px);
+}
+
+.lumiere-card--clickable { cursor: pointer; }
+
+.lumiere-card--clickable:hover,
+.lumiere-card--clickable:focus-visible {
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.4));
+  border-color: var(--color-gold, #d4af37);
+  transform: translateY(-1px);
+}
+
+.lumiere-card--clickable:focus-visible {
+  outline: 2px solid var(--color-gold, #d4af37);
+  outline-offset: 2px;
+}
+
+.lumiere-card--compact { padding: var(--space-sm, 8px); }
+
+.lumiere-card--highlight {
+  border-color: var(--color-gold, #d4af37);
+  box-shadow: 0 0 0 1px var(--color-gold, #d4af37), var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.lumiere-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 4px);
+  position: relative;
+}
+
+.lumiere-card__title {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+  font-weight: 600;
+  color: var(--color-text, #f5f5f5);
+}
+
+.lumiere-card__subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-muted, #a0a0a0);
+}
+
+.lumiere-card__actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: var(--space-xs, 4px);
+}
+
+.lumiere-card__action {
+  background: transparent;
+  border: 1px solid var(--color-border, rgba(212, 175, 55, 0.15));
+  color: var(--color-text-muted, #a0a0a0);
+  border-radius: var(--radius-sm, 4px);
+  padding: 2px 8px;
+  font-size: var(--font-size-xs, 0.75rem);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.lumiere-card__action:hover,
+.lumiere-card__action:focus-visible {
+  color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, #d4af37);
+  outline: none;
+}
+
+.lumiere-card__body {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text, #f5f5f5);
+  line-height: 1.5;
+}
+
+/* Correção: evitar colisão entre título e ações no cabeçalho */
+.lumiere-card__header:has(.lumiere-card__actions) .lumiere-card__title,
+.lumiere-card__header:has(.lumiere-card__actions) .lumiere-card__subtitle {
+  padding-right: 72px;
+}

@@ -1,0 +1,328 @@
+/* ========================================
+   GOALS PAGE
+   ======================================== */
+
+.goals-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg, 1.5rem);
+}
+
+/* Header */
+.goals-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md, 1rem);
+}
+
+.goals-header__title {
+  margin: 0;
+  font-size: var(--font-size-xl, 1.25rem);
+  color: var(--color-gold, #d4af37);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.goals-header__actions {
+  display: flex;
+  gap: var(--space-xs, 0.25rem);
+}
+
+/* Botões */
+.goals-btn {
+  background: transparent;
+  border: 1px solid var(--color-gold, #d4af37);
+  color: var(--color-gold, #d4af37);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
+}
+
+.goals-btn:hover,
+.goals-btn:focus-visible {
+  background: var(--color-gold, #d4af37);
+  color: var(--color-bg-primary, #0a0a0a);
+  outline: none;
+}
+
+.goals-btn--primary {
+  background: var(--color-gold, #d4af37);
+  color: var(--color-bg-primary, #0a0a0a);
+}
+
+.goals-btn--primary:hover,
+.goals-btn--primary:focus-visible {
+  background: var(--color-gold-hover, #e6c34a);
+}
+
+/* Formulário */
+.goals-form {
+  background: var(--color-bg-secondary, #1a1715);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--space-md, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 1rem);
+}
+
+.goals-form__title {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+  color: var(--color-gold, #d4af37);
+}
+
+.goals-form__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.goals-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.goals-form__field label {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.goals-form__field input,
+.goals-form__field select,
+.goals-form__field textarea {
+  background: var(--color-bg-input, #2a2521);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.5rem;
+  color: var(--color-text-primary, #f5f0eb);
+  font-family: inherit;
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.goals-form__field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.goals-form__error {
+  color: var(--color-error, #e74c3c);
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+.goals-form__actions {
+  display: flex;
+  gap: var(--space-sm, 0.5rem);
+  justify-content: flex-end;
+}
+
+/* Lista */
+.goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 0.5rem);
+}
+
+/* Item individual */
+.goal-item {
+  background: var(--color-bg-secondary, #1a1715);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--space-md, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 0.25rem);
+  transition: border-color var(--transition-fast, 0.15s ease);
+}
+
+.goal-item:hover {
+  border-color: var(--color-border-light, #b8956a);
+}
+
+.goal-item--completed {
+  border-color: var(--color-gold, #d4af37);
+  opacity: 0.85;
+}
+
+.goal-item--abandoned {
+  opacity: 0.5;
+}
+
+.goal-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.goal-item__name {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+  color: var(--color-text-primary, #f5f0eb);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.goal-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs, 0.25rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.goal-item__tag {
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: var(--radius-full, 40px);
+  padding: 0.1rem 0.5rem;
+}
+
+.goal-item__description {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+/* Barra de progresso dentro do item */
+.goal-item__progress {
+  margin-top: var(--space-xs, 0.25rem);
+}
+
+.goal-item__actions {
+  display: flex;
+  gap: var(--space-xs, 0.25rem);
+}
+
+.goal-item__actions button {
+  background: transparent;
+  border: 1px solid var(--color-border, #4a3f38);
+  color: var(--color-text-secondary, #b8956a);
+  border-radius: var(--radius-sm, 8px);
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0.4rem 0.6rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast, 0.15s ease), border-color var(--transition-fast, 0.15s ease);
+}
+
+.goal-item__actions button:hover,
+.goal-item__actions button:focus-visible {
+  color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, #d4af37);
+  outline: none;
+}
+
+/* Estados */
+.goals-state {
+  text-align: center;
+  padding: var(--space-xl, 2rem);
+  color: var(--color-text-secondary, #b8956a);
+  font-style: italic;
+}
+
+.goals-state--error {
+  color: var(--color-error, #e74c3c);
+}
+
+/* Responsivo */
+@media (min-width: 768px) {
+  .goals-form__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .goals-form__field--full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Botão "marcar como principal" */
+.goal-item__btn-primary {
+  font-size: 1rem;
+  color: rgba(212, 175, 55, 0.55);
+  transition: color 150ms ease, transform 150ms ease;
+}
+
+.goal-item__btn-primary:hover {
+  color: #d4af37;
+  transform: scale(1.1);
+}
+
+.goal-item__btn-primary.is-active {
+  color: #d4af37;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+}
+
+/* Fix overflow — botões das ações */
+.goal-item__header {
+  min-width: 0;
+}
+
+.goal-item__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.goal-item__actions {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+}
+
+@media (max-width: 479px) {
+  .goal-item__actions button {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0.3rem 0.45rem;
+    font-size: 0.95rem;
+  }
+
+  .goal-item__actions {
+    gap: 0.2rem;
+  }
+
+  .goal-item__name {
+    font-size: 0.95rem;
+  }
+}
+
+/* Fix 2 — quebra correcta + acções em linha própria em mobile */
+.goal-item__name {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.goal-item__header {
+  flex-wrap: wrap;
+}
+
+.goal-item__actions {
+  margin-left: auto;
+}
+
+@media (max-width: 479px) {
+  .goal-item__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .goal-item__name {
+    width: 100%;
+    font-size: 0.98rem;
+    line-height: 1.3;
+  }
+
+  .goal-item__actions {
+    align-self: flex-end;
+    margin-left: 0;
+  }
+}

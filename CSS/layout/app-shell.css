@@ -1,0 +1,882 @@
+/* ========================================
+   APP SHELL - Layout híbrido (sidebar + main)
+   Desktop: sidebar fixa + main
+   Mobile:  sidebar off-canvas com overlay
+   ======================================== */
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: 100vh;
+  overflow: hidden;
+  transition: grid-template-columns var(--transition-normal, 0.25s ease);
+}
+
+.app-shell.is-collapsed {
+  grid-template-columns: 64px 1fr;
+}
+
+/* ---------- SIDEBAR ---------- */
+.app-sidebar {
+  background: var(--color-bg-secondary, #1a1715);
+  border-right: 1px solid var(--color-border, #4a3f38);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width var(--transition-normal, 0.25s ease);
+}
+
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.75rem);
+  padding: var(--space-lg, 1.5rem) var(--space-md, 1rem);
+  border-bottom: 1px solid var(--color-border, #4a3f38);
+  white-space: nowrap;
+}
+
+.app-sidebar__brand-symbol {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.app-sidebar__brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.app-sidebar__brand-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  color: var(--color-gold, #d4af37);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.app-sidebar__brand-tagline {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  color: #9f7f20;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Colapsado: símbolo sozinho, centrado */
+.app-shell.is-collapsed .app-sidebar__brand {
+  padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
+  justify-content: center;
+}
+
+.app-shell.is-collapsed .app-sidebar__brand-text {
+  display: none;
+}
+
+.app-sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
+  gap: var(--space-xs, 0.25rem);
+  overflow-y: auto;
+}
+
+.app-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.5rem);
+  padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+  color: var(--color-text-primary, #f5f0eb);
+  border-radius: var(--radius-sm, 8px);
+  border-left: 3px solid transparent;
+  text-decoration: none;
+  font-size: var(--font-size-sm, 0.875rem);
+  transition: background var(--transition-fast, 0.15s ease),
+              color var(--transition-fast, 0.15s ease),
+              border-color var(--transition-fast, 0.15s ease);
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  background: transparent;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.app-nav-item:hover,
+.app-nav-item:focus-visible {
+  background: rgba(212, 175, 55, 0.08);
+  color: var(--color-gold, #d4af37);
+  outline: none;
+}
+
+.app-nav-item.is-active {
+  color: var(--color-gold, #d4af37);
+  background: rgba(212, 175, 55, 0.12);
+  border-left-color: var(--color-gold, #d4af37);
+}
+
+.app-nav-item__icon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.app-nav-item__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.app-nav-item__label {
+  transition: opacity var(--transition-fast, 0.15s ease);
+}
+
+.app-shell.is-collapsed .app-nav-item__label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.app-sidebar__footer {
+  border-top: 1px solid var(--color-border, #4a3f38);
+  padding: var(--space-sm, 0.5rem);
+}
+
+/* ---------- MAIN (topbar + content) ---------- */
+.app-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.4rem;
+  border-bottom: 0;
+  background: var(--color-bg-primary, #0a0a0a);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-topbar__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 1.5px solid rgba(212, 175, 55, 0.28);
+  border-radius: 10px;
+  color: rgba(212, 175, 55, 0.65);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+  margin-left: 0;
+}
+
+.app-topbar__toggle:hover {
+  border-color: rgba(212, 175, 55, 0.55);
+  color: var(--color-gold, #d4af37);
+}
+
+.app-topbar__toggle:hover,
+.app-topbar__toggle:focus-visible {
+  background: rgba(212, 175, 55, 0.1);
+  outline: none;
+}
+
+.app-topbar__toggle-icon {
+  display: block;
+  width: 16px;
+  height: 13px;
+  color: currentColor;
+}
+
+.app-topbar__title {
+  margin: 0;
+  font-size: var(--font-size-lg, 1.125rem);
+  color: var(--color-gold, #d4af37);
+  font-weight: var(--font-weight-medium, 500);
+  letter-spacing: 0.02em;
+}
+
+.app-content {
+  flex: 1;
+  padding: var(--space-lg, 1.5rem);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* ---------- OVERLAY (mobile) ---------- */
+.app-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+.app-overlay.is-visible {
+  display: block;
+}
+
+/* ---------- RESPONSIVO (mobile) ---------- */
+@media (max-width: 767px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal, 0.25s ease);
+    z-index: 100;
+    border-right: 1px solid var(--color-border, #4a3f38);
+  }
+
+  .app-shell.is-mobile-open .app-sidebar {
+    transform: translateX(0);
+  }
+  .app-shell.is-collapsed .app-nav-item__label {
+    opacity: 1;
+    width: auto;
+  }
+  .app-shell.is-collapsed {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Acessibilidade ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .app-shell,
+  .app-sidebar {
+    transition: none;
+  }
+}
+
+/* Esconder quando não estiver logado */
+.app-shell[hidden] { display: none; }
+
+
+/* ============================================================
+   Secções da sidebar (B.2 — reorganização)
+   ============================================================ */
+
+.app-nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 0 var(--space-md, 1rem) 0;
+}
+
+.app-nav-section:last-child {
+  padding-bottom: 0;
+}
+
+.app-nav-section__title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #9f7f20;
+  margin: 0;
+  padding: var(--space-md, 1rem) var(--space-md, 1rem) var(--space-xs, 0.25rem) var(--space-md, 1rem);
+  opacity: 0.85;
+}
+
+/* Colapsado: esconde os títulos das secções */
+.app-shell.is-collapsed .app-nav-section__title {
+  display: none;
+}
+
+.app-shell.is-collapsed .app-nav-section {
+  padding-bottom: var(--space-sm, 0.75rem);
+}
+
+/* Item disabled (Relatórios) */
+.app-nav-item[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+.app-nav-item[disabled]:hover {
+  background: transparent;
+  color: inherit;
+}
+
+
+/* ============================================================
+   Rodapé da sidebar — perfil do utilizador (B.3)
+   ============================================================ */
+
+.app-sidebar__footer {
+  border-top: 1px solid var(--color-border, #4a3f38);
+  padding: var(--space-md, 1rem) var(--space-md, 1rem);
+}
+
+.app-sidebar__profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md, 1rem);
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: var(--space-sm, 0.5rem);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  transition: background var(--transition-fast, 0.15s ease);
+}
+
+.app-sidebar__profile:hover {
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.app-sidebar__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4af37, #9f7f20);
+  color: #060505;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.app-sidebar__profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.app-sidebar__profile-name {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #f5f0eb);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.app-sidebar__profile-link {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.7rem;
+  color: var(--color-gold, #9f7f20);
+  letter-spacing: 0.02em;
+}
+
+/* Colapsado: só avatar */
+.app-shell.is-collapsed .app-sidebar__profile-info {
+  display: none;
+}
+
+.app-shell.is-collapsed .app-sidebar__profile {
+  justify-content: center;
+  padding: var(--space-sm, 0.5rem) 0;
+}
+
+
+/* ============================================================
+   Topbar — barra superior com pesquisa, notificações e data (B.4)
+   ============================================================ */
+
+
+
+.app-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.75rem);
+  margin-left: auto;
+}
+
+.app-topbar__action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--color-text-primary, #f5f0eb);
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
+}
+
+.app-topbar__action:hover {
+  background: rgba(212, 175, 55, 0.10);
+  color: var(--color-gold, #d4af37);
+}
+
+.app-topbar__action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.app-topbar__action-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.app-topbar__badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e74c3c;
+  box-shadow: 0 0 0 2px #0a0a0a;
+}
+
+.app-topbar__date {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs, 0.5rem);
+  padding: var(--space-xs, 0.5rem) var(--space-md, 1rem);
+  border-radius: var(--radius-md, 8px);
+  color: #f5f0eb;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.app-topbar__date-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--color-gold, #d4af37);
+}
+
+.app-topbar__date-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Em ecrãs pequenos, esconde o texto da data (só o ícone) */
+@media (max-width: 600px) {
+  .app-topbar__date-text {
+    display: none;
+  }
+  .app-topbar__date {
+    padding: var(--space-xs, 0.5rem);
+  }
+}
+
+
+/* ============================================================
+   Topbar — versão brand + ações (B.4 v2)
+   ============================================================ */
+
+.app-topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 0;
+  margin-left: 0.35rem;
+}
+
+.app-topbar__brand-symbol {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.45));
+}
+
+.app-topbar__brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.app-topbar__brand-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: var(--color-gold, #d4af37);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.app-topbar__brand-tagline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.app-topbar__brand-tagline-text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #9f7f20;
+  line-height: 1;
+}
+
+.app-topbar__brand-line {
+  display: block;
+  width: 16px;
+  height: 1px;
+  background: #9f7f20;
+  opacity: 0.6;
+}
+
+.app-topbar__divider {
+  display: none;
+}
+
+.app-topbar__user {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm, 0.75rem);
+  background: transparent;
+  border: 0;
+  padding: 0.4rem 0;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  transition: background var(--transition-fast, 0.15s ease);
+}
+
+.app-topbar__user:hover {
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.app-topbar__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4af37, #9f7f20);
+  color: #060505;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.app-topbar__user-name {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #f5f0eb);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+/* Mobile estreito (< 480px): esconde só o nome do utilizador e reduz wordmark */
+@media (max-width: 479px) {
+  .app-topbar__user-name {
+    display: none;
+  }
+
+  /* Símbolo: mantém-se GRANDE (dominante) */
+  .app-topbar__brand-symbol {
+    width: 64px;
+    height: 64px;
+  }
+
+  /* Hamburger: mais PEQUENO */
+  .app-topbar__toggle {
+    width: 32px;
+    height: 32px;
+    border-width: 1.2px;
+    border-radius: 9px;
+  }
+
+  .app-topbar__brand-name {
+    font-size: 1.3rem;
+    letter-spacing: 0.12em;
+  }
+
+  .app-topbar__brand-tagline-text {
+    font-size: 0.5rem;
+    letter-spacing: 0.22em;
+  }
+
+  .app-topbar__brand-line {
+    width: 12px;
+  }
+
+  .app-topbar__brand {
+    gap: 0.1rem;
+    margin-left: 0.3rem;
+  }
+}
+
+/* Mobile muito estreito (< 360px): reduz ainda mais, mas mantém o wordmark */
+@media (max-width: 359px) {
+  .app-topbar__brand-symbol {
+    width: 60px;
+    height: 60px;
+  }
+
+  .app-topbar__toggle {
+    width: 30px;
+    height: 30px;
+    border-width: 1px;
+  }
+
+  .app-topbar__brand-name {
+    font-size: 1.25rem;
+    letter-spacing: 0.1em;
+  }
+
+  .app-topbar__brand-tagline-text {
+    font-size: 0.45rem;
+    letter-spacing: 0.18em;
+  }
+}
+
+
+/* Todos os ícones da sidebar em dourado */
+.app-nav-item__icon {
+  color: var(--color-gold, #d4af37);
+}
+
+.app-nav-item__icon svg {
+  stroke: currentColor;
+  color: var(--color-gold, #d4af37);
+}
+
+/* Ativo: dourado mais brilhante */
+.app-nav-item.is-active .app-nav-item__icon,
+.app-nav-item.is-active .app-nav-item__icon svg {
+  color: #f5d76e;
+  stroke: #f5d76e;
+}
+
+/* Hover: dourado mais claro */
+.app-nav-item:hover .app-nav-item__icon,
+.app-nav-item:hover .app-nav-item__icon svg {
+  color: #f5d76e;
+  stroke: #f5d76e;
+}
+
+
+/* ============================================================
+   Painel de Notificações — dropdown do sino (Pendente 1)
+   ============================================================ */
+
+.app-notif {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  width: 320px;
+  max-width: calc(100vw - 40px);
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--color-bg-input, #0a0a0a);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  z-index: 20;
+  padding: 0;
+}
+
+.app-notif__header {
+  padding: var(--space-md, 1rem);
+  border-bottom: 1px solid var(--color-border, #4a3f38);
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-input, #0a0a0a);
+}
+
+.app-notif__title-h {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-gold, #d4af37);
+}
+
+.app-notif__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.app-notif__item {
+  padding: var(--space-md, 1rem);
+  border-bottom: 1px solid rgba(74, 63, 56, 0.5);
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s ease);
+}
+
+.app-notif__item:last-child {
+  border-bottom: 0;
+}
+
+.app-notif__item:hover {
+  background: rgba(212, 175, 55, 0.06);
+}
+
+.app-notif__title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #f5f0eb;
+  margin-bottom: 3px;
+}
+
+.app-notif__meta {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  color: #9f7f20;
+  letter-spacing: 0.02em;
+}
+
+.app-notif__empty {
+  padding: var(--space-lg, 1.5rem) var(--space-md, 1rem);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.85rem;
+  color: #888;
+  text-align: center;
+  margin: 0;
+}
+
+/* Mobile: painel ocupa quase toda a largura */
+@media (max-width: 600px) {
+  .app-notif {
+    right: 10px;
+    width: calc(100vw - 20px);
+  }
+}
+
+
+/* ============================================================
+   Bottom nav (mobile) — P3.1
+   Visível apenas em ecrãs < 768px. Em desktop fica escondido.
+   ============================================================ */
+
+.app-bottom-nav {
+  display: none; /* escondido por defeito — ativa em mobile via media query */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 62px;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  background: var(--color-bg-primary, #0a0a0a);
+  border-top: 1px solid var(--color-border, #4a3f38);
+  grid-template-columns: repeat(5, 1fr);
+  align-items: stretch;
+}
+
+.app-bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: 0;
+  padding: 6px 4px;
+  cursor: pointer;
+  color: var(--color-text-secondary, #888);
+  font-family: 'Manrope', sans-serif;
+  transition: color var(--transition-fast, 0.15s ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-bottom-nav__item:active {
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.app-bottom-nav__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
+
+.app-bottom-nav__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.app-bottom-nav__label {
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Estado ativo */
+.app-bottom-nav__item.is-active {
+  color: var(--color-gold, #d4af37);
+}
+
+.app-bottom-nav__item.is-active .app-bottom-nav__icon {
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.4));
+}
+
+/* Mobile: ativa */
+@media (max-width: 767px) {
+  .app-bottom-nav {
+    display: grid;
+  }
+
+  /* Deixa espaço para o nav no fundo do conteúdo */
+  .app-content {
+    padding-bottom: 80px;
+  }
+}

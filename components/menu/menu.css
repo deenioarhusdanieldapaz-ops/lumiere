@@ -1,0 +1,91 @@
+/**
+ * Menu Component - Estilos
+ */
+
+.lumiere-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.lumiere-menu__trigger {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-muted, #a0a0a0);
+  border-radius: var(--radius-sm, 4px);
+  padding: 4px 8px;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.lumiere-menu__trigger:hover,
+.lumiere-menu__trigger:focus-visible {
+  color: var(--color-gold, #d4af37);
+  border-color: var(--color-border, rgba(212, 175, 55, 0.15));
+  outline: none;
+}
+
+.lumiere-menu__trigger[aria-expanded="true"] {
+  color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, #d4af37);
+}
+
+.lumiere-menu__list {
+  position: absolute;
+  top: calc(100% + 4px);
+  min-width: 160px;
+  background: var(--color-surface, #1a1a1a);
+  border: 1px solid var(--color-border, rgba(212, 175, 55, 0.15));
+  border-radius: var(--radius-sm, 4px);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.4));
+  padding: 4px;
+  margin: 0;
+  list-style: none;
+  z-index: 50;
+}
+
+.lumiere-menu--right .lumiere-menu__list {
+  right: 0;
+}
+
+.lumiere-menu--left .lumiere-menu__list {
+  left: 0;
+}
+
+.lumiere-menu__item {
+  margin: 0;
+  padding: 0;
+}
+
+.lumiere-menu__action {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--color-text, #f5f5f5);
+  text-align: left;
+  padding: 6px 12px;
+  font-size: var(--font-size-sm, 0.875rem);
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lumiere-menu__action:hover,
+.lumiere-menu__action:focus-visible {
+  background: var(--color-hover, rgba(212, 175, 55, 0.1));
+  color: var(--color-gold, #d4af37);
+  outline: none;
+}
+
+.lumiere-menu__action[disabled],
+.lumiere-menu__action[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.lumiere-menu__action[disabled]:hover {
+  background: transparent;
+  color: var(--color-text, #f5f5f5);
+}

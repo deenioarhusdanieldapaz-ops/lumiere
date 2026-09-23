@@ -1,0 +1,364 @@
+/* ========================================
+   STUDIES PAGE
+   ======================================== */
+
+.studies-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg, 1.5rem);
+}
+
+/* Header */
+.studies-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md, 1rem);
+}
+
+.studies-header__title {
+  margin: 0;
+  font-size: var(--font-size-xl, 1.25rem);
+  color: var(--color-gold, #d4af37);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.studies-header__actions {
+  display: flex;
+  gap: var(--space-xs, 0.25rem);
+}
+
+/* Botões */
+.studies-btn {
+  background: transparent;
+  border: 1px solid var(--color-gold, #d4af37);
+  color: var(--color-gold, #d4af37);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
+}
+
+.studies-btn:hover,
+.studies-btn:focus-visible {
+  background: var(--color-gold, #d4af37);
+  color: var(--color-bg-primary, #0a0a0a);
+  outline: none;
+}
+
+.studies-btn--primary {
+  background: var(--color-gold, #d4af37);
+  color: var(--color-bg-primary, #0a0a0a);
+}
+
+.studies-btn--primary:hover,
+.studies-btn--primary:focus-visible {
+  background: var(--color-gold-hover, #e6c34a);
+}
+
+.studies-btn--small {
+  padding: 0.25rem 0.6rem;
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+/* Formulário */
+.studies-form {
+  background: var(--color-bg-secondary, #1a1715);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--space-md, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 1rem);
+}
+
+.studies-form__title {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+  color: var(--color-gold, #d4af37);
+}
+
+.studies-form__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.studies-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.studies-form__field label {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.studies-form__field input,
+.studies-form__field select,
+.studies-form__field textarea {
+  background: var(--color-bg-input, #2a2521);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.5rem;
+  color: var(--color-text-primary, #f5f0eb);
+  font-family: inherit;
+  font-size: var(--font-size-sm, 0.875rem);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.studies-form__field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.studies-form__error {
+  color: var(--color-error, #e74c3c);
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+.studies-form__actions {
+  display: flex;
+  gap: var(--space-sm, 0.5rem);
+  justify-content: flex-end;
+}
+
+/* Lista */
+.studies-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 0.5rem);
+}
+
+/* Item individual */
+.study-item {
+  background: var(--color-bg-secondary, #1a1715);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--space-md, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 0.25rem);
+  transition: border-color var(--transition-fast, 0.15s ease);
+}
+
+.study-item:hover {
+  border-color: var(--color-border-light, #b8956a);
+}
+
+.study-item--completed {
+  border-color: var(--color-gold, #d4af37);
+  opacity: 0.85;
+}
+
+.study-item--paused {
+  opacity: 0.6;
+}
+
+.study-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.study-item__name {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+  color: var(--color-text-primary, #f5f0eb);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.study-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs, 0.25rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.study-item__tag {
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: var(--radius-full, 40px);
+  padding: 0.1rem 0.5rem;
+}
+
+.study-item__description {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.study-item__progress {
+  margin-top: var(--space-xs, 0.25rem);
+}
+
+.study-item__actions {
+  display: flex;
+  gap: var(--space-xs, 0.25rem);
+}
+
+.study-item__actions button {
+  background: transparent;
+  border: 1px solid var(--color-border, #4a3f38);
+  color: var(--color-text-secondary, #b8956a);
+  border-radius: var(--radius-sm, 8px);
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0.4rem 0.6rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast, 0.15s ease), border-color var(--transition-fast, 0.15s ease);
+}
+
+.study-item__actions button:hover,
+.study-item__actions button:focus-visible {
+  color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, #d4af37);
+  outline: none;
+}
+
+/* ---------- Sessions (sub-lista dentro do study) ---------- */
+.study-sessions {
+  margin-top: var(--space-sm, 0.5rem);
+  padding-top: var(--space-sm, 0.5rem);
+  border-top: 1px solid var(--color-border, #4a3f38);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 0.25rem);
+}
+
+.study-sessions__title {
+  margin: 0 0 var(--space-xs, 0.25rem) 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #b8956a);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.study-session {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-xs, 0.25rem);
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm, 8px);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-primary, #f5f0eb);
+}
+
+.study-session__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.study-session__date {
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.study-session__duration {
+  color: var(--color-gold, #d4af37);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.study-session__notes {
+  font-style: italic;
+  color: var(--color-text-secondary, #b8956a);
+  margin-top: 2px;
+}
+
+.study-session__delete {
+  background: transparent;
+  border: 1px solid var(--color-border, #4a3f38);
+  color: var(--color-text-secondary, #b8956a);
+  border-radius: var(--radius-sm, 8px);
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.study-session__delete:hover,
+.study-session__delete:focus-visible {
+  color: var(--color-error, #e74c3c);
+  border-color: var(--color-error, #e74c3c);
+  outline: none;
+}
+
+/* Formulário inline para adicionar sessão */
+.study-session-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--space-xs, 0.25rem);
+  align-items: end;
+  margin-top: var(--space-xs, 0.25rem);
+}
+
+.study-session-form input,
+.study-session-form select {
+  background: var(--color-bg-input, #2a2521);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.35rem 0.5rem;
+  color: var(--color-text-primary, #f5f0eb);
+  font-family: inherit;
+  font-size: var(--font-size-xs, 0.75rem);
+  width: 100%;
+}
+
+.study-session-form button {
+  background: var(--color-gold, #d4af37);
+  color: var(--color-bg-primary, #0a0a0a);
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.4rem 0.8rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  font-family: inherit;
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.study-session-form button:hover,
+.study-session-form button:focus-visible {
+  background: var(--color-gold-hover, #e6c34a);
+  outline: none;
+}
+
+/* Estados */
+.studies-state {
+  text-align: center;
+  padding: var(--space-xl, 2rem);
+  color: var(--color-text-secondary, #b8956a);
+  font-style: italic;
+}
+
+.studies-state--error {
+  color: var(--color-error, #e74c3c);
+}
+
+/* Responsivo */
+@media (min-width: 768px) {
+  .studies-form__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .studies-form__field--full {
+    grid-column: 1 / -1;
+  }
+}

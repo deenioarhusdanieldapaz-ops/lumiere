@@ -1,0 +1,44 @@
+/* ========================================
+   TEMA AUTO (segue o sistema operativo)
+   Aplicado quando <html data-theme="auto">
+   ======================================== */
+html[data-theme="auto"] {
+  /* Valores por omissão antes do @media resolver */
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #1a1715;
+  --color-bg-input: #2a2521;
+  --color-border: #4a3f38;
+  --color-border-light: #b8956a;
+  --color-text-primary: #f5f0eb;
+  --color-text-secondary: #b8956a;
+  --color-gold: #d4af37;
+  --color-gold-hover: #e6c34a;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"] {
+    --color-bg-primary: #0a0a0a;
+    --color-bg-secondary: #1a1715;
+    --color-bg-input: #2a2521;
+    --color-border: #4a3f38;
+    --color-border-light: #b8956a;
+    --color-text-primary: #f5f0eb;
+    --color-text-secondary: #b8956a;
+    --color-gold: #d4af37;
+    --color-gold-hover: #e6c34a;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  html[data-theme="auto"] {
+    --color-bg-primary: #f5f0eb;
+    --color-bg-secondary: #ffffff;
+    --color-bg-input: #e8e0d8;
+    --color-border: #c4b8a8;
+    --color-border-light: #b8956a;
+    --color-text-primary: #1a1715;
+    --color-text-secondary: #4a3f38;
+    --color-gold: #b8956a;
+    --color-gold-hover: #d4af37;
+  }
+}

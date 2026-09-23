@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview - Componentes Lumière</title>
+
+  <!-- CSS dos componentes (Fase 5). Tokens do sistema visual (Fase 2) ainda não existem: fallbacks aplicam-se. -->
+  <link rel="stylesheet" href="../components/cards/card.css">
+  <link rel="stylesheet" href="../components/progress/progress.css">
+  <link rel="stylesheet" href="../components/empty-state/emptyState.css">
+  <link rel="stylesheet" href="../components/menu/menu.css">
+
+  <style>
+    /* Estilo mínimo SÓ para o preview (não faz parte do sistema). */
+    body {
+      background: #0d0d0d;
+      color: #f5f5f5;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 { color: #d4af37; font-size: 1.4rem; margin-bottom: 8px; }
+    h2 { color: #d4af37; font-size: 1rem; margin-top: 32px; border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 6px; }
+    .preview-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; align-items: flex-start; }
+    .preview-col { flex: 1 1 240px; min-width: 220px; }
+    .preview-note { color: #888; font-size: 0.8rem; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Preview de Componentes — Fase 5</h1>
+  <p class="preview-note">Tokens do sistema visual (Fase 2) ainda não definidos. Estilos usam fallbacks.</p>
+
+  <h2>Card</h2>
+  <div class="preview-row" id="preview-cards"></div>
+
+  <h2>Progress</h2>
+  <div class="preview-row" id="preview-progress"></div>
+
+  <h2>EmptyState</h2>
+  <div class="preview-row" id="preview-empty"></div>
+
+  <h2>Menu</h2>
+  <div class="preview-row" id="preview-menu"></div>
+
+  <script type="module" src="./preview-components.js"></script>
+</body>
+</html>

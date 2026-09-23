@@ -1,0 +1,29 @@
+# Dependências
+node_modules/
+package-lock.json
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Backups temporários
+*.tmp
+*.bak
+
+# Build/output (futuro)
+dist/
+build/
+
+# Logs
+*.log
+
+# Testes locais (ofuscação temporária)
+dist-test/
+
+# Historico Git antigo
+.git.old/
+
+# Script de backup pessoal
+backup_lumiere.sh
+backup_lumiere.sh0
+backup_lumiere.sh0cc

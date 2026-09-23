@@ -1,0 +1,31 @@
+{
+  "name": "lumiere-life-manager",
+  "version": "1.0.0",
+  "description": "Personal integrated manager for tasks, habits, studies, goals, calendar, finances, notes and Lumiere operation.",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "dev": "npx serve .",
+    "test": "vitest",
+    "lint": "eslint src/**/*.js"
+  },
+  "keywords": [
+    "pwa",
+    "productivity",
+    "lumiere"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "eslint": "^8.56.0",
+    "html-minifier-terser": "^7.2.0",
+    "javascript-obfuscator": "^5.7.0",
+    "prettier": "^3.2.5",
+    "vitest": "^1.2.0"
+  },
+  "dependencies": {
+    "dexie": "^4.4.5"
+  }
+}

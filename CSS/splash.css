@@ -1,0 +1,194 @@
+/* Splash — timeline 13000ms */
+
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  /* Camada 1: glow radial central (rede de segurança)
+     Camada 2: imagem das curvas douradas */
+  background-color: #060505;
+  background-image:
+    radial-gradient(ellipse at 50% 50%,
+      rgba(212, 175, 55, 0.10) 0%,
+      rgba(212, 175, 55, 0.04) 35%,
+      transparent 70%),
+    url('../public/brand/master/splash-bg.png');
+  background-position: center center, center center;
+  background-size: 100% 100%, cover;
+  background-repeat: no-repeat, no-repeat;
+
+  color: #d4af37;
+  font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  transition: opacity 500ms ease-out;
+  overflow: hidden;
+}
+
+.splash--hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash__symbol {
+  width: 230px;
+  height: 230px;
+  display: block;
+  opacity: 1;
+  filter:
+    drop-shadow(0 0 12px rgba(212, 175, 55, 0.22))
+    drop-shadow(0 0 40px rgba(212, 175, 55, 0.12));
+}
+
+.splash__wordmark {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  margin: 0;
+  padding-left: 0.25em;
+  opacity: 1;
+  background: linear-gradient(180deg, #f5d76e 0%, #d4af37 50%, #9f7f20 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #d4af37;
+}
+
+.splash__divider {
+  display: none;
+}
+
+.splash__subtitle {
+  font-size: 0.67rem;
+  font-weight: 400;
+  letter-spacing: 0.5em;
+  color: #cccccc;
+  margin: 0;
+  padding-left: 0.5em;
+  text-transform: uppercase;
+  opacity: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.splash__subtitle::before,
+.splash__subtitle::after {
+  content: '';
+  display: block;
+  width: 57px;
+  height: 2px;
+  background: #9f7f20;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.splash__loader {
+  width: 200px;
+  height: 2px;
+  background: rgba(212, 175, 55, 0.15);
+  overflow: hidden;
+  border-radius: 2px;
+  margin-top: 1.5rem;
+  opacity: 1;
+}
+
+.splash__loader-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #9f7f20, #d4af37, #f5d76e);
+  border-radius: 2px;
+  animation: splash-progress 12000ms ease-in-out 0ms forwards;
+}
+
+.splash__hint {
+  font-size: 0.60rem;
+  letter-spacing: 0.4em;
+  color: #9f7f20;
+  margin: 0;
+  padding-left: 0.4em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.splash__hint::after {
+  content: '...';
+  margin-left: 0.3em;
+  letter-spacing: 0;
+}
+
+@keyframes splash-sym-in {
+  0%   { opacity: 0; transform: scale(0.6); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes splash-word-in {
+  0%   { opacity: 0; letter-spacing: 0.15em; }
+  100% { opacity: 1; letter-spacing: 0.25em; }
+}
+
+@keyframes splash-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes splash-progress {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+
+100% { transform: translateX(320%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash__symbol,
+  .splash__wordmark,
+  .splash__divider,
+  .splash__subtitle,
+  .splash__loader,
+  .splash__hint {
+    animation: none;
+    opacity: 1;
+  }
+  .splash__loader-bar {
+    animation: none;
+    width: 100%;
+  }
+}
+
+
+/* ============================================================
+   Ajustes responsivos do fundo (curvas douradas)
+   ============================================================ */
+
+/* Ecrãs muito verticais (telemóvel 9:20 típico) */
+@media (max-aspect-ratio: 3/4) {
+  .splash {
+    background-position: center center, center 30%;
+  }
+}
+
+/* Ecrãs muito largos (desktop 16:9, 21:9) */
+@media (min-aspect-ratio: 16/9) {
+  .splash {
+    background-position: center center, center center;
+  }
+}
+
+/* Telemóvel em landscape — o símbolo pode ficar pequeno */
+@media (orientation: landscape) and (max-height: 500px) {
+  .splash__symbol {
+    width: 130px;
+    height: 130px;
+  }
+  .splash__wordmark {
+    font-size: 1.5rem;
+  }
+}

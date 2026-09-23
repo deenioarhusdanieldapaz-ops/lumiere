@@ -1,0 +1,191 @@
+/* ============================================================
+   Perfil — Lumière Life Manager
+   ============================================================ */
+
+.profile {
+  color: var(--color-text-primary, #f5f0eb);
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-md, 1rem) 0;
+}
+
+.profile__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md, 1rem);
+  margin-bottom: var(--space-lg, 1.5rem);
+}
+
+.profile__back {
+  background: transparent;
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  color: var(--color-gold, #d4af37);
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast, 0.15s ease);
+}
+
+.profile__back:hover {
+  background: rgba(212, 175, 55, 0.10);
+}
+
+.profile__title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--color-gold, #d4af37);
+  margin: 0;
+}
+
+.profile__avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm, 0.75rem);
+  margin-bottom: var(--space-lg, 1.5rem);
+}
+
+.profile__avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #d4af37, #9f7f20);
+  color: #060505;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+}
+
+.profile__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile__avatar-initials {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.profile__avatar-btn {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.85rem;
+  color: var(--color-gold, #d4af37);
+  border: 1px solid var(--color-gold, #d4af37);
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s ease);
+}
+
+.profile__avatar-btn:hover {
+  background: rgba(212, 175, 55, 0.10);
+}
+
+.profile__avatar-remove {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #888888);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.profile__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 1rem);
+}
+
+.profile__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #cccccc);
+  letter-spacing: 0.03em;
+}
+
+.profile__input {
+  background: var(--color-bg-input, #0f0f0f);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-md, 8px);
+  padding: 0.7rem 0.9rem;
+  color: var(--color-text-primary, #f5f0eb);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color var(--transition-fast, 0.15s ease);
+}
+
+.profile__input:focus {
+  border-color: var(--color-gold, #d4af37);
+}
+
+.profile__input--textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.profile__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-sm, 0.75rem);
+}
+
+.profile__btn {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  border: 0;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: opacity var(--transition-fast, 0.15s ease);
+}
+
+.profile__btn--primary {
+  background: linear-gradient(135deg, #d4af37, #9f7f20);
+  color: #060505;
+}
+
+.profile__btn--primary:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.profile__btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.profile__status {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.8rem;
+  text-align: center;
+  margin: 0.5rem 0 0;
+}
+
+.profile__status--info { color: #9f7f20; }
+.profile__status--success { color: #4caf50; }
+.profile__status--error { color: #e74c3c; }
+
+.profile__loading {
+  font-family: 'Manrope', sans-serif;
+  color: var(--color-text-secondary, #888888);
+  text-align: center;
+  padding: var(--space-lg, 1.5rem);
+}

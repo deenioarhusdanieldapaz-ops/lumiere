@@ -1,0 +1,12 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<mask id="mGld">
+<rect width="512" height="512" fill="#000"/>
+<circle cx="240" cy="256" r="200" fill="#fff"/>
+<circle cx="292" cy="256" r="178" fill="#000"/>
+</mask>
+</defs>
+<rect width="512" height="512" fill="#d4af37"/>
+<rect width="512" height="512" fill="#0a0a0a" mask="url(#mGld)"/>
+<path d="M 268 130 C 340 220 345 320 310 375 C 275 425 225 425 195 380 C 165 335 175 275 220 235 C 240 262 268 268 288 262 C 305 232 302 180 268 130 Z" fill="#0a0a0a"/>
+</svg>

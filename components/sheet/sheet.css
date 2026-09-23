@@ -1,0 +1,171 @@
+/* ============================================================
+   Sheet — painel deslizante do fundo (bottom sheet)
+   ============================================================ */
+
+.lumiere-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 240ms ease-out;
+}
+
+.lumiere-sheet-backdrop.is-open {
+  opacity: 1;
+}
+
+.lumiere-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1001;
+  background: var(--color-bg-primary, #0a0a0a);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  border-top: 1px solid var(--color-border, #4a3f38);
+  padding: 0 0 env(safe-area-inset-bottom, 1rem) 0;
+  max-height: 80vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.lumiere-sheet.is-open {
+  transform: translateY(0);
+}
+
+.lumiere-sheet__handle {
+  display: block;
+  width: 40px;
+  height: 4px;
+  border: 0;
+  background: var(--color-border, #4a3f38);
+  border-radius: 2px;
+  margin: 12px auto 8px;
+  padding: 0;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.lumiere-sheet__handle:hover {
+  background: var(--color-gold, #d4af37);
+}
+
+.lumiere-sheet__title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-gold, #d4af37);
+  text-align: center;
+  padding: 0 1rem 0.75rem;
+  border-bottom: 1px solid var(--color-border, #4a3f38);
+}
+
+.lumiere-sheet__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.lumiere-sheet__item {
+  margin: 0;
+}
+
+.lumiere-sheet__btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  background: transparent;
+  border: 0;
+  color: var(--color-text-primary, #f5f0eb);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lumiere-sheet__btn:hover,
+.lumiere-sheet__btn:focus {
+  background: rgba(212, 175, 55, 0.06);
+  outline: none;
+}
+
+.lumiere-sheet__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.lumiere-sheet__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--color-gold, #d4af37);
+}
+
+.lumiere-sheet__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lumiere-sheet__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lumiere-sheet__chevron {
+  color: var(--color-text-secondary, #888);
+  font-size: 1.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+body.has-sheet-open {
+  overflow: hidden;
+}
+
+
+/* Secções */
+.lumiere-sheet__section {
+  margin-bottom: 1.25rem;
+}
+
+.lumiere-sheet__section:last-child {
+  margin-bottom: 0;
+}
+
+.lumiere-sheet__section-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin: 0 0 0.5rem;
+  padding: 0 0.9rem;
+  opacity: 0.85;
+}
+
+.lumiere-sheet__section-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

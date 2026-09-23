@@ -1,0 +1,77 @@
+/* ============================================================
+   Line Chart — gráfico de linha SVG simples
+   ============================================================ */
+
+.lumiere-chart {
+  width: 100%;
+  font-family: 'Manrope', sans-serif;
+}
+
+.lumiere-chart__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.lumiere-chart__grid-line {
+  stroke: rgba(212, 175, 55, 0.10);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.lumiere-chart__area {
+  pointer-events: none;
+}
+
+.lumiere-chart__line {
+  stroke: var(--color-gold, #d4af37);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.4));
+}
+
+.lumiere-chart__dot {
+  fill: var(--color-bg-primary, #0a0a0a);
+  stroke: var(--color-gold, #d4af37);
+  stroke-width: 2;
+}
+
+.lumiere-chart__label {
+  font-size: 11px;
+  font-weight: 500;
+  fill: var(--color-text-secondary, #9f7f20);
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.lumiere-chart__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  color: var(--color-text-secondary, #888);
+}
+
+.lumiere-chart__text {
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.lumiere-chart__spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(212, 175, 55, 0.2);
+  border-top-color: var(--color-gold, #d4af37);
+  border-radius: 50%;
+  animation: lumiere-chart-spin 800ms linear infinite;
+}
+
+@keyframes lumiere-chart-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Tema claro: dots com fundo claro */
+html[data-theme="lumiere"] .lumiere-chart__dot {
+  fill: var(--color-bg-primary, #f5f0eb);
+}

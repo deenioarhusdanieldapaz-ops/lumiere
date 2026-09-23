@@ -1,0 +1,79 @@
+name: Obfuscate and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create dist directory
+        run: mkdir -p dist
+
+      - name: Copy HTML files
+        run: |
+          find . -name "*.html" -not -path "./node_modules/*" -not -path "./dist/*" | while read file; do
+            mkdir -p "dist/$(dirname $file)"
+            cp "$file" "dist/$file"
+          done
+
+      - name: Copy static assets
+        run: |
+          cp -r assets dist/ 2>/dev/null || true
+          cp -r public dist/ 2>/dev/null || true
+          cp -r components dist/ 2>/dev/null || true
+          cp manifest.webmanifest dist/ 2>/dev/null || true
+
+      - name: Minify CSS
+        run: |
+          find . -name "*.css" -not -path "./node_modules/*" -not -path "./dist/*" | while read file; do
+            mkdir -p "dist/$(dirname $file)"
+            npx clean-css-cli -o "dist/$file" "$file"
+          done
+
+      - name: Obfuscate JavaScript
+        run: |
+          find . -name "*.js" -not -path "./node_modules/*" -not -path "./dist/*" -not -path "./sw.js" -not -path "./.github/*" | while read file; do
+            mkdir -p "dist/$(dirname $file)"
+            npx javascript-obfuscator "$file" --output "dist/$file" --compact true --control-flow-flattening true --dead-code-injection true --disable-console-output false --self-defending true --string-array true --string-array-encoding base64 --target browser
+          done
+
+      - name: Minify HTML
+        run: |
+          find dist -name "*.html" | while read file; do
+            npx html-minifier-terser --collapse-whitespace --remove-comments --minify-css true --minify-js true -o "$file" "$file"
+          done
+
+      - name: Copy service worker (não ofuscado)
+        run: |
+          [ -f sw.js ] && cp sw.js dist/sw.js || true
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

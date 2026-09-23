@@ -1,0 +1,15 @@
+/* ========================================
+   TEMA NOIR (escuro) - PADRÃO
+   Aplicado quando <html data-theme="noir">
+   ======================================== */
+html[data-theme="noir"] {
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #1a1715;
+  --color-bg-input: #2a2521;
+  --color-border: #4a3f38;
+  --color-border-light: #b8956a;
+  --color-text-primary: #f5f0eb;
+  --color-text-secondary: #b8956a;
+  --color-gold: #d4af37;
+  --color-gold-hover: #e6c34a;
+}

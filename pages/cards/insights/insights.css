@@ -1,0 +1,417 @@
+/* ============================================================
+   Card: Insights (página completa)
+   ============================================================ */
+
+.insights {
+  position: relative;
+  padding: 1.25rem 0.75rem 2rem;
+  font-family: 'Manrope', sans-serif;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.insights::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -30%;
+  width: 80%;
+  height: 60%;
+  background: radial-gradient(
+    ellipse at 70% 30%,
+    rgba(212, 175, 55, 0.10) 0%,
+    rgba(212, 175, 55, 0) 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.insights > * { position: relative; z-index: 1; }
+
+/* Header */
+.insights__header {
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.insights__title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.7rem;
+  font-weight: 400;
+  color: #d4af37;
+  margin: 0 0 0.25rem;
+  letter-spacing: 0.02em;
+}
+
+.insights__sub {
+  font-size: 0.82rem;
+  color: #b8b0a4;
+  margin: 0;
+}
+
+/* Hero card */
+.insights__hero {
+  position: relative;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.insights__hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -30%;
+  width: 90%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 70% 50%,
+    rgba(212, 175, 55, 0.28) 0%,
+    rgba(212, 175, 55, 0.10) 35%,
+    rgba(212, 175, 55, 0) 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.insights__hero-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.insights__hero-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.insights__hero-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.insights__hero-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+}
+
+.insights__hero-number {
+  font-family: 'Cinzel', serif;
+  font-size: 3rem;
+  font-weight: 500;
+  color: #d4af37;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.15rem;
+}
+
+.insights__hero-number-label {
+  font-size: 0.78rem;
+  color: #b8b0a4;
+  margin-bottom: 1.15rem;
+}
+
+.insights__hero-counters {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.14);
+  gap: 0.5rem;
+}
+
+.insights__hero-counter {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.4rem;
+  border-right: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.insights__hero-counter:last-child { border-right: 0; }
+
+.insights__hero-counter-value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #d4af37;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.insights__hero-counter-label {
+  font-size: 0.62rem;
+  color: #b8b0a4;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Loading */
+.insights__loading {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #b8b0a4;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Mobile */
+@media (max-width: 479px) {
+  .insights__title { font-size: 1.4rem; }
+  .insights__hero { padding: 1rem; }
+  .insights__hero-number { font-size: 2.4rem; }
+  .insights__hero-counter-value { font-size: 1.1rem; }
+  .insights__hero-counter-label { font-size: 0.58rem; }
+}
+
+/* ============================================================
+   Secções genéricas
+   ============================================================ */
+
+.insights__section {
+  padding: 0 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.insights__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.25rem 0.75rem;
+}
+
+.insights__section-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.insights__section-count {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #b8b0a4;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.insights__section-empty {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  color: #b8b0a4;
+  text-align: center;
+  padding: 1.25rem 0.5rem;
+  margin: 0;
+}
+
+/* ============================================================
+   Prioridades
+   ============================================================ */
+
+.insights__priorities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.insights__priority {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  border: 1px solid rgba(212, 175, 55, 0.14);
+}
+
+.insights__priority--bad {
+  border-color: rgba(212, 102, 90, 0.35);
+}
+
+.insights__priority--warning {
+  border-color: rgba(212, 175, 55, 0.35);
+}
+
+.insights__priority-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.insights__priority--bad .insights__priority-icon {
+  background: rgba(212, 102, 90, 0.15);
+  color: #d4665a;
+}
+
+.insights__priority-icon svg {
+  width: 55%;
+  height: 55%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.insights__priority-text { min-width: 0; }
+
+.insights__priority-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  line-height: 1.2;
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.insights__priority-detail {
+  font-size: 0.66rem;
+  color: #b8b0a4;
+  line-height: 1.2;
+}
+
+.insights__priority-score {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: -0.01em;
+}
+
+.insights__priority-score--bad { color: #d4665a; }
+.insights__priority-score--warning { color: #d4af37; }
+.insights__priority-score--info { color: #b8b0a4; }
+
+/* ============================================================
+   Items (insights + recomendações)
+   ============================================================ */
+
+.insights__items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.insights__item {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.9rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  border: 1px solid rgba(212, 175, 55, 0.14);
+}
+
+.insights__item--bad { border-color: rgba(212, 102, 90, 0.35); }
+.insights__item--warning { border-color: rgba(212, 175, 55, 0.35); }
+.insights__item--info { border-color: rgba(212, 175, 55, 0.14); }
+
+.insights__item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.insights__item--bad .insights__item-icon {
+  background: rgba(212, 102, 90, 0.15);
+  color: #d4665a;
+}
+
+.insights__item-icon svg {
+  width: 55%;
+  height: 55%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.insights__item-text { min-width: 0; }
+
+.insights__item-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  line-height: 1.3;
+  margin-bottom: 0.2rem;
+}
+
+.insights__item-desc {
+  font-size: 0.72rem;
+  color: #b8b0a4;
+  line-height: 1.35;
+}
+
+/* FIX tema claro */
+.insights__priority-title,
+.insights__item-title { color: #f0e6d2 !important; }
+
+.insights__priority-detail,
+.insights__item-desc,
+.insights__section-count,
+.insights__section-empty { color: #b8b0a4 !important; }
+
+.insights__section-title { color: #d4af37 !important; }
+
+.insights__priority-score--bad { color: #d4665a !important; }
+.insights__priority-score--warning { color: #d4af37 !important; }
+.insights__priority-score--info { color: #b8b0a4 !important; }
+
+/* Mobile */
+@media (max-width: 479px) {
+  .insights__priority {
+    grid-template-columns: 28px 1fr auto;
+    gap: 0.7rem;
+    padding: 0.75rem 0.75rem;
+  }
+
+  .insights__priority-icon,
+  .insights__item-icon { width: 28px; height: 28px; }
+
+  .insights__priority-title,
+  .insights__item-title { font-size: 0.78rem; }
+
+  .insights__priority-detail,
+  .insights__item-desc { font-size: 0.62rem; }
+}

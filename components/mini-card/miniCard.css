@@ -1,0 +1,100 @@
+/* ============================================================
+   Mini Card — cartão compacto do Dashboard
+   ============================================================ */
+
+.lumiere-mini-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 1rem;
+  background: var(--color-bg-secondary, #1a1715);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: 12px;
+  color: var(--color-text-primary, #f5f0eb);
+  font-family: 'Manrope', sans-serif;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+}
+
+.lumiere-mini-card:hover,
+.lumiere-mini-card:focus {
+  border-color: var(--color-gold, #d4af37);
+  background: rgba(212, 175, 55, 0.04);
+  outline: none;
+}
+
+.lumiere-mini-card:active {
+  transform: scale(0.98);
+}
+
+.lumiere-mini-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--color-gold, #d4af37);
+  flex-shrink: 0;
+  margin-bottom: 0.15rem;
+}
+
+.lumiere-mini-card__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lumiere-mini-card__label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary, #9f7f20);
+  line-height: 1.2;
+}
+
+.lumiere-mini-card__value {
+  font-size: 1.65rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--color-gold, #d4af37);
+  letter-spacing: -0.02em;
+}
+
+.lumiere-mini-card__sublabel {
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--color-text-secondary, #888);
+  line-height: 1.2;
+  margin-top: 0.1rem;
+}
+
+.lumiere-mini-card--empty .lumiere-mini-card__value {
+  color: var(--color-text-secondary, #888);
+  opacity: 0.7;
+}
+
+.lumiere-mini-card--loading .lumiere-mini-card__value {
+  color: var(--color-text-secondary, #888);
+  animation: mini-card-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes mini-card-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.9; }
+}
+
+.lumiere-mini-card--error {
+  border-color: #e74c3c;
+}
+
+.lumiere-mini-card--error .lumiere-mini-card__value {
+  color: #e74c3c;
+}

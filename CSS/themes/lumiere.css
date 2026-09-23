@@ -1,0 +1,15 @@
+/* ========================================
+   TEMA LUMIÈRE (claro)
+   Aplicado quando <html data-theme="lumiere">
+   ======================================== */
+html[data-theme="lumiere"] {
+  --color-bg-primary: #f5f0eb;
+  --color-bg-secondary: #ffffff;
+  --color-bg-input: #e8e0d8;
+  --color-border: #c4b8a8;
+  --color-border-light: #b8956a;
+  --color-text-primary: #1a1715;
+  --color-text-secondary: #4a3f38;
+  --color-gold: #b8956a;
+  --color-gold-hover: #d4af37;
+}

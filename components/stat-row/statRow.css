@@ -1,0 +1,106 @@
+/* ============================================================
+   Stat Row — linha de estado reutilizável
+   ============================================================ */
+
+.lumiere-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 0.25rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--color-border, #4a3f38);
+  color: var(--color-text-primary, #f5f0eb);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lumiere-stat-row:last-child {
+  border-bottom: 0;
+}
+
+.lumiere-stat-row:hover,
+.lumiere-stat-row:focus {
+  background: rgba(212, 175, 55, 0.05);
+  outline: none;
+}
+
+.lumiere-stat-row__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-gold, #d4af37);
+}
+
+.lumiere-stat-row__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lumiere-stat-row__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.lumiere-stat-row__value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.lumiere-stat-row__value-text {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #888);
+}
+
+.lumiere-stat-row__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Cores por estado */
+.lumiere-stat-row--good .lumiere-stat-row__check {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+}
+
+.lumiere-stat-row--warning .lumiere-stat-row__check {
+  background: rgba(245, 215, 110, 0.15);
+  color: #f5d76e;
+}
+
+.lumiere-stat-row--bad .lumiere-stat-row__check {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+}
+
+.lumiere-stat-row--empty .lumiere-stat-row__check {
+  background: rgba(136, 136, 136, 0.15);
+  color: #888;
+}
+
+.lumiere-stat-row--empty .lumiere-stat-row__value-text {
+  font-style: italic;
+  opacity: 0.7;
+}

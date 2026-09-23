@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview - App Shell (Fase 6)</title>
+  <link rel="stylesheet" href="../CSS/main.css">
+</head>
+<body>
+  <div class="app-shell" id="app-shell">
+    <aside class="app-sidebar" id="sidebar">
+      <div class="app-sidebar__brand">LUMIÈRE</div>
+      <nav class="app-sidebar__nav" aria-label="Navegação principal">
+        <button class="app-nav-item is-active" data-page="dashboard" type="button">
+          <span class="app-nav-item__icon">◆</span>
+          <span class="app-nav-item__label">Dashboard</span>
+        </button>
+        <button class="app-nav-item" data-page="tasks" type="button">
+          <span class="app-nav-item__icon">✓</span>
+          <span class="app-nav-item__label">Tarefas</span>
+        </button>
+        <button class="app-nav-item" data-page="habits" type="button">
+          <span class="app-nav-item__icon">↻</span>
+          <span class="app-nav-item__label">Hábitos</span>
+        </button>
+        <button class="app-nav-item" data-page="studies" type="button">
+          <span class="app-nav-item__icon">▤</span>
+          <span class="app-nav-item__label">Estudos</span>
+        </button>
+        <button class="app-nav-item" data-page="goals" type="button">
+          <span class="app-nav-item__icon">◎</span>
+          <span class="app-nav-item__label">Objetivos</span>
+        </button>
+        <button class="app-nav-item" data-page="calendar" type="button">
+          <span class="app-nav-item__icon">▦</span>
+          <span class="app-nav-item__label">Calendário</span>
+        </button>
+        <button class="app-nav-item" data-page="finances" type="button">
+          <span class="app-nav-item__icon">$</span>
+          <span class="app-nav-item__label">Finanças</span>
+        </button>
+        <button class="app-nav-item" data-page="notes" type="button">
+          <span class="app-nav-item__icon">▤</span>
+          <span class="app-nav-item__label">Notas</span>
+        </button>
+        <button class="app-nav-item" data-page="lumiere" type="button">
+          <span class="app-nav-item__icon">✦</span>
+          <span class="app-nav-item__label">Lumière</span>
+        </button>
+        <button class="app-nav-item" data-page="settings" type="button">
+          <span class="app-nav-item__icon">⚙</span>
+          <span class="app-nav-item__label">Definições</span>
+        </button>
+      </nav>
+      <div class="app-sidebar__footer">
+        <button class="app-nav-item" type="button" id="btn-profile">
+          <span class="app-nav-item__icon">☺</span>
+          <span class="app-nav-item__label">Perfil</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <button class="app-topbar__toggle" id="btn-toggle" aria-label="Alternar sidebar">☰</button>
+        <h1 class="app-topbar__title" id="page-title">Dashboard</h1>
+      </header>
+      <main class="app-content" id="content">
+        <p>Conteúdo de exemplo do <strong>Dashboard</strong>.</p>
+        <p>Clique nos itens da sidebar para simular navegação (só muda o título).</p>
+        <p>Use o botão ☰ para recolher a sidebar (desktop) ou abri-la (mobile).</p>
+      </main>
+    </div>
+
+    <div class="app-overlay" id="overlay"></div>
+  </div>
+
+  <script type="module">
+    import { navigation } from '../js/navigation.js';
+
+    // Inicializa módulos quando o DOM está pronto
+    document.addEventListener('DOMContentLoaded', () => {
+        navigation.init();
+    });
+</script>
+</body>
+</html>

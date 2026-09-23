@@ -1,0 +1,917 @@
+/* ============================================================
+   Card: Lumière (página completa)
+   ============================================================ */
+
+.lumiere-card {
+  position: relative;
+  padding: 1.25rem 0.75rem 2rem;
+  font-family: 'Manrope', sans-serif;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.lumiere-card::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -30%;
+  width: 80%;
+  height: 60%;
+  background: radial-gradient(
+    ellipse at 70% 30%,
+    rgba(212, 175, 55, 0.10) 0%,
+    rgba(212, 175, 55, 0) 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lumiere-card > * { position: relative; z-index: 1; }
+
+/* Header */
+.lumiere-card__header {
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.lumiere-card__title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.7rem;
+  font-weight: 400;
+  color: #d4af37;
+  margin: 0 0 0.25rem;
+  letter-spacing: 0.02em;
+}
+
+.lumiere-card__sub {
+  font-size: 0.82rem;
+  color: #b8b0a4;
+  margin: 0;
+}
+
+/* Hero card */
+.lumiere-card__hero {
+  position: relative;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lumiere-card__hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -30%;
+  width: 90%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 70% 50%,
+    rgba(212, 175, 55, 0.28) 0%,
+    rgba(212, 175, 55, 0.10) 35%,
+    rgba(212, 175, 55, 0) 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.lumiere-card__hero-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.lumiere-card__hero-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.lumiere-card__hero-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.lumiere-card__hero-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+}
+
+.lumiere-card__hero-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.15rem;
+}
+
+.lumiere-card__hero-number-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.lumiere-card__hero-number {
+  font-family: 'Cinzel', serif;
+  font-size: 3rem;
+  font-weight: 500;
+  color: #d4af37;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.lumiere-card__hero-unit {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  line-height: 1;
+}
+
+.lumiere-card__hero-period {
+  font-size: 0.78rem;
+  color: #b8b0a4;
+  margin: 0 0 1rem;
+}
+
+/* Barra segmentada */
+.lumiere-card__seg-bar {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+  height: 10px;
+  margin-bottom: 0.55rem;
+}
+
+.lumiere-card__seg {
+  flex: 1;
+  border-radius: 2px;
+  background: rgba(212, 175, 55, 0.12);
+  transition: background 300ms ease;
+}
+
+.lumiere-card__seg.is-filled {
+  background: #d4af37;
+}
+
+.lumiere-card__hero-meta {
+  font-size: 0.72rem;
+  color: #b8b0a4;
+  margin: 0;
+}
+
+/* Pill de comparação */
+.lumiere-card__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #d4af37;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.lumiere-card__pill--up {
+  color: #9ecc8f;
+  border-color: rgba(158, 204, 143, 0.4);
+  background: rgba(158, 204, 143, 0.1);
+}
+
+.lumiere-card__pill--down {
+  color: #d4665a;
+  border-color: rgba(212, 102, 90, 0.4);
+  background: rgba(212, 102, 90, 0.1);
+}
+
+.lumiere-card__pill--empty {
+  color: #b8b0a4;
+  border-color: rgba(184, 176, 164, 0.25);
+  background: rgba(120, 112, 105, 0.15);
+}
+
+.lumiere-card__pill-arrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.lumiere-card__pill-text {
+  line-height: 1;
+}
+
+/* Loading */
+.lumiere-card__loading {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #b8b0a4;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* ============================================================
+   Mobile
+   ============================================================ */
+
+@media (max-width: 479px) {
+  .lumiere-card__title {
+    font-size: 1.4rem;
+  }
+
+  .lumiere-card__hero {
+    padding: 1rem;
+  }
+
+  .lumiere-card__hero-number {
+    font-size: 2.5rem;
+  }
+
+  .lumiere-card__hero-unit {
+    font-size: 0.9rem;
+  }
+
+  .lumiere-card__pill {
+    font-size: 0.6rem;
+    padding: 0.28rem 0.55rem;
+  }
+
+  .lumiere-card__seg-bar {
+    height: 8px;
+    gap: 2px;
+  }
+}
+
+/* ============================================================
+   FIX tema claro — cores claras nos cards escuros
+   ============================================================ */
+
+.lumiere-card__hero,
+.lumiere-card__hero * {
+  color: #f0e6d2;
+}
+
+.lumiere-card__hero-icon,
+.lumiere-card__hero-label,
+.lumiere-card__hero-number,
+.lumiere-card__seg.is-filled {
+  color: #d4af37;
+  background-color: #d4af37;
+}
+
+.lumiere-card__hero-icon,
+.lumiere-card__hero-label,
+.lumiere-card__hero-number {
+  background-color: transparent;
+}
+
+.lumiere-card__hero-period,
+.lumiere-card__hero-meta {
+  color: #b8b0a4;
+}
+
+.lumiere-card__pill {
+  color: #d4af37;
+}
+
+/* ============================================================
+   Secção — Receita do mês
+   ============================================================ */
+
+.lumiere-card__revenue {
+  position: relative;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #0d0a07 0%, #15100a 100%);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  padding: 1.1rem 1.25rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.lumiere-card__revenue-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+}
+
+.lumiere-card__revenue-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.lumiere-card__revenue-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.lumiere-card__revenue-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+}
+
+.lumiere-card__revenue-body {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+}
+
+.lumiere-card__revenue-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.lumiere-card__revenue-divider {
+  width: 1px;
+  background: rgba(212, 175, 55, 0.15);
+  flex-shrink: 0;
+}
+
+.lumiere-card__revenue-col-label {
+  font-size: 0.7rem;
+  color: #b8b0a4;
+  line-height: 1.2;
+}
+
+.lumiere-card__revenue-col-value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #d4af37;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.lumiere-card__revenue-legend {
+  font-size: 0.7rem;
+  color: #b8b0a4;
+  margin: 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+/* FIX tema claro */
+.lumiere-card__revenue,
+.lumiere-card__revenue * {
+  color: #f0e6d2;
+}
+
+.lumiere-card__revenue-icon,
+.lumiere-card__revenue-label,
+.lumiere-card__revenue-col-value {
+  color: #d4af37;
+}
+
+.lumiere-card__revenue-col-label,
+.lumiere-card__revenue-legend {
+  color: #b8b0a4;
+}
+
+/* Mobile */
+@media (max-width: 479px) {
+  .lumiere-card__revenue {
+    padding: 1rem;
+  }
+
+  .lumiere-card__revenue-col-value {
+    font-size: 1.1rem;
+  }
+
+  .lumiere-card__revenue-body {
+    gap: 0.85rem;
+  }
+}
+
+/* ============================================================
+   Secção genérica — cabeçalhos
+   ============================================================ */
+
+.lumiere-card__section {
+  padding: 0 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.lumiere-card__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.25rem 0.75rem;
+}
+
+.lumiere-card__section-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin: 0;
+}
+
+.lumiere-card__section-see-all {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  color: #b8b0a4;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.lumiere-card__section-see-all:hover {
+  color: #d4af37;
+}
+
+.lumiere-card__section-empty {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  color: #b8b0a4;
+  text-align: center;
+  padding: 1.25rem 0.5rem;
+  margin: 0;
+}
+
+/* Lista de vendas */
+.lumiere-card__sales-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(212, 175, 55, 0.12);
+}
+
+.lumiere-card__sale {
+  display: grid;
+  grid-template-columns: 22px 1fr auto auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0.35rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+}
+
+.lumiere-card__sale:last-child { border-bottom: 0; }
+
+.lumiere-card__sale-toggle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.lumiere-card__sale.is-paid .lumiere-card__sale-toggle {
+  background: #d4af37;
+  border-color: #d4af37;
+}
+
+.lumiere-card__sale.is-paid .lumiere-card__sale-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 4px;
+  height: 8px;
+  border-right: 1.5px solid #0a0806;
+  border-bottom: 1.5px solid #0a0806;
+  transform: rotate(45deg);
+}
+
+.lumiere-card__sale.is-cancelled { opacity: 0.55; }
+
+.lumiere-card__sale-text { min-width: 0; }
+
+.lumiere-card__sale-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  line-height: 1.2;
+  margin-bottom: 0.12rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lumiere-card__sale-date {
+  font-size: 0.66rem;
+  color: #b8b0a4;
+  line-height: 1.2;
+}
+
+.lumiere-card__sale-total {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  white-space: nowrap;
+}
+
+.lumiere-card__sale-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.lumiere-card__sale-badge--paid {
+  background: rgba(212, 175, 55, 0.2);
+  color: #d4af37;
+}
+
+.lumiere-card__sale-badge--pending {
+  background: rgba(120, 112, 105, 0.25);
+  color: #b8b0a4;
+}
+
+.lumiere-card__sale-badge--cancelled {
+  background: rgba(190, 60, 45, 0.15);
+  color: #d4665a;
+}
+
+/* FIX tema claro */
+.lumiere-card__section-title { color: #d4af37; }
+.lumiere-card__section-see-all,
+.lumiere-card__section-empty,
+.lumiere-card__sale-date { color: #b8b0a4; }
+.lumiere-card__sale-name,
+.lumiere-card__sale-total { color: #f0e6d2; }
+
+@media (max-width: 479px) {
+  .lumiere-card__sale {
+    grid-template-columns: 20px 1fr auto;
+    gap: 0.55rem;
+    padding: 0.7rem 0.25rem;
+  }
+
+  .lumiere-card__sale-badge { display: none; }
+
+  .lumiere-card__sale-name,
+  .lumiere-card__sale-total { font-size: 0.78rem; }
+}
+
+/* ============================================================
+   Secção — Produtos mais vendidos
+   ============================================================ */
+
+.lumiere-card__top-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0.25rem 0;
+}
+
+.lumiere-card__top-product {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lumiere-card__top-product-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lumiere-card__top-product-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lumiere-card__top-product-bar-wrap {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.1);
+  overflow: hidden;
+}
+
+.lumiere-card__top-product-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: #d4af37;
+  transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lumiere-card__top-product-count {
+  font-size: 0.68rem;
+  color: #b8b0a4;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Tip no fundo
+   ============================================================ */
+
+.lumiere-card__tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #0d0a07 0%, #0a0806 100%);
+  border: 1px solid rgba(212, 175, 55, 0.14);
+  padding: 1rem 1.1rem;
+  margin: 0 0.25rem 1rem;
+}
+
+.lumiere-card__tip-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: #d4af37;
+  margin-top: 1px;
+}
+
+.lumiere-card__tip-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.lumiere-card__tip-text {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #b8b0a4;
+  margin: 0;
+  font-style: italic;
+}
+
+/* FIX tema claro */
+.lumiere-card__top-product-name { color: #f0e6d2; }
+.lumiere-card__top-product-count,
+.lumiere-card__tip-text { color: #b8b0a4; }
+
+/* Mobile */
+@media (max-width: 479px) {
+  .lumiere-card__top-product-name { font-size: 0.78rem; }
+  .lumiere-card__top-product-count { font-size: 0.62rem; }
+  .lumiere-card__tip { padding: 0.9rem 1rem; }
+}
+
+/* Fix — remover background do container principal */
+.lumiere-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.lumiere-card__header {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 0.5rem;
+}
+
+/* ============================================================
+   Estado vazio
+   ============================================================ */
+
+.lumiere-card__empty-card {
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  padding: 2rem 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.lumiere-card__empty-icon {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  margin-bottom: 0.25rem;
+}
+
+.lumiere-card__empty-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+  stroke-width: 1.4;
+}
+
+.lumiere-card__empty-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f0e6d2;
+  margin: 0;
+  line-height: 1.3;
+  max-width: 300px;
+}
+
+.lumiere-card__empty-text {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #b8b0a4;
+  margin: 0;
+  max-width: 300px;
+}
+
+.lumiere-card__empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+  color: #d4af37;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.lumiere-card__empty-cta:hover {
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.1) 100%);
+  transform: translateY(-1px);
+}
+
+.lumiere-card__empty-cta-plus {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* Secção CONFIGURAR O TEU NEGÓCIO */
+.lumiere-card__setup {
+  padding: 0 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.lumiere-card__setup-header {
+  padding: 0 0.25rem 0.85rem;
+}
+
+.lumiere-card__setup-header-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin: 0;
+}
+
+.lumiere-card__setup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.lumiere-card__setup-tile {
+  display: grid;
+  grid-template-columns: 32px 1fr 16px;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  border: 1px solid rgba(212, 175, 55, 0.16);
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Manrope', sans-serif;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.lumiere-card__setup-tile:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: translateY(-1px);
+}
+
+.lumiere-card__setup-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.lumiere-card__setup-icon svg {
+  width: 55%;
+  height: 55%;
+  stroke: currentColor;
+  fill: none;
+  display: block;
+}
+
+.lumiere-card__setup-text {
+  min-width: 0;
+}
+
+.lumiere-card__setup-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #f0e6d2;
+  line-height: 1.2;
+  margin-bottom: 0.15rem;
+}
+
+.lumiere-card__setup-sub {
+  font-size: 0.7rem;
+  color: #b8b0a4;
+  line-height: 1.2;
+}
+
+.lumiere-card__setup-chevron {
+  color: #b8b0a4;
+  font-size: 1.1rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+/* FIX tema claro */
+.lumiere-card__empty-card,
+.lumiere-card__empty-card *,
+.lumiere-card__setup-tile,
+.lumiere-card__setup-tile * {
+  color: #f0e6d2;
+}
+
+.lumiere-card__empty-icon,
+.lumiere-card__empty-cta,
+.lumiere-card__empty-cta-plus,
+.lumiere-card__setup-header-title,
+.lumiere-card__setup-icon {
+  color: #d4af37;
+}
+
+.lumiere-card__empty-text,
+.lumiere-card__setup-sub,
+.lumiere-card__setup-chevron {
+  color: #b8b0a4;
+}
+
+/* Mobile */
+@media (max-width: 479px) {
+  .lumiere-card__empty-icon { width: 56px; height: 56px; }
+  .lumiere-card__empty-title { font-size: 0.98rem; }
+  .lumiere-card__empty-text { font-size: 0.76rem; }
+  .lumiere-card__empty-cta {
+    font-size: 0.66rem;
+    padding: 0.7rem 1.2rem;
+  }
+  .lumiere-card__setup-title { font-size: 0.82rem; }
+}

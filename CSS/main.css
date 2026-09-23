@@ -1,0 +1,138 @@
+/* ========================================
+   LUMIÈRE LIFE MANAGER - SISTEMA VISUAL
+   Tokens, Reset, Tipografia e Layout
+   ======================================== */
+
+/* ---------- IMPORTS (devem vir antes de qualquer regra) ---------- */
+@import url("themes/index.css");
+@import url("layout/app-shell.css");
+@import url("onboarding.css");
+
+/* ---------- VARIÁVEIS (TOKENS) ---------- */
+:root {
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #1a1715;
+  --color-bg-input: #2a2521;
+  --color-border: #4a3f38;
+  --color-border-light: #b8956a;
+  --color-text-primary: #f5f0eb;
+  --color-text-secondary: #b8956a;
+  --color-gold: #d4af37;
+  --color-gold-hover: #e6c34a;
+  --color-error: #e74c3c;
+  --color-success: #2ecc71;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  --font-family-base: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2.2rem;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius-full: 40px;
+  --shadow-card: 0 8px 32px rgba(184, 149, 106, 0.15);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.2);
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}
+
+/* ---------- RESET GLOBAL ---------- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- TIPOGRAFIA ---------- */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-light);
+  line-height: 1.2;
+  color: var(--color-gold);
+  letter-spacing: 0.02em;
+}
+h1 { font-size: var(--font-size-3xl); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+
+a {
+  color: var(--color-gold);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover { color: var(--color-gold-hover); }
+
+/* ---------- LAYOUT BASE ---------- */
+#app {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* ---------- UTILITÁRIOS ---------- */
+.text-center { text-align: center; }
+.text-gold { color: var(--color-gold); }
+.text-secondary { color: var(--color-text-secondary); }
+.mt-1 { margin-top: var(--space-md); }
+.mb-1 { margin-bottom: var(--space-md); }
+.p-1 { padding: var(--space-md); }
+.radius-md { border-radius: var(--radius-md); }
+.shadow-card { box-shadow: var(--shadow-card); }
+
+/* ---------- RESPONSIVIDADE BÁSICA ---------- */
+@media (min-width: 768px) {
+  #app { max-width: 720px; }
+  :root { --font-size-base: 1.05rem; }
+}
+@media (min-width: 1024px) {
+  #app { max-width: 960px; }
+}
+
+
+/* ---------- FIX: garantir que [hidden] esconde sempre ---------- */
+[hidden] { display: none !important; }
