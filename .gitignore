@@ -27,3 +27,9 @@ dist-test/
 backup_lumiere.sh
 backup_lumiere.sh0
 backup_lumiere.sh0cc
+
+# Backups locais
+*.bak
+*.bak2
+index.html.bak*
+js/*.bak*
