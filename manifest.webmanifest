@@ -13,8 +13,14 @@
   "theme_color": "#d4af37",
   "categories": ["productivity", "lifestyle", "health", "finance"],
   "iarc_rating_id": "e6b54c3d-9e8c-4e1b-a7c0-1e2a4c8f7d3b",
-  "prefer_related_applications": false,
-  "related_applications": [],
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=mz.lumiere.lifemanager",
+      "id": "mz.lumiere.lifemanager"
+    }
+  ],
   "launch_handler": {
     "client_mode": ["navigate-existing", "auto"]
   },
