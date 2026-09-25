@@ -16,7 +16,7 @@ fcmMessaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(title, options);
 });
 
-const CACHE_NAME = 'lumiere-cache-v176';
+const CACHE_NAME = 'lumiere-cache-v177';
 const OFFLINE_URLS = [
   './',
   './index.html',

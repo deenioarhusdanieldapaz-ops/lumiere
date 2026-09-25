@@ -28,7 +28,6 @@ import { initReports } from '../pages/cards/reports/reports.js';
 import { splash } from './splash.js';
 import { injectIcons } from './icons.js';
 import { notifications } from './notifications.js';
-import { initLocalNotifications } from './notifications-local.js';
 
 /**
  * Monta o Dashboard no container #content.
@@ -229,10 +228,6 @@ async function bootstrap() {
       stateManager.navigateTo('overview');
       eventBus.emit('navigation:changed', { page: 'overview' });
     }
-
-    // Notificacoes locais contextuais
-    try { initLocalNotifications(); } catch (e) { console.warn('[App] NotifLocal:', e); }
-
     splash.hide();
   } catch (err) {
     console.error('[App] Falha ao inicializar:', err);
