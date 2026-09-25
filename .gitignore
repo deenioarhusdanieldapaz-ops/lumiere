@@ -36,3 +36,6 @@ js/*.bak*
 
 # Backups FCM
 *.before-fcm
+
+# Backups notif
+*.before-notif
