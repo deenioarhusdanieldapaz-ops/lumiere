@@ -1,14 +1,16 @@
 {
   "name": "Lumière Life Manager",
   "short_name": "Lumière",
-  "description": "Gestor pessoal integrado",
+  "description": "Gestor pessoal integrado para tarefas, hábitos, estudos, objetivos, finanças e operação Lumière.",
   "lang": "pt-MZ",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#060505",
   "theme_color": "#d4af37",
+  "categories": ["productivity", "lifestyle", "health", "finance"],
   "icons": [
     {
       "src": "public/icons/android-chrome-192x192.png",
@@ -27,6 +29,65 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "public/screenshots/dashboard.jpg",
+      "sizes": "720x1612",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Início - Lumière Life Manager"
+    },
+    {
+      "src": "public/screenshots/evolucao.jpg",
+      "sizes": "720x1612",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "A tua evolução"
+    },
+    {
+      "src": "public/screenshots/habitos.jpg",
+      "sizes": "720x1612",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Hábitos"
+    },
+    {
+      "src": "public/screenshots/tarefas.jpg",
+      "sizes": "720x1612",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Tarefas agrupadas"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Hoje",
+      "short_name": "Hoje",
+      "description": "Ver as tarefas e hábitos de hoje",
+      "url": "./?page=today",
+      "icons": [
+        { "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }
+      ]
+    },
+    {
+      "name": "Hábitos",
+      "short_name": "Hábitos",
+      "description": "Marcar hábitos de hoje",
+      "url": "./?page=habits",
+      "icons": [
+        { "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }
+      ]
+    },
+    {
+      "name": "Nova Tarefa",
+      "short_name": "Tarefa",
+      "description": "Criar uma nova tarefa rapidamente",
+      "url": "./?page=tasks&action=new",
+      "icons": [
+        { "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }
+      ]
     }
   ]
 }
