@@ -40,16 +40,48 @@ function applyTheme(theme) {
 }
 
 async function renderDashboard() {
-  // Dashboard migrado para cards independentes via navegacao.
-  stateManager.navigateTo('overview');
+  const container = document.getElementById('content');
+  if (!container) {
+    console.warn('[App] #content não encontrado.');
+    return;
+  }
+  const userName = localStorage.getItem('lumiereUserName') || '';
+
+  // Carregar todas as coleções para o Dashboard
+  const names = [
+    'tasks','habits','habitLogs','studies','studySessions',
+    'goals','goalMilestones','calendarEvents','financeAccounts',
+    'financeTransactions','budgets','notes','lumiereBusinesses',
+    'lumiereProducts','lumiereCustomers','lumiereSales','reminders'
+  ];
+  const collections = {};
+  try {
+    const results = await Promise.all(
+      names.map(n => dataManager.list(n).catch(() => []))
+    );
+    for (let i = 0; i < names.length; i++) {
+      collections[names[i]] = Array.isArray(results[i]) ? results[i] : [];
+    }
+  } catch (err) {
+    console.error('[App] Erro ao carregar coleções:', err);
+  }
+
+  loadDashboard(container, {
+    userName,
+    state: stateManager.getState(),
+    collections,
+    services: { core, eventBus, stateManager, dataManager }
+  });
 }
 
 /**
  * Renderiza só se a página atual for dashboard.
  */
 function renderIfDashboard() {
-  // Redireccionado para overview (dashboard migrado)
-  stateManager.navigateTo('overview');
+  const state = stateManager.getState();
+  if (state.currentPage === 'dashboard') {
+    renderDashboard();
+  }
 }
 
 async function bootstrap() {
