@@ -7,10 +7,29 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#060505",
   "theme_color": "#d4af37",
   "categories": ["productivity", "lifestyle", "health", "finance"],
+  "iarc_rating_id": "e6b54c3d-9e8c-4e1b-a7c0-1e2a4c8f7d3b",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "scope_extensions": [
+    {
+      "type": "origin",
+      "origin": "https://lumiere-83s.pages.dev"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "note_taking": {
+    "new_note_url": "./?page=notes&action=new"
+  },
   "icons": [
     {
       "src": "public/icons/android-chrome-192x192.png",
@@ -67,26 +86,69 @@
       "short_name": "Hoje",
       "description": "Ver as tarefas e hábitos de hoje",
       "url": "./?page=today",
-      "icons": [
-        { "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }
-      ]
+      "icons": [{ "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }]
     },
     {
       "name": "Hábitos",
       "short_name": "Hábitos",
       "description": "Marcar hábitos de hoje",
       "url": "./?page=habits",
-      "icons": [
-        { "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }
-      ]
+      "icons": [{ "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }]
     },
     {
       "name": "Nova Tarefa",
       "short_name": "Tarefa",
       "description": "Criar uma nova tarefa rapidamente",
       "url": "./?page=tasks&action=new",
+      "icons": [{ "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+lumiere",
+      "url": "./?deeplink=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./?page=notes&action=open",
+      "accept": {
+        "text/plain": [".txt"],
+        "text/markdown": [".md"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "./?page=notes&action=share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "widgets": [
+    {
+      "name": "Hoje no Lumière",
+      "short_name": "Hoje",
+      "description": "As tarefas e hábitos de hoje",
+      "tag": "lumiere-today",
+      "ms_ac_template": "./widgets/today.json",
+      "data": "./widgets/today-data.json",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "public/screenshots/dashboard.jpg",
+          "sizes": "720x1612",
+          "label": "Widget Hoje"
+        }
+      ],
       "icons": [
-        { "src": "public/icons/android-chrome-192x192.png", "sizes": "192x192" }
+        {
+          "src": "public/icons/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
       ]
     }
   ]
