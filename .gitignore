@@ -33,3 +33,6 @@ backup_lumiere.sh0cc
 *.bak2
 index.html.bak*
 js/*.bak*
+
+# Backups FCM
+*.before-fcm
