@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "mz.lumiere.lifemanager",
+        "sha256_cert_fingerprints": ["A5:19:C2:C7:9C:5B:41:DC:B2:5B:FA:0D:08:A8:CD:5F:34:CB:F3:5A:88:B2:1B:67:2A:3A:B8:78:75:8B:CD:B8"]
+      }
+    }]
