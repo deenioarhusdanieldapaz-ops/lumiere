@@ -202,7 +202,7 @@ function buildStreakSection(habit) {
     num.textContent = String(habit._streak);
     const label = document.createElement('span');
     label.className = 'habit-item__streak-label';
-    label.textContent = ' dia' + (habit._streak > 1 ? 's' : '') + ' seguidos';
+    label.textContent = habit._streak === 1 ? ' dia seguido' : ' dias seguidos';
     num.appendChild(label);
   } else {
     num.textContent = 'Comeca hoje';
@@ -214,18 +214,24 @@ function buildStreakSection(habit) {
   const week = document.createElement('div');
   week.className = 'habit-item__streak-week';
   (habit._last7 || []).forEach(day => {
+    const col = document.createElement('div');
+    col.className = 'habit-item__streak-col';
+
     const cell = document.createElement('div');
     cell.className = 'habit-item__streak-cell';
     if (day.done) cell.classList.add('is-done');
     else if (day.applicable) cell.classList.add('is-missed');
     else cell.classList.add('is-na');
     if (day.isToday) cell.classList.add('is-today');
-    cell.title = day.label;
+    cell.title = day.label + (day.done ? ' (feito)' : '');
+    col.appendChild(cell);
+
     const lbl = document.createElement('span');
     lbl.className = 'habit-item__streak-day';
     lbl.textContent = day.label;
-    cell.appendChild(lbl);
-    week.appendChild(cell);
+    col.appendChild(lbl);
+
+    week.appendChild(col);
   });
   section.appendChild(week);
   return section;

@@ -342,8 +342,15 @@
 
 .habit-item__streak-week {
   display: flex;
-  gap: 4px;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.habit-item__streak-col {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 3px;
 }
 
 .habit-item__streak-cell {
@@ -352,10 +359,7 @@
   border-radius: 5px;
   background: #2a2521;
   border: 1px solid rgba(212, 175, 55, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  box-sizing: border-box;
 }
 
 .habit-item__streak-cell.is-done {
@@ -379,15 +383,14 @@
 }
 
 .habit-item__streak-day {
-  position: absolute;
-  bottom: -16px;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: #7a736c;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  line-height: 1;
 }
 
-.habit-item__streak-cell.is-today .habit-item__streak-day {
+.habit-item__streak-col:has(.is-today) .habit-item__streak-day {
   color: #d4af37;
   font-weight: 700;
 }
