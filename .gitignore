@@ -48,3 +48,6 @@ index.html.no-eruda
 
 # Backups FAB
 *.before-fab
+
+# Backups streak
+*.before-streak
