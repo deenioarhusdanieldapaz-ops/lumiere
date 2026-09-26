@@ -1,28 +1,32 @@
 // ============================================================
-// Firebase Cloud Messaging
+// Firebase Cloud Messaging — carregamento resiliente
+// Se a rede falhar, o SW de cache continua funcional
 // ============================================================
-importScripts('./firebase-config-sw.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
-
-firebase.initializeApp(self.LUMIERE_FIREBASE_CONFIG);
-const fcmMessaging = firebase.messaging();
-
-fcmMessaging.onBackgroundMessage((payload) => {
-  console.log('[SW] FCM background message:', payload);
-  const title = (payload.notification && payload.notification.title) || 'Lumiere';
-  const options = {
-    body: (payload.notification && payload.notification.body) || 'Nova notificacao',
-    icon: './public/icons/android-chrome-192x192.png',
-    badge: './public/icons/android-chrome-192x192.png'
-  };
-  self.registration.showNotification(title, options);
-});
+let fcmMessaging = null;
+try {
+  importScripts('./firebase-config-sw.js');
+  importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+  importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+  firebase.initializeApp(self.LUMIERE_FIREBASE_CONFIG);
+  fcmMessaging = firebase.messaging();
+  fcmMessaging.onBackgroundMessage((payload) => {
+    console.log('[SW] FCM background message:', payload);
+    const title = (payload.notification && payload.notification.title) || 'Lumiere';
+    const options = {
+      body: (payload.notification && payload.notification.body) || 'Nova notificacao',
+      icon: './public/icons/android-chrome-192x192.png',
+      badge: './public/icons/android-chrome-192x192.png'
+    };
+    self.registration.showNotification(title, options);
+  });
+} catch (e) {
+  console.warn('[SW] Firebase indisponivel neste arranque:', e && e.message ? e.message : e);
+}
 
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v182';
+const CACHE_NAME = 'lumiere-cache-v183';
 const OFFLINE_URLS = [
   './',
   './index.html',
