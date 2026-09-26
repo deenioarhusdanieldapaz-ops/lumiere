@@ -51,18 +51,10 @@ async function loadHabits() {
         .map(l => l.habitId)
     );
     const todayDow = ['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
-    const logsArr = Array.isArray(logs) ? logs : [];
     _state.habits = habitsArr.map(h => {
       const days = Array.isArray(h.daysOfWeek) ? h.daysOfWeek : [];
       const isToday = days.length === 0 || days.includes(todayDow);
-      const habitLogs = logsArr.filter(l => l.habitId === h.id);
-      return {
-        ...h,
-        _doneToday: logsToday.has(h.id),
-        _isToday: isToday,
-        _streak: calcularStreak(h, habitLogs),
-        _last7: calcularLast7(h, habitLogs)
-      };
+      return { ...h, _doneToday: logsToday.has(h.id), _isToday: isToday };
     });
   } catch (err) {
     console.error('[Habits] Erro ao carregar:', err);
@@ -137,100 +129,6 @@ function renderList() {
   return list;
 }
 
-function calcularStreak(habit, logs) {
-  const dowMap = ['sun','mon','tue','wed','thu','fri','sat'];
-  const daysOfWeek = Array.isArray(habit.daysOfWeek) ? habit.daysOfWeek : [];
-  const isApplicable = (d) => daysOfWeek.length === 0 || daysOfWeek.includes(dowMap[d.getDay()]);
-  const doneDates = new Set((logs || []).filter(l => l.completed).map(l => l.date));
-  let streak = 0;
-  let cursor = new Date();
-  cursor.setHours(0, 0, 0, 0);
-  let isFirst = true;
-  for (let i = 0; i < 365; i++) {
-    const ymd = cursor.getFullYear() + '-' + String(cursor.getMonth()+1).padStart(2,'0') + '-' + String(cursor.getDate()).padStart(2,'0');
-    if (isApplicable(cursor)) {
-      if (doneDates.has(ymd)) streak++;
-      else if (isFirst) { /* hoje ainda nao marcado, nao quebra */ }
-      else break;
-    }
-    isFirst = false;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  return streak;
-}
-
-function calcularLast7(habit, logs) {
-  const dowMap = ['sun','mon','tue','wed','thu','fri','sat'];
-  const labelMap = { mon:'Seg', tue:'Ter', wed:'Qua', thu:'Qui', fri:'Sex', sat:'Sab', sun:'Dom' };
-  const daysOfWeek = Array.isArray(habit.daysOfWeek) ? habit.daysOfWeek : [];
-  const doneDates = new Set((logs || []).filter(l => l.completed).map(l => l.date));
-  const result = [];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const ymd = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    const dow = dowMap[d.getDay()];
-    const applicable = daysOfWeek.length === 0 || daysOfWeek.includes(dow);
-    result.push({
-      ymd: ymd,
-      label: labelMap[dow],
-      done: doneDates.has(ymd),
-      applicable: applicable,
-      isToday: i === 0
-    });
-  }
-  return result;
-}
-
-function buildStreakSection(habit) {
-  const section = document.createElement('div');
-  section.className = 'habit-item__streak';
-
-  const left = document.createElement('div');
-  left.className = 'habit-item__streak-info';
-
-  const fire = document.createElement('span');
-  fire.className = 'habit-item__streak-fire';
-  fire.textContent = '\uD83D\uDD25';
-  left.appendChild(fire);
-
-  const num = document.createElement('span');
-  num.className = 'habit-item__streak-num';
-  if (habit._streak > 0) {
-    num.textContent = String(habit._streak);
-    const label = document.createElement('span');
-    label.className = 'habit-item__streak-label';
-    label.textContent = ' dia' + (habit._streak > 1 ? 's' : '') + ' seguidos';
-    num.appendChild(label);
-  } else {
-    num.textContent = 'Comeca hoje';
-    num.classList.add('habit-item__streak-num--empty');
-  }
-  left.appendChild(num);
-  section.appendChild(left);
-
-  const week = document.createElement('div');
-  week.className = 'habit-item__streak-week';
-  (habit._last7 || []).forEach(day => {
-    const cell = document.createElement('div');
-    cell.className = 'habit-item__streak-cell';
-    if (day.done) cell.classList.add('is-done');
-    else if (day.applicable) cell.classList.add('is-missed');
-    else cell.classList.add('is-na');
-    if (day.isToday) cell.classList.add('is-today');
-    cell.title = day.label;
-    const lbl = document.createElement('span');
-    lbl.className = 'habit-item__streak-day';
-    lbl.textContent = day.label;
-    cell.appendChild(lbl);
-    week.appendChild(cell);
-  });
-  section.appendChild(week);
-  return section;
-}
-
 function renderHabitItem(habit) {
   const item = document.createElement('article');
   item.className = 'habit-item';
@@ -301,8 +199,6 @@ function renderHabitItem(habit) {
     desc.textContent = habit.description;
     item.appendChild(desc);
   }
-
-  item.appendChild(buildStreakSection(habit));
 
   return item;
 }
