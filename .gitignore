@@ -42,3 +42,6 @@ js/*.bak*
 
 # Eruda backup
 index.html.no-eruda
+
+# Backup SW
+*.before-offline-fix
