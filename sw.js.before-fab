@@ -22,7 +22,7 @@ fcmMessaging.onBackgroundMessage((payload) => {
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v179';
+const CACHE_NAME = 'lumiere-cache-v178';
 const OFFLINE_URLS = [
   './',
   './index.html',
@@ -57,8 +57,6 @@ const OFFLINE_URLS = [
   './core/intelligence/recommendations.js',
   './data/contracts/index.js',
   './components/index.js',
-  './components/floating-action/floatingAction.js',
-  './components/floating-action/floatingAction.css',
   './pages/tasks/tasks.js',
   './pages/tasks/tasks.css',
   './pages/habits/habits.js',

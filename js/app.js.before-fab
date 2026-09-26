@@ -29,7 +29,6 @@ import { splash } from './splash.js';
 import { injectIcons } from './icons.js';
 import { notifications } from './notifications.js';
 import { initLocalNotifications } from './notifications-local.js';
-import { initFloatingAction } from '../components/floating-action/floatingAction.js';
 
 /**
  * Monta o Dashboard no container #content.
@@ -230,9 +229,6 @@ async function bootstrap() {
       stateManager.navigateTo('overview');
       eventBus.emit('navigation:changed', { page: 'overview' });
     }
-
-    // Floating Action Button
-    try { initFloatingAction(); } catch (e) { console.warn('[App] FAB:', e); }
 
     // Notificacoes locais contextuais
     try { initLocalNotifications(); } catch (e) { console.warn('[App] NotifLocal:', e); }
