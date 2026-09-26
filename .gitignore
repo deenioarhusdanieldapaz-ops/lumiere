@@ -39,3 +39,6 @@ js/*.bak*
 
 # Backups notif
 *.before-notif
+
+# Eruda backup
+index.html.no-eruda
