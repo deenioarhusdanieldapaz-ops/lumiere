@@ -45,3 +45,6 @@ index.html.no-eruda
 
 # Backup SW
 *.before-offline-fix
+
+# Backups FAB
+*.before-fab
