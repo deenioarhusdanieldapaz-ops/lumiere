@@ -2,7 +2,6 @@
 <html lang="pt-MZ" data-theme="noir">
 <head>
   <meta charset="UTF-8">
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lumière Life Manager</title>
   <link rel="stylesheet" href="CSS/fonts.css?v=5">
