@@ -411,7 +411,11 @@
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') { console.log('[FCM] Permissao negada'); return; }
         console.log('[FCM] Permissao concedida');
-        const token = await getToken(messaging, { vapidKey: 'BDsXwVZHF-4fTGStO0EjPougzKGD3n8eHXeQQC01VoesgBkND0xPI07gKG6oI3-mRJaclW53Z844jPo2JiQQQjc' });
+        const swReg = await navigator.serviceWorker.ready;
+        const token = await getToken(messaging, {
+          vapidKey: 'BDsXwVZHF-4fTGStO0EjPougzKGD3n8eHXeQQC01VoesgBkND0xPI07gKG6oI3-mRJaclW53Z844jPo2JiQQQjc',
+          serviceWorkerRegistration: swReg
+        });
         if (token) { console.log('[FCM] Token obtido'); localStorage.setItem('fcmToken', token); }
         else { console.warn('[FCM] Sem token'); }
       } catch (err) { console.error('[FCM] Erro:', err); }
