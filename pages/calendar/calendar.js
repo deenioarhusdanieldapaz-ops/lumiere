@@ -21,7 +21,7 @@ const KEYWORD_EMOJI_CALENDAR = [
   { kw: ['consulta', 'medico', 'dentista'], emoji: '\u{1FA7A}' },
   { kw: ['aniversario', 'festa', 'festejo'], emoji: '\u{1F382}' },
   { kw: ['prova', 'exame', 'teste'], emoji: '\u{1F4DD}' },
-  { kw: ['viagem', 'voo', 'embarque'], emoji: '\u{2708}\u{FE0F}' },
+  { kw: ['viagem', 'viajar', 'voo', 'embarque'], emoji: '\u{2708}\u{FE0F}' },
   { kw: ['treino', 'corrida', 'treinar'], emoji: '\u{1F3C3}' },
   { kw: ['pagamento', 'conta', 'fatura'], emoji: '\u{1F4B3}' },
   { kw: ['aula', 'curso', 'formacao'], emoji: '\u{1F4DA}' },
