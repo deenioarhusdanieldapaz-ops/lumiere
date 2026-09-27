@@ -5,6 +5,54 @@ import { dataManager } from '../../core/dataManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
+// ============================================================
+// Icones automaticos — 21 keywords (titulo) + 9 categorias
+// ============================================================
+const CATEGORY_EMOJI_NOTES = {
+  personal: '\u{1F4DD}', work: '\u{1F4BC}', study: '\u{1F4DA}',
+  health: '\u{2764}\u{FE0F}', finance: '\u{1F4B0}', home: '\u{1F3E0}',
+  lumiere: '\u{2728}', leisure: '\u{1F3B5}', other: '\u{1F4CC}'
+};
+
+const KEYWORD_EMOJI_NOTES = [
+  { kw: ['ideia', 'brainstorm', 'pensamento'], emoji: '\u{1F4A1}' },
+  { kw: ['estrategia', 'plano', 'planeamento'], emoji: '\u{1F3AF}' },
+  { kw: ['registo', 'diario', 'log', 'journal'], emoji: '\u{1F4D6}' },
+  { kw: ['receita', 'como fazer', 'tutorial'], emoji: '\u{1F373}' },
+  { kw: ['reuniao', 'ata', 'encontro'], emoji: '\u{1F5E3}' },
+  { kw: ['lista', 'checklist', 'compras'], emoji: '\u{1F4CB}' },
+  { kw: ['urgente', 'importante', 'atencao'], emoji: '\u{26A0}' },
+  { kw: ['referencia', 'link', 'fonte'], emoji: '\u{1F517}' },
+  { kw: ['estudo', 'apontamento', 'materia'], emoji: '\u{1F4DA}' },
+  { kw: ['viagem', 'travel', 'destino'], emoji: '\u{2708}' },
+  { kw: ['contacto', 'pessoa', 'telefone'], emoji: '\u{1F464}' },
+  { kw: ['saude', 'medico', 'sintoma'], emoji: '\u{1FA7A}' },
+  { kw: ['dinheiro', 'orcamento', 'conta'], emoji: '\u{1F4B0}' },
+  { kw: ['citacao', 'frase', 'quote'], emoji: '\u{1F4AC}' },
+  { kw: ['livro', 'leitura', 'capitulo'], emoji: '\u{1F4D5}' },
+  { kw: ['filme', 'serie', 'assistir'], emoji: '\u{1F3AC}' },
+  { kw: ['reflexao', 'meditacao'], emoji: '\u{1F9D8}' },
+  { kw: ['gratidao', 'agradecer', 'obrigado'], emoji: '\u{1F64F}' },
+  { kw: ['sonho', 'meta', 'objetivo'], emoji: '\u{1F31F}' },
+  { kw: ['projeto', 'projecto', 'trabalho'], emoji: '\u{1F680}' },
+  { kw: ['calculo', 'matematica', 'formula'], emoji: '\u{1F9EE}' }
+];
+
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function emojiForNote(title, category) {
+  const normalized = normalizeText(title);
+  for (const item of KEYWORD_EMOJI_NOTES) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return CATEGORY_EMOJI_NOTES[category] || '\u{1F4CC}';
+}
+
 let _container = null;
 let _state = {
   notes: [],
@@ -264,10 +312,21 @@ function renderNoteItem(note) {
   const header = document.createElement('div');
   header.className = 'note-item__header';
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'note-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'note-item__icon';
+  icon.textContent = note.icon || emojiForNote(note.title, note.category);
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'note-item__name';
   name.textContent = note.title || '(sem título)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
+
+  header.appendChild(headerLeft);
 
   const actions = document.createElement('div');
   actions.className = 'note-item__actions';
