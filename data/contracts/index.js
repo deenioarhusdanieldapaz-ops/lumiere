@@ -19,3 +19,4 @@ export { categoryContract } from './categoryContract.js?v=20260912a';
 export { tagContract } from './tagContract.js?v=20260912a';
 export { preferencesContract } from './preferencesContract.js?v=20260912a';
 export { userProfileContract } from './userProfileContract.js?v=20260912a';
+export { templateContract } from './templateContract.js?v=20260927a';

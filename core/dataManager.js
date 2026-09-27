@@ -30,7 +30,8 @@ const contractMap = {
   categories: contracts.categoryContract,
   tags: contracts.tagContract,
   preferences: contracts.preferencesContract,
-  userProfiles: contracts.userProfileContract
+  userProfiles: contracts.userProfileContract,
+  templates: contracts.templateContract
 };
 
 export const dataManager = {
