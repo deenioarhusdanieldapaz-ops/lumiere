@@ -10,6 +10,84 @@ import { dataManager } from '../../core/dataManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
+// ============================================================
+// Icones automaticos — 50 keywords (nome) + 9 categorias
+// Ordem: especificas antes de genericas, saude antes de agendamento
+// ============================================================
+const CATEGORY_EMOJI_TASKS = {
+  personal: '\u{1F4DD}', work: '\u{1F4BC}', study: '\u{1F4DA}',
+  health: '\u{2764}\u{FE0F}', finance: '\u{1F4B0}', home: '\u{1F3E0}',
+  lumiere: '\u{2728}', leisure: '\u{1F3AF}', other: '\u{1F4CC}'
+};
+
+const KEYWORD_EMOJI_TASKS = [
+  { kw: ['trabalhar', 'trabalho', 'buscato', 'emprego'], emoji: '\u{1F4BC}' },
+  { kw: ['reuniao', 'encontro', 'meeting'], emoji: '\u{1F91D}' },
+  { kw: ['relatorio', 'report'], emoji: '\u{1F4C4}' },
+  { kw: ['estudar', 'estudo', 'materia'], emoji: '\u{1F4DA}' },
+  { kw: ['ler', 'leitura', 'livro'], emoji: '\u{1F4D6}' },
+  { kw: ['fisica', 'matematica', 'calculo'], emoji: '\u{1F9EE}' },
+  { kw: ['medico', 'consulta', 'hospital'], emoji: '\u{1FA7A}' },
+  { kw: ['dentista'], emoji: '\u{1F9B7}' },
+  { kw: ['farmacia', 'remedio', 'medicamento'], emoji: '\u{1F48A}' },
+  { kw: ['teste', 'prova', 'exame'], emoji: '\u{1F4DD}' },
+  { kw: ['revisao', 'revisar', 'rever'], emoji: '\u{1F504}' },
+  { kw: ['correr', 'corrida', 'treino'], emoji: '\u{1F3C3}' },
+  { kw: ['alongar', 'aquecimento', 'ginastica'], emoji: '\u{1F938}' },
+  { kw: ['limpar', 'arrumar', 'casa'], emoji: '\u{1F9F9}' },
+  { kw: ['passar', 'engomar'], emoji: '\u{1F454}' },
+  { kw: ['lavar', 'roupa'], emoji: '\u{1F455}' },
+  { kw: ['compras', 'mercado', 'supermercado'], emoji: '\u{1F6D2}' },
+  { kw: ['comprar', 'adquirir'], emoji: '\u{1F6CD}' },
+  { kw: ['cozinhar', 'refeicao', 'comida'], emoji: '\u{1F373}' },
+  { kw: ['pagar', 'pagamento', 'conta', 'fatura'], emoji: '\u{1F4B3}' },
+  { kw: ['poupar', 'transferir', 'enviar dinheiro'], emoji: '\u{1F4B0}' },
+  { kw: ['banco', 'bci', 'deposito'], emoji: '\u{1F3E6}' },
+  { kw: ['ligar', 'telefonar', 'chamar'], emoji: '\u{1F4DE}' },
+  { kw: ['enviar', 'email', 'mensagem'], emoji: '\u{2709}' },
+  { kw: ['responder', 'resposta'], emoji: '\u{1F4AC}' },
+  { kw: ['marcar', 'agendar', 'marcacao'], emoji: '\u{1F4C5}' },
+  { kw: ['ir ao', 'visitar', 'visita'], emoji: '\u{1F4CD}' },
+  { kw: ['tratar', 'resolver', 'assunto'], emoji: '\u{1F527}' },
+  { kw: ['imprimir'], emoji: '\u{1F5A8}' },
+  { kw: ['escrever', 'redigir', 'texto'], emoji: '\u{270D}' },
+  { kw: ['preencher', 'formulario'], emoji: '\u{1F4CB}' },
+  { kw: ['entregar', 'entrega', 'prazo'], emoji: '\u{23F0}' },
+  { kw: ['confirmar', 'confirmacao'], emoji: '\u{2705}' },
+  { kw: ['planear', 'planeamento'], emoji: '\u{1F4CA}' },
+  { kw: ['organizar', 'lista'], emoji: '\u{1F4C1}' },
+  { kw: ['pesquisar', 'procurar', 'buscar'], emoji: '\u{1F50D}' },
+  { kw: ['verificar', 'checar'], emoji: '\u{2714}' },
+  { kw: ['familia', 'ajudar pessoa'], emoji: '\u{1F468}\u{200D}\u{1F469}\u{200D}\u{1F467}' },
+  { kw: ['aniversario', 'parabens'], emoji: '\u{1F382}' },
+  { kw: ['presente', 'prenda'], emoji: '\u{1F381}' },
+  { kw: ['viajar', 'viagem', 'voo'], emoji: '\u{2708}\u{FE0F}' },
+  { kw: ['passaporte', 'visto'], emoji: '\u{1F6C2}' },
+  { kw: ['manutencao', 'reparar', 'arranjar'], emoji: '\u{1F528}' },
+  { kw: ['instalar', 'configurar', 'setup'], emoji: '\u{2699}\u{FE0F}' },
+  { kw: ['backup', 'copia', 'guardar'], emoji: '\u{1F4BE}' },
+  { kw: ['seguranca', 'proteger', 'senha'], emoji: '\u{1F512}' },
+  { kw: ['ir buscar', 'recolher', 'ir pegar'], emoji: '\u{1F697}' },
+  { kw: ['carregar', 'recarregar', 'bateria'], emoji: '\u{1F50B}' },
+  { kw: ['festa', 'celebrar', 'comemorar'], emoji: '\u{1F389}' },
+  { kw: ['fotografia', 'foto', 'tirar foto'], emoji: '\u{1F4F7}' }
+];
+
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function emojiForTask(name, category) {
+  const normalized = normalizeText(name);
+  for (const item of KEYWORD_EMOJI_TASKS) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return CATEGORY_EMOJI_TASKS[category] || '\u{1F4CC}';
+}
+
 let _container = null;
 let _state = {
   tasks: [],
@@ -204,17 +282,33 @@ function renderTaskItem(task) {
   const isToday = task.dueDate && task.dueDate <= today && task.status !== 'completed' && task.status !== 'cancelled';
   if (isToday) item.classList.add('task-item--today');
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'task-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'task-item__icon';
+  if (task.status === 'completed') {
+    icon.classList.add('is-completed');
+    icon.textContent = '\u2705';
+  } else {
+    icon.textContent = task.icon || emojiForTask(task.name, task.category);
+  }
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'task-item__name';
   name.textContent = task.name || '(sem nome)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
 
   if (isToday) {
     const badge = document.createElement('span');
     badge.className = 'task-item__badge-today';
     badge.textContent = 'HOJE';
-    header.appendChild(badge);
+    headerLeft.appendChild(badge);
   }
+
+  header.appendChild(headerLeft);
 
   const actions = document.createElement('div');
   actions.className = 'task-item__actions';
