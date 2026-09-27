@@ -8,6 +8,54 @@ import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 import { createProgress } from '../../components/progress/progress.js';
 
+// ============================================================
+// Icones automaticos — 21 keywords (nome) + 9 categorias
+// ============================================================
+const CATEGORY_EMOJI_GOALS = {
+  personal: '\u{1F331}', work: '\u{1F4BC}', study: '\u{1F393}',
+  health: '\u{1F4AA}', finance: '\u{1F4B0}', home: '\u{1F3E0}',
+  lumiere: '\u{2728}', leisure: '\u{1F3A8}', other: '\u{1F3AF}'
+};
+
+const KEYWORD_EMOJI_GOALS = [
+  { kw: ['correr', 'corrida', 'maratona', 'km'], emoji: '\u{1F3C3}' },
+  { kw: ['admissao', 'universidade', 'unza', 'exame'], emoji: '\u{1F393}' },
+  { kw: ['poupar', 'poupanca', 'guardar dinheiro'], emoji: '\u{1F4B0}' },
+  { kw: ['investir', 'investimento'], emoji: '\u{1F4C8}' },
+  { kw: ['peso', 'emagrecer', 'massa'], emoji: '\u{2696}' },
+  { kw: ['musculo', 'forca', 'ginasio'], emoji: '\u{1F4AA}' },
+  { kw: ['ler', 'livros', 'leitura'], emoji: '\u{1F4DA}' },
+  { kw: ['viajar', 'viagem'], emoji: '\u{2708}' },
+  { kw: ['negocio', 'empresa', 'empreender'], emoji: '\u{1F680}' },
+  { kw: ['casa', 'apartamento', 'comprar casa'], emoji: '\u{1F3E0}' },
+  { kw: ['carro', 'mota', 'automovel'], emoji: '\u{1F697}' },
+  { kw: ['casamento', 'noivado'], emoji: '\u{1F48D}' },
+  { kw: ['lingua', 'ingles', 'idioma'], emoji: '\u{1F5E3}' },
+  { kw: ['certificacao', 'curso', 'diploma'], emoji: '\u{1F4DC}' },
+  { kw: ['poupar tempo', 'produtividade'], emoji: '\u{23F1}' },
+  { kw: ['espiritual', 'fe', 'meditacao'], emoji: '\u{1F9D8}' },
+  { kw: ['familia', 'ajudar'], emoji: '\u{2764}\u{FE0F}' },
+  { kw: ['saude', 'bem-estar', 'mental'], emoji: '\u{1F331}' },
+  { kw: ['arte', 'criar', 'escrever livro'], emoji: '\u{1F3A8}' },
+  { kw: ['fisico', 'atletico', 'performance'], emoji: '\u{1F3CB}' },
+  { kw: ['disciplina', 'consistencia'], emoji: '\u{1F3AF}' }
+];
+
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function emojiForGoal(name, category) {
+  const normalized = normalizeText(name);
+  for (const item of KEYWORD_EMOJI_GOALS) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return CATEGORY_EMOJI_GOALS[category] || '\u{1F3AF}';
+}
+
 let _container = null;
 let _state = {
   goals: [],
@@ -121,10 +169,21 @@ function renderGoalItem(goal) {
   const header = document.createElement('div');
   header.className = 'goal-item__header';
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'goal-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'goal-item__icon';
+  icon.textContent = goal.icon || emojiForGoal(goal.name, goal.category);
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'goal-item__name';
   name.textContent = goal.name || '(sem nome)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
+
+  header.appendChild(headerLeft);
 
   const actions = document.createElement('div');
   actions.className = 'goal-item__actions';
