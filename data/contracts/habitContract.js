@@ -8,6 +8,7 @@ export const habitContract = {
     target: { type: 'number', required: false, default: 1 },
     unit: { type: 'string', required: false, default: 'times' },
     status: { type: 'string', required: true, enum: ['active','paused','archived'], default: 'active' },
+    icon: { type: 'string', default: '' },
     startDate: { type: 'string', required: false },
     daysOfWeek: { type: 'array', items: { type: 'string' }, default: [] },
     reminder: { type: 'boolean', default: false },

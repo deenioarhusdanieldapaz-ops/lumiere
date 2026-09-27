@@ -7,6 +7,46 @@ import { dataManager } from '../../core/dataManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
+// ============================================================
+// Icones automaticos — keyword no nome, fallback para categoria
+// ============================================================
+const CATEGORY_EMOJI = {
+  personal: '\u{1F331}', work: '\u{1F4BC}', study: '\u{1F4DA}',
+  health: '\u{1F3C3}', finance: '\u{1F4B0}', home: '\u{1F9F9}',
+  lumiere: '\u{2728}', leisure: '\u{1F3B5}', other: '\u{1F3AF}'
+};
+
+const KEYWORD_EMOJI = [
+  { kw: ['correr', 'corrida', 'run', 'jogging'], emoji: '\u{1F3C3}' },
+  { kw: ['forca', 'ginasio', 'musculacao', 'peso'], emoji: '\u{1F4AA}' },
+  { kw: ['yoga', 'meditar', 'meditacao'], emoji: '\u{1F9D8}' },
+  { kw: ['agua', 'beber', 'hidratar'], emoji: '\u{1F4A7}' },
+  { kw: ['comer', 'alimentar', 'dieta', 'refeicao'], emoji: '\u{1F957}' },
+  { kw: ['dormir', 'sono', 'descansar', 'deitar'], emoji: '\u{1F6CC}' },
+  { kw: ['ler', 'leitura', 'livro'], emoji: '\u{1F4DA}' },
+  { kw: ['estudar', 'estudo', 'fisica', 'matematica'], emoji: '\u{1F4DA}' },
+  { kw: ['escrever', 'jornal', 'diario'], emoji: '\u{270D}' },
+  { kw: ['programar', 'codigo', 'dev'], emoji: '\u{1F4BB}' },
+  { kw: ['trabalhar', 'buscato', 'emprego'], emoji: '\u{1F4BC}' },
+  { kw: ['treinar', 'treino'], emoji: '\u{1F3C3}' },
+  { kw: ['poupar', 'poupanca', 'economizar'], emoji: '\u{1F4B0}' },
+  { kw: ['investir', 'investimento'], emoji: '\u{1F4B0}' },
+  { kw: ['casa', 'limpar', 'organizar'], emoji: '\u{1F9F9}' },
+  { kw: ['lumiere'], emoji: '\u{2728}' },
+  { kw: ['musica', 'cantar', 'tocar'], emoji: '\u{1F3B5}' },
+  { kw: ['levantar', 'manha', 'acordar'], emoji: '\u{2600}' },
+  { kw: ['noite'], emoji: '\u{1F319}' },
+  { kw: ['disciplina'], emoji: '\u{1F525}' }
+];
+
+function emojiForHabit(name, category) {
+  const lower = (name || '').toLowerCase();
+  for (const item of KEYWORD_EMOJI) {
+    if (item.kw.some((k) => lower.includes(k))) return item.emoji;
+  }
+  return CATEGORY_EMOJI[category] || '\u{1F3AF}';
+}
+
 let _container = null;
 let _state = {
   habits: [],
@@ -247,17 +287,28 @@ function renderHabitItem(habit) {
   const header = document.createElement('div');
   header.className = 'habit-item__header';
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'habit-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'habit-item__icon';
+  icon.textContent = habit.icon || emojiForHabit(habit.name, habit.category);
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'habit-item__name';
   name.textContent = habit.name || '(sem nome)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
 
   if (habit._isToday && !habit._doneToday) {
     const badge = document.createElement('span');
     badge.className = 'habit-item__badge-today';
     badge.textContent = 'HOJE';
-    header.appendChild(badge);
+    headerLeft.appendChild(badge);
   }
+
+  header.appendChild(headerLeft);
 
   const actions = document.createElement('div');
   actions.className = 'habit-item__actions';
