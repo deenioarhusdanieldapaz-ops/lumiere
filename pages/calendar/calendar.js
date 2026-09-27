@@ -7,6 +7,54 @@ import { dataManager } from '../../core/dataManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
+// ============================================================
+// Icones automaticos — 21 keywords (titulo) + 9 categorias
+// ============================================================
+const CATEGORY_EMOJI_CALENDAR = {
+  personal: '\u{1F4C5}', work: '\u{1F4BC}', study: '\u{1F4DA}',
+  health: '\u{1F3E5}', finance: '\u{1F4B0}', home: '\u{1F3E0}',
+  lumiere: '\u{2728}', leisure: '\u{1F389}', other: '\u{1F4CC}'
+};
+
+const KEYWORD_EMOJI_CALENDAR = [
+  { kw: ['reuniao', 'encontro', 'meeting'], emoji: '\u{1F91D}' },
+  { kw: ['consulta', 'medico', 'dentista'], emoji: '\u{1FA7A}' },
+  { kw: ['aniversario', 'festa', 'festejo'], emoji: '\u{1F382}' },
+  { kw: ['prova', 'exame', 'teste'], emoji: '\u{1F4DD}' },
+  { kw: ['viagem', 'voo', 'embarque'], emoji: '\u{2708}\u{FE0F}' },
+  { kw: ['treino', 'corrida', 'treinar'], emoji: '\u{1F3C3}' },
+  { kw: ['pagamento', 'conta', 'fatura'], emoji: '\u{1F4B3}' },
+  { kw: ['aula', 'curso', 'formacao'], emoji: '\u{1F4DA}' },
+  { kw: ['trabalho', 'emprego', 'expediente'], emoji: '\u{1F4BC}' },
+  { kw: ['almoco', 'jantar', 'cafe'], emoji: '\u{1F37D}\u{FE0F}' },
+  { kw: ['casamento', 'noivado'], emoji: '\u{1F48D}' },
+  { kw: ['chamada', 'telefonema'], emoji: '\u{1F4DE}' },
+  { kw: ['entrevista'], emoji: '\u{1F3A4}' },
+  { kw: ['prazo', 'deadline', 'entrega'], emoji: '\u{23F0}' },
+  { kw: ['compras', 'shopping', 'mercado'], emoji: '\u{1F6D2}' },
+  { kw: ['culto', 'igreja', 'missa'], emoji: '\u{26EA}' },
+  { kw: ['cinema', 'filme', 'serie'], emoji: '\u{1F3AC}' },
+  { kw: ['jogo', 'partida', 'desporto'], emoji: '\u{26BD}' },
+  { kw: ['mudanca', 'mudar', 'transporte'], emoji: '\u{1F69A}' },
+  { kw: ['reserva', 'bilhete', 'marcacao'], emoji: '\u{1F3AB}' },
+  { kw: ['cafe da manha', 'brunch', 'pequeno-almoco'], emoji: '\u{1F950}' }
+];
+
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function emojiForEvent(title, category) {
+  const normalized = normalizeText(title);
+  for (const item of KEYWORD_EMOJI_CALENDAR) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return CATEGORY_EMOJI_CALENDAR[category] || '\u{1F4CC}';
+}
+
 let _container = null;
 let _state = {
   events: [],
@@ -166,10 +214,19 @@ function renderEventItem(ev) {
   const header = document.createElement('div');
   header.className = 'calendar-item__header';
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'calendar-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'calendar-item__icon';
+  icon.textContent = ev.icon || emojiForEvent(ev.title, ev.category);
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'calendar-item__name';
   name.textContent = ev.title || '(sem título)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
 
   // Hora (se não for allDay)
   if (!ev.allDay && ev.start) {
@@ -178,13 +235,15 @@ function renderEventItem(ev) {
     const s = ev.start.split('T')[1] || '';
     const e = (ev.end || '').split('T')[1] || '';
     time.textContent = s && e ? (s.slice(0,5) + '–' + e.slice(0,5)) : s.slice(0,5);
-    header.appendChild(time);
+    headerLeft.appendChild(time);
   } else if (ev.allDay) {
     const time = document.createElement('span');
     time.className = 'calendar-item__time';
     time.textContent = 'Dia inteiro';
-    header.appendChild(time);
+    headerLeft.appendChild(time);
   }
+
+  header.appendChild(headerLeft);
 
   const actions = document.createElement('div');
   actions.className = 'calendar-item__actions';
