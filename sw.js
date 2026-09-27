@@ -26,7 +26,7 @@ try {
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v183';
+const CACHE_NAME = 'lumiere-cache-v184';
 const OFFLINE_URLS = [
   './',
   './index.html',
@@ -158,7 +158,7 @@ self.addEventListener('fetch', (event) => {
 
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match('./index.html'))
+      fetch(event.request).catch(() => caches.match('./'))
     );
     return;
   }
