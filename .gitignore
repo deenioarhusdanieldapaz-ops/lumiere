@@ -51,3 +51,4 @@ index.html.no-eruda
 
 # Backups streak
 *.before-streak
+*.before-*
