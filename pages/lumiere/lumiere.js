@@ -8,6 +8,113 @@ import { dataManager } from '../../core/dataManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
 
+// ============================================================
+// Icones automaticos — 50 Products + 25 Customers
+// ============================================================
+const KEYWORD_EMOJI_PRODUCTS = [
+  { kw: ['bolsa'], emoji: '\u{1F45C}' },
+  { kw: ['camisola', 't-shirt', 'tshirt', 'hoodie', 'camisa'], emoji: '\u{1F455}' },
+  { kw: ['caneca'], emoji: '\u{2615}' },
+  { kw: ['poster'], emoji: '\u{1F5BC}\u{FE0F}' },
+  { kw: ['colar'], emoji: '\u{1F4FF}' },
+  { kw: ['brinco'], emoji: '\u{1F48E}' },
+  { kw: ['pulseira'], emoji: '\u{231A}' },
+  { kw: ['anel'], emoji: '\u{1F48D}' },
+  { kw: ['relogio'], emoji: '\u{231A}' },
+  { kw: ['oculos'], emoji: '\u{1F576}\u{FE0F}' },
+  { kw: ['cinto'], emoji: '\u{1F94B}' },
+  { kw: ['lenco'], emoji: '\u{1F9E3}' },
+  { kw: ['bone'], emoji: '\u{1F9E2}' },
+  { kw: ['sapato', 'tenis'], emoji: '\u{1F45F}' },
+  { kw: ['carteira'], emoji: '\u{1F45B}' },
+  { kw: ['perfume'], emoji: '\u{1F490}' },
+  { kw: ['creme'], emoji: '\u{1F9F4}' },
+  { kw: ['maquilhagem'], emoji: '\u{1F484}' },
+  { kw: ['vela'], emoji: '\u{1F56F}\u{FE0F}' },
+  { kw: ['almofada'], emoji: '\u{1F6CB}\u{FE0F}' },
+  { kw: ['planta'], emoji: '\u{1FAB4}' },
+  { kw: ['vaso'], emoji: '\u{1F3FA}' },
+  { kw: ['sabonete'], emoji: '\u{1F9FC}' },
+  { kw: ['espelho'], emoji: '\u{1FA9E}' },
+  { kw: ['toalha'], emoji: '\u{1F9FB}' },
+  { kw: ['caderno'], emoji: '\u{1F4D4}' },
+  { kw: ['agenda'], emoji: '\u{1F4C5}' },
+  { kw: ['caneta'], emoji: '\u{1F58A}\u{FE0F}' },
+  { kw: ['livro'], emoji: '\u{1F4D5}' },
+  { kw: ['marcador'], emoji: '\u{1F516}' },
+  { kw: ['lapis'], emoji: '\u{270F}\u{FE0F}' },
+  { kw: ['bolo'], emoji: '\u{1F382}' },
+  { kw: ['doce'], emoji: '\u{1F36C}' },
+  { kw: ['cafe'], emoji: '\u{2615}' },
+  { kw: ['cha'], emoji: '\u{1F375}' },
+  { kw: ['vinho'], emoji: '\u{1F377}' },
+  { kw: ['sumo'], emoji: '\u{1F9C3}' },
+  { kw: ['pao'], emoji: '\u{1F35E}' },
+  { kw: ['comida'], emoji: '\u{1F37D}\u{FE0F}' },
+  { kw: ['telemovel', 'telefone'], emoji: '\u{1F4F1}' },
+  { kw: ['computador'], emoji: '\u{1F4BB}' },
+  { kw: ['fone'], emoji: '\u{1F3A7}' },
+  { kw: ['carregador'], emoji: '\u{1F50C}' },
+  { kw: ['consultoria'], emoji: '\u{1F4BC}' },
+  { kw: ['formacao'], emoji: '\u{1F393}' },
+  { kw: ['design'], emoji: '\u{1F3A8}' },
+  { kw: ['fotografia'], emoji: '\u{1F4F7}' },
+  { kw: ['entrega'], emoji: '\u{1F4E6}' },
+  { kw: ['chaveiro', 'porta-chave'], emoji: '\u{1F511}' },
+  { kw: ['garrafa'], emoji: '\u{1F9F4}' }
+];
+
+const KEYWORD_EMOJI_CUSTOMERS = [
+  { kw: ['vip'], emoji: '\u{2B50}' },
+  { kw: ['premium'], emoji: '\u{1F48E}' },
+  { kw: ['regular'], emoji: '\u{1F504}' },
+  { kw: ['novo'], emoji: '\u{1F195}' },
+  { kw: ['recorrente'], emoji: '\u{1F501}' },
+  { kw: ['empresa'], emoji: '\u{1F3E2}' },
+  { kw: ['particular'], emoji: '\u{1F464}' },
+  { kw: ['atacado'], emoji: '\u{1F4E6}' },
+  { kw: ['retalho'], emoji: '\u{1F3EA}' },
+  { kw: ['revendedor'], emoji: '\u{1F91D}' },
+  { kw: ['influencer'], emoji: '\u{1F4F8}' },
+  { kw: ['parceiro'], emoji: '\u{1F91D}' },
+  { kw: ['corporativo'], emoji: '\u{1F3DB}\u{FE0F}' },
+  { kw: ['individual'], emoji: '\u{1F9D1}' },
+  { kw: ['estudante'], emoji: '\u{1F393}' },
+  { kw: ['profissional'], emoji: '\u{1F454}' },
+  { kw: ['loja'], emoji: '\u{1F3EA}' },
+  { kw: ['hotel'], emoji: '\u{1F3E8}' },
+  { kw: ['restaurante'], emoji: '\u{1F37D}\u{FE0F}' },
+  { kw: ['online'], emoji: '\u{1F310}' },
+  { kw: ['presencial'], emoji: '\u{1F4CD}' },
+  { kw: ['estrangeiro'], emoji: '\u{1F30D}' },
+  { kw: ['local'], emoji: '\u{1F3E0}' },
+  { kw: ['fiel'], emoji: '\u{2764}\u{FE0F}' },
+  { kw: ['cliente'], emoji: '\u{1F464}' }
+];
+
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function emojiForProduct(name, category) {
+  const normalized = normalizeText(name);
+  for (const item of KEYWORD_EMOJI_PRODUCTS) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return '\u{1F4E6}';
+}
+
+function emojiForCustomer(name) {
+  const normalized = normalizeText(name);
+  for (const item of KEYWORD_EMOJI_CUSTOMERS) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return '\u{1F464}';
+}
+
 let _container = null;
 
 const TABS = [
@@ -192,6 +299,22 @@ function renderItem(item, tabId) {
   const header = document.createElement('div');
   header.className = 'lumiere-item__header';
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'lumiere-item__header-left';
+
+  // Icone (apenas para products e customers neste sub-bloco)
+  if (tabId === 'products' || tabId === 'customers') {
+    const icon = document.createElement('span');
+    icon.className = 'lumiere-item__icon';
+    if (tabId === 'products') {
+      icon.textContent = item.icon || emojiForProduct(item.name, item.category);
+    } else {
+      icon.textContent = item.icon || emojiForCustomer(item.name);
+    }
+    icon.setAttribute('aria-hidden', 'true');
+    headerLeft.appendChild(icon);
+  }
+
   const name = document.createElement('h3');
   name.className = 'lumiere-item__name';
 
@@ -204,7 +327,9 @@ function renderItem(item, tabId) {
   } else {
     name.textContent = item.name || '(sem nome)';
   }
-  header.appendChild(name);
+  headerLeft.appendChild(name);
+
+  header.appendChild(headerLeft);
 
   if (['businesses','customers','products','sales'].includes(tabId)) {
     const actions = document.createElement('div');
