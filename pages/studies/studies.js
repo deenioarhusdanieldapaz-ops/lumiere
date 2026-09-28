@@ -8,6 +8,63 @@ import { dataManager } from '../../core/dataManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
+// ============================================================
+// Icones automaticos — 30 keywords (name + subject) + 9 categorias
+// ============================================================
+const CATEGORY_EMOJI_STUDIES = {
+  personal: '\u{1F4DA}', work: '\u{1F4BC}', study: '\u{1F393}',
+  health: '\u{2764}\u{FE0F}', finance: '\u{1F4B0}', home: '\u{1F3E0}',
+  lumiere: '\u{2728}', leisure: '\u{1F3AF}', other: '\u{1F4D6}'
+};
+
+const KEYWORD_EMOJI_STUDIES = [
+  { kw: ['matematica', 'calculo', 'algebra', 'geometria'], emoji: '\u{1F9EE}' },
+  { kw: ['fisica', 'mecanica', 'optica'], emoji: '\u{269B}\u{FE0F}' },
+  { kw: ['quimica', 'organica', 'inorganica'], emoji: '\u{1F9EA}' },
+  { kw: ['biologia', 'anatomia'], emoji: '\u{1F9EC}' },
+  { kw: ['historia'], emoji: '\u{1F4DC}' },
+  { kw: ['geografia'], emoji: '\u{1F30D}' },
+  { kw: ['portugues', 'gramatica', 'literatura'], emoji: '\u{1F4D6}' },
+  { kw: ['ingles', 'idioma', 'lingua'], emoji: '\u{1F5E3}\u{FE0F}' },
+  { kw: ['frances', 'espanhol', 'alemao'], emoji: '\u{1F310}' },
+  { kw: ['filosofia', 'etica'], emoji: '\u{1F914}' },
+  { kw: ['sociologia', 'psicologia'], emoji: '\u{1F9E0}' },
+  { kw: ['economia', 'contabilidade'], emoji: '\u{1F4B9}' },
+  { kw: ['direito', 'juridico', 'lei'], emoji: '\u{2696}\u{FE0F}' },
+  { kw: ['medicina', 'clinica'], emoji: '\u{1FA7A}' },
+  { kw: ['engenharia', 'tecnico'], emoji: '\u{2699}\u{FE0F}' },
+  { kw: ['programacao', 'codigo', 'python', 'javascript'], emoji: '\u{1F4BB}' },
+  { kw: ['redes', 'sistema', 'computador'], emoji: '\u{1F5A5}\u{FE0F}' },
+  { kw: ['estatistica', 'probabilidade'], emoji: '\u{1F4CA}' },
+  { kw: ['trigonometria', 'logaritmo'], emoji: '\u{1F4D0}' },
+  { kw: ['revisao', 'resumo', 'apontamento'], emoji: '\u{1F4DD}' },
+  { kw: ['exercicio', 'pratica'], emoji: '\u{270F}\u{FE0F}' },
+  { kw: ['capitulo'], emoji: '\u{1F4D5}' },
+  { kw: ['video-aula', 'videoaula', 'aula'], emoji: '\u{1F3A5}' },
+  { kw: ['notas', 'apontamentos'], emoji: '\u{1F5D2}\u{FE0F}' },
+  { kw: ['prova', 'exame', 'teste'], emoji: '\u{1F393}' },
+  { kw: ['tese', 'monografia', 'dissertacao'], emoji: '\u{1F4C4}' },
+  { kw: ['artigo', 'paper', 'pesquisa'], emoji: '\u{1F52C}' },
+  { kw: ['projeto', 'trabalho'], emoji: '\u{1F680}' },
+  { kw: ['apresentacao', 'slide', 'powerpoint'], emoji: '\u{1F3A4}' },
+  { kw: ['laboratorio'], emoji: '\u{1F52D}' }
+];
+
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function emojiForStudy(name, subject, category) {
+  const combined = normalizeText((name || '') + ' ' + (subject || ''));
+  for (const item of KEYWORD_EMOJI_STUDIES) {
+    if (item.kw.some((k) => combined.includes(normalizeText(k)))) return item.emoji;
+  }
+  return CATEGORY_EMOJI_STUDIES[category] || '\u{1F4D6}';
+}
+
 let _container = null;
 let _state = {
   studies: [],
@@ -145,10 +202,26 @@ function renderStudyItem(study) {
   const header = document.createElement('div');
   header.className = 'study-item__header';
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'study-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'study-item__icon';
+  if (study.status === 'completed') {
+    icon.classList.add('is-completed');
+    icon.textContent = '\u2705';
+  } else {
+    icon.textContent = study.icon || emojiForStudy(study.name, study.subject, study.category);
+  }
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'study-item__name';
   name.textContent = study.name || '(sem nome)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
+
+  header.appendChild(headerLeft);
 
   const actions = document.createElement('div');
   actions.className = 'study-item__actions';
