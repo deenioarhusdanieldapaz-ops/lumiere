@@ -9,6 +9,86 @@ import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
 import { createProgress } from '../../components/progress/progress.js';
 
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+// ============================================================
+// Icones automaticos — Accounts + Budgets + Transactions
+// ============================================================
+const ACCOUNT_TYPE_EMOJI = {
+  checking: '\u{1F3E6}', savings: '\u{1F416}', credit: '\u{1F4B3}',
+  investment: '\u{1F4C8}', cash: '\u{1F4B5}'
+};
+
+const KEYWORD_EMOJI_ACCOUNTS = [
+  { kw: ['banco', 'bci', 'millennium', 'bim', 'standard'], emoji: '\u{1F3E6}' },
+  { kw: ['poupanca'], emoji: '\u{1F416}' },
+  { kw: ['credito', 'cartao'], emoji: '\u{1F4B3}' },
+  { kw: ['investimento', 'acoes'], emoji: '\u{1F4C8}' },
+  { kw: ['dinheiro', 'carteira', 'cash'], emoji: '\u{1F4B5}' }
+];
+
+const CATEGORY_EMOJI_FINANCE = {
+  personal: '\u{1F4B0}', work: '\u{1F4BC}', study: '\u{1F4DA}',
+  health: '\u{1F3E5}', finance: '\u{1F4B0}', home: '\u{1F3E0}',
+  lumiere: '\u{2728}', leisure: '\u{1F389}', other: '\u{1F4CA}',
+  income: '\u{2B06}\u{FE0F}', food: '\u{1F37D}\u{FE0F}', transport: '\u{1F68C}',
+  utilities: '\u{1F4A1}', shopping: '\u{1F6CD}\u{FE0F}', subscription: '\u{1F501}',
+  savings: '\u{1F416}', investment: '\u{1F4C8}', debt: '\u{1F4B3}',
+  insurance: '\u{1F6E1}\u{FE0F}', family: '\u{1F468}\u{200D}\u{1F469}\u{200D}\u{1F467}'
+};
+
+const KEYWORD_EMOJI_TRANSACTIONS = [
+  { kw: ['supermercado', 'mercado', 'compras'], emoji: '\u{1F6D2}' },
+  { kw: ['restaurante', 'almoco', 'jantar'], emoji: '\u{1F37D}\u{FE0F}' },
+  { kw: ['gasolina', 'combustivel'], emoji: '\u{26FD}' },
+  { kw: ['transporte', 'chapa', 'taxi', 'autocarro'], emoji: '\u{1F68C}' },
+  { kw: ['electricidade', 'energia'], emoji: '\u{1F4A1}' },
+  { kw: ['agua'], emoji: '\u{1F4A7}' },
+  { kw: ['internet', 'wifi'], emoji: '\u{1F4F6}' },
+  { kw: ['telefone', 'celular', 'telemovel'], emoji: '\u{1F4F1}' },
+  { kw: ['medico', 'hospital', 'consulta'], emoji: '\u{1F3E5}' },
+  { kw: ['farmacia', 'remedio', 'medicamento'], emoji: '\u{1F48A}' },
+  { kw: ['roupa', 'camisa', 'vestido'], emoji: '\u{1F455}' },
+  { kw: ['sapatos', 'tenis'], emoji: '\u{1F45F}' },
+  { kw: ['salario', 'ordenado'], emoji: '\u{1F4BC}' },
+  { kw: ['freelance', 'extra', 'bonus'], emoji: '\u{1F4B0}' },
+  { kw: ['investimento'], emoji: '\u{1F4C8}' },
+  { kw: ['poupanca'], emoji: '\u{1F416}' },
+  { kw: ['presente', 'prenda'], emoji: '\u{1F381}' },
+  { kw: ['escola', 'propinas', 'tuition'], emoji: '\u{1F393}' },
+  { kw: ['aluguer', 'renda'], emoji: '\u{1F3E0}' },
+  { kw: ['seguro'], emoji: '\u{1F6E1}\u{FE0F}' },
+  { kw: ['viagem', 'voo'], emoji: '\u{2708}\u{FE0F}' },
+  { kw: ['gasoleo'], emoji: '\u{26FD}' },
+  { kw: ['transferencia', 'transfer'], emoji: '\u{21C4}' },
+  { kw: ['imposto', 'taxa'], emoji: '\u{1F3E6}' }
+];
+
+function emojiForAccount(name, type) {
+  const normalized = normalizeText(name);
+  for (const item of KEYWORD_EMOJI_ACCOUNTS) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return ACCOUNT_TYPE_EMOJI[type] || '\u{1F3E6}';
+}
+
+function emojiForBudget(name, category) {
+  return CATEGORY_EMOJI_FINANCE[category] || '\u{1F4CA}';
+}
+
+function emojiForTransaction(description, category) {
+  const normalized = normalizeText(description);
+  for (const item of KEYWORD_EMOJI_TRANSACTIONS) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return CATEGORY_EMOJI_FINANCE[category] || '\u{1F4CA}';
+}
+
 let _container = null;
 
 const TABS = [
@@ -203,10 +283,21 @@ function renderBudgetItem(b) {
   const header = document.createElement('div');
   header.className = 'finances-item__header';
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'finances-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'finances-item__icon';
+  icon.textContent = b.icon || emojiForBudget(b.name, b.category);
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'finances-item__name';
   name.textContent = b.name || '(sem nome)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
+
+  header.appendChild(headerLeft);
 
   const amount = document.createElement('span');
   amount.className = 'finances-item__amount finances-item__amount--neutral';
@@ -288,10 +379,21 @@ function renderTransactionItem(trx) {
   header.className = 'finances-item__header';
 
   // Descrição ou Payee como título
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'finances-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'finances-item__icon';
+  icon.textContent = trx.icon || emojiForTransaction(trx.description || trx.payee, trx.category);
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'finances-item__name';
   name.textContent = trx.description || trx.payee || '(sem descrição)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
+
+  header.appendChild(headerLeft);
 
   // Valor com sinal
   const amount = document.createElement('span');
@@ -353,10 +455,21 @@ function renderAccountItem(acc) {
   const header = document.createElement('div');
   header.className = 'finances-item__header';
 
+  const headerLeft = document.createElement('div');
+  headerLeft.className = 'finances-item__header-left';
+
+  const icon = document.createElement('span');
+  icon.className = 'finances-item__icon';
+  icon.textContent = acc.icon || emojiForAccount(acc.name, acc.type);
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
+
   const name = document.createElement('h3');
   name.className = 'finances-item__name';
   name.textContent = acc.name || '(sem nome)';
-  header.appendChild(name);
+  headerLeft.appendChild(name);
+
+  header.appendChild(headerLeft);
 
   const amount = document.createElement('span');
   amount.className = 'finances-item__amount finances-item__amount--neutral';
