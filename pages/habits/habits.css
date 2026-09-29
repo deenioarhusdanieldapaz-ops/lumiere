@@ -441,3 +441,17 @@
     font-size: 0.42rem;
   }
 }
+
+
+/* Fix limpeza: badge HOJE desce em mobile para não competir com actions */
+@media (max-width: 480px) {
+  .habit-item__header-left {
+    flex-wrap: wrap;
+  }
+  .habit-item__badge-today {
+    flex-basis: 100%;
+    margin-left: 52px;
+    margin-top: 4px;
+  }
+}
+/* fix-limpeza3-badge */
