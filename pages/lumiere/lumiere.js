@@ -107,6 +107,48 @@ function emojiForProduct(name, category) {
   return '\u{1F4E6}';
 }
 
+const CATEGORY_EMOJI_BUSINESSES = {
+  personal: '\u{1F4E6}', work: '\u{1F4BC}', study: '\u{1F4DA}',
+  health: '\u{2764}\u{FE0F}', finance: '\u{1F4B0}', home: '\u{1F3E0}',
+  lumiere: '\u{2728}', leisure: '\u{1F3AF}', other: '\u{1F4CC}'
+};
+
+const KEYWORD_EMOJI_BUSINESSES = [
+  { kw: ['moda'], emoji: '\u{1F457}' },
+  { kw: ['acessorios'], emoji: '\u{1F45B}' },
+  { kw: ['joalharia', 'joias', 'joalheria'], emoji: '\u{1F48E}' },
+  { kw: ['cosmetica', 'beleza'], emoji: '\u{1F484}' },
+  { kw: ['alimentacao', 'comida'], emoji: '\u{1F37D}\u{FE0F}' },
+  { kw: ['cafe', 'cafeteria'], emoji: '\u{2615}' },
+  { kw: ['tecnologia', 'informatica', 'tech'], emoji: '\u{1F4BB}' },
+  { kw: ['servico'], emoji: '\u{1F527}' },
+  { kw: ['consultoria'], emoji: '\u{1F4BC}' },
+  { kw: ['design'], emoji: '\u{1F3A8}' },
+  { kw: ['marketing', 'publicidade'], emoji: '\u{1F4E3}' },
+  { kw: ['arte', 'artesanato'], emoji: '\u{1F3AD}' },
+  { kw: ['fotografia'], emoji: '\u{1F4F7}' },
+  { kw: ['educacao', 'escola'], emoji: '\u{1F393}' },
+  { kw: ['saude', 'clinica'], emoji: '\u{1F3E5}' },
+  { kw: ['fitness', 'ginasio'], emoji: '\u{1F4AA}' },
+  { kw: ['transporte', 'entrega'], emoji: '\u{1F69A}' },
+  { kw: ['comercio', 'loja'], emoji: '\u{1F3EA}' },
+  { kw: ['e-commerce', 'ecommerce', 'online'], emoji: '\u{1F6D2}' },
+  { kw: ['producao', 'fabrica'], emoji: '\u{1F3ED}' },
+  { kw: ['agricultura', 'agro'], emoji: '\u{1F33E}' },
+  { kw: ['construcao', 'obras'], emoji: '\u{1F3D7}\u{FE0F}' },
+  { kw: ['pets', 'animais'], emoji: '\u{1F43E}' },
+  { kw: ['restaurante'], emoji: '\u{1F374}' },
+  { kw: ['barbeiro', 'barbearia'], emoji: '\u{1F488}' }
+];
+
+function emojiForBusiness(name, category) {
+  const normalized = normalizeText(name);
+  for (const item of KEYWORD_EMOJI_BUSINESSES) {
+    if (item.kw.some((k) => normalized.includes(normalizeText(k)))) return item.emoji;
+  }
+  return CATEGORY_EMOJI_BUSINESSES[category] || '\u{2728}';
+}
+
 function emojiForCustomer(name) {
   const normalized = normalizeText(name);
   for (const item of KEYWORD_EMOJI_CUSTOMERS) {
@@ -302,18 +344,23 @@ function renderItem(item, tabId) {
   const headerLeft = document.createElement('div');
   headerLeft.className = 'lumiere-item__header-left';
 
-  // Icone (apenas para products e customers neste sub-bloco)
-  if (tabId === 'products' || tabId === 'customers') {
-    const icon = document.createElement('span');
-    icon.className = 'lumiere-item__icon';
-    if (tabId === 'products') {
-      icon.textContent = item.icon || emojiForProduct(item.name, item.category);
-    } else {
-      icon.textContent = item.icon || emojiForCustomer(item.name);
-    }
-    icon.setAttribute('aria-hidden', 'true');
-    headerLeft.appendChild(icon);
+  // Icone — 4 tabs suportados
+  const icon = document.createElement('span');
+  icon.className = 'lumiere-item__icon';
+  let iconEmoji = '\u{1F4E6}';
+  if (tabId === 'products') {
+    iconEmoji = item.icon || emojiForProduct(item.name, item.category);
+  } else if (tabId === 'customers') {
+    iconEmoji = item.icon || emojiForCustomer(item.name);
+  } else if (tabId === 'businesses') {
+    iconEmoji = item.icon || emojiForBusiness(item.name, item.category);
+  } else if (tabId === 'sales') {
+    const prod = _state.data.products.find(p => p.id === item.productId);
+    iconEmoji = item.icon || (prod ? emojiForProduct(prod.name, prod.category) : '\u{1F4B5}');
   }
+  icon.textContent = iconEmoji;
+  icon.setAttribute('aria-hidden', 'true');
+  headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
   name.className = 'lumiere-item__name';
