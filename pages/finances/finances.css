@@ -330,3 +330,12 @@
   flex: 0 1 auto;
   white-space: nowrap;
 }
+
+
+/* Fix limpeza: em mobile, header-left ocupa a linha toda */
+@media (max-width: 640px) {
+  .finances-item__header-left {
+    flex-basis: 100%;
+  }
+}
+/* finance-limpeza-mobile */

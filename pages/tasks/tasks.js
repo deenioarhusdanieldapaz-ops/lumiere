@@ -21,6 +21,8 @@ const CATEGORY_EMOJI_TASKS = {
 };
 
 const KEYWORD_EMOJI_TASKS = [
+  { kw: ['dormir', 'sono', 'descansar', 'deitar'], emoji: '\u{1F6CC}' },
+  { kw: ['igreja', 'missa', 'culto'], emoji: '\u{26EA}' },
   { kw: ['trabalhar', 'trabalho', 'buscato', 'emprego'], emoji: '\u{1F4BC}' },
   { kw: ['reuniao', 'encontro', 'meeting'], emoji: '\u{1F91D}' },
   { kw: ['relatorio', 'report'], emoji: '\u{1F4C4}' },
