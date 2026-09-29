@@ -208,6 +208,7 @@
 }
 
 .habit-item__actions {
+  flex-shrink: 0;
   display: flex;
   gap: var(--space-xs, 0.25rem);
 }
@@ -304,7 +305,6 @@
 }
 
 .habit-item__badge-today {
-  flex-shrink: 0;
   display: inline-block;
   margin-left: 0.5rem;
   padding: 0.1rem 0.45rem;
