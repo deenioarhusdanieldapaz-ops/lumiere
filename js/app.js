@@ -12,6 +12,7 @@ import { initGoals } from '../pages/goals/goals.js';
 import { initStudies } from '../pages/studies/studies.js';
 import { initLumiere } from '../pages/lumiere/lumiere.js';
 import { initNotes } from '../pages/notes/notes.js';
+import { initTemplates } from '../pages/templates/templates.js';
 import { initCalendar } from '../pages/calendar/calendar.js';
 import { initFinances } from '../pages/finances/finances.js';
 import { initSettings } from '../pages/settings/settings.js';
@@ -199,6 +200,8 @@ async function bootstrap() {
         if (container) initLumiere(container);
       } else if (payload.page === 'notes') {
         if (container) initNotes(container);
+      } else if (payload.page === 'templates') {
+        if (container) initTemplates(container);
       } else if (payload.page === 'calendar') {
         if (container) initCalendar(container);
       } else if (payload.page === 'finances') {

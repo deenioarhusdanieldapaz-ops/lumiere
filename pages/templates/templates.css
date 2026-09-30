@@ -1,0 +1,192 @@
+/* ========================================
+   TEMPLATES PAGE
+   ======================================== */
+
+.templates-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg, 1.5rem);
+}
+
+/* ---------- Header ---------- */
+.templates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-md, 1rem);
+}
+
+.templates-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.templates-header__title {
+  margin: 0;
+  font-size: var(--font-size-xl, 1.25rem);
+  color: var(--color-gold, #d4af37);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.templates-header__subtitle {
+  margin: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.templates-header__actions {
+  display: flex;
+  gap: var(--space-xs, 0.25rem);
+  flex-shrink: 0;
+}
+
+.templates-btn {
+  background: transparent;
+  border: 1px solid var(--color-gold, #d4af37);
+  color: var(--color-gold, #d4af37);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
+}
+
+.templates-btn--primary {
+  background: var(--color-gold, #d4af37);
+  color: #0a0a0a;
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.templates-btn--primary:hover {
+  background: var(--color-gold-hover, #e6c34a);
+}
+
+/* ---------- Filtros ---------- */
+.templates-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs, 0.25rem);
+}
+
+.templates-filter {
+  background: transparent;
+  border: 1px solid var(--color-border, #4a3f38);
+  color: var(--color-text-secondary, #b8956a);
+  border-radius: var(--radius-full, 40px);
+  padding: 0.35rem 0.9rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.templates-filter.is-active {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--color-gold, #d4af37);
+  color: var(--color-gold, #d4af37);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+/* ---------- Lista ---------- */
+.templates-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.templates-item {
+  background: var(--color-bg-secondary, #1a1715);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--space-md, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 0.25rem);
+  transition: border-color var(--transition-fast, 0.15s ease);
+}
+
+.templates-item:hover {
+  border-color: var(--color-border-light, #b8956a);
+}
+
+.templates-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.templates-item__header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.templates-item__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.templates-item__name {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+  color: var(--color-text-primary, #f5f0eb);
+  font-weight: var(--font-weight-medium, 500);
+  overflow-wrap: break-word;
+  word-break: normal;
+  min-width: 0;
+}
+
+.templates-item__menu {
+  flex-shrink: 0;
+}
+
+.templates-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs, 0.25rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.templates-item__tag {
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: var(--radius-full, 40px);
+  padding: 0.1rem 0.5rem;
+}
+
+.templates-item__description {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #b8956a);
+}
+
+/* ---------- Estado (vazio / erro) ---------- */
+.templates-state {
+  text-align: center;
+  padding: var(--space-lg, 1.5rem);
+  color: var(--color-text-secondary, #b8956a);
+  font-size: var(--font-size-sm, 0.875rem);
+  background: var(--color-bg-secondary, #1a1715);
+  border: 1px dashed var(--color-border, #4a3f38);
+  border-radius: var(--radius-md, 12px);
+}
+
+.templates-state--error {
+  color: var(--color-error, #e74c3c);
+  border-color: var(--color-error, #e74c3c);
+}
