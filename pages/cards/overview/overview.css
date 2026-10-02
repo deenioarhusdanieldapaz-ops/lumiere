@@ -750,3 +750,143 @@
 .overview__today-badge--urgent {
   color: #f8f0dc !important;
 }
+
+/* ============================================================
+   Índice de Evolução — enriquecimento (Bloco 4.2)
+   ============================================================ */
+
+/* Botão "Ver detalhes" no header */
+.overview__evolution-details {
+  background: transparent;
+  border: 1px solid var(--color-gold, #d4af37);
+  color: var(--color-gold, #d4af37);
+  border-radius: 40px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.7rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.overview__evolution-details:hover {
+  background: rgba(212, 175, 55, 0.12);
+}
+
+/* Delta badge */
+.overview__evolution-delta {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 40px;
+  margin-bottom: 0.4rem;
+}
+
+.overview__evolution-delta--up {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.overview__evolution-delta--down {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+}
+
+.overview__evolution-delta--flat {
+  background: rgba(184, 149, 106, 0.15);
+  color: #b8956a;
+}
+
+/* Barra segmentada */
+.overview__evolution-bar {
+  display: flex;
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 0.9rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.overview__evolution-bar-seg {
+  height: 100%;
+  transition: opacity 0.15s ease;
+}
+
+.overview__evolution-bar-seg[data-signal="tasks"]      { background: #4a90d9; }
+.overview__evolution-bar-seg[data-signal="habits"]     { background: #d4af37; }
+.overview__evolution-bar-seg[data-signal="goals"]      { background: #2d7a4f; }
+.overview__evolution-bar-seg[data-signal="finances"]   { background: #e67e22; }
+.overview__evolution-bar-seg[data-signal="studies"]    { background: #8b5cf6; }
+.overview__evolution-bar-seg[data-signal="reflection"] { background: #b8956a; }
+
+/* Grid de tiles (2 colunas) */
+.overview__evolution-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 0.9rem;
+}
+
+.overview__evolution-tile {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  border-radius: 8px;
+}
+
+.overview__evolution-tile-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overview__evolution-tile-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.8;
+}
+
+.overview__evolution-tile[data-signal="tasks"] .overview__evolution-tile-icon    { color: #4a90d9; }
+.overview__evolution-tile[data-signal="habits"] .overview__evolution-tile-icon   { color: #d4af37; }
+.overview__evolution-tile[data-signal="goals"] .overview__evolution-tile-icon    { color: #2d7a4f; }
+.overview__evolution-tile[data-signal="finances"] .overview__evolution-tile-icon { color: #e67e22; }
+.overview__evolution-tile[data-signal="studies"] .overview__evolution-tile-icon  { color: #8b5cf6; }
+.overview__evolution-tile[data-signal="reflection"] .overview__evolution-tile-icon { color: #b8956a; }
+
+.overview__evolution-tile-name {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #b8956a);
+}
+
+.overview__evolution-tile-score {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #f5f0eb);
+}
+
+/* Estado vazio */
+.overview__evolution-empty {
+  margin: 0.8rem 0 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #b8956a);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Mobile — tiles em 1 coluna se necessário */
+@media (max-width: 360px) {
+  .overview__evolution-grid {
+    grid-template-columns: 1fr;
+  }
+  .overview__evolution-details {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.55rem;
+  }
+}

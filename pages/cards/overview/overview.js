@@ -622,25 +622,41 @@ export async function initOverview(container) {
 
   section.appendChild(header);
 
-  // Card — A TUA EVOLUÇÃO
+  // Card — ÍNDICE DE EVOLUÇÃO
   const evoCard = document.createElement('section');
   evoCard.className = 'overview__evolution';
 
+  // ----- HEADER -----
   const evoHeader = document.createElement('header');
   evoHeader.className = 'overview__evolution-header';
+
   const evoTitle = document.createElement('h2');
   evoTitle.className = 'overview__evolution-title';
-  evoTitle.textContent = 'A tua evolução';
+  evoTitle.textContent = 'Índice de Evolução';
   evoHeader.appendChild(evoTitle);
+
+  const btnDetails = document.createElement('button');
+  btnDetails.type = 'button';
+  btnDetails.className = 'overview__evolution-details';
+  btnDetails.textContent = 'Ver detalhes \u2192';
+  btnDetails.addEventListener('click', () => {
+    eventBus.emit('navigation:changed', { page: 'progress' });
+  });
+  evoHeader.appendChild(btnDetails);
+
   evoCard.appendChild(evoHeader);
 
+  // ----- CÁLCULOS -----
+  const evoResult = lumiereIndex.calculate(collections);
+  const hasScore = typeof evoResult.score === 'number';
+  const deltaInfo = hasScore ? lumiereIndex.computeWeeklyDelta(collections) : { delta: null };
+  const deltaBadge = lumiereIndex.interpretDelta(deltaInfo.delta);
+  const interpretationText = lumiereIndex.interpret(hasScore ? evoResult.score : null);
+
+  // ----- BODY (ring + right) -----
   const evoBody = document.createElement('div');
   evoBody.className = 'overview__evolution-body';
 
-  const evoResult = lumiereIndex.calculate(collections);
-  const hasScore = typeof evoResult.score === 'number';
-
-  // [BLOCO 3] Componente createProgressRing (size explícito)
   const ring = createProgressRing({
     value: hasScore ? evoResult.score : 0,
     variant: hasScore ? 'default' : 'empty',
@@ -652,7 +668,7 @@ export async function initOverview(container) {
   ring.style.cursor = 'pointer';
   ring.setAttribute('role', 'button');
   ring.setAttribute('tabindex', '0');
-  ring.setAttribute('aria-label', 'Ver detalhes do progresso');
+  ring.setAttribute('aria-label', 'Ver detalhes do Índice de Evolução');
   ring.addEventListener('click', () => {
     eventBus.emit('navigation:changed', { page: 'progress' });
   });
@@ -671,18 +687,83 @@ export async function initOverview(container) {
   const evoRight = document.createElement('div');
   evoRight.className = 'overview__evolution-right';
 
+  // Delta badge (só se houver valor válido)
+  if (deltaBadge) {
+    const delta = document.createElement('div');
+    delta.className = 'overview__evolution-delta overview__evolution-delta--' + deltaBadge.sign;
+    delta.textContent = deltaBadge.text;
+    evoRight.appendChild(delta);
+  }
+
   const evoText = document.createElement('p');
   evoText.className = 'overview__evolution-text';
-  evoText.textContent = hasScore
-    ? 'Consistência é o que transforma planos em resultados.'
-    : 'Sem base de dados ainda.';
+  evoText.textContent = interpretationText;
   evoRight.appendChild(evoText);
-
-  // Pill de variação semanal: escondida até existir comparação válida
-  // (cálculo a adicionar na Fase 9 — Intelligence).
 
   evoBody.appendChild(evoRight);
   evoCard.appendChild(evoBody);
+
+  // ----- BARRA SEGMENTADA (só com score) -----
+  if (hasScore) {
+    const barWrap = document.createElement('div');
+    barWrap.className = 'overview__evolution-bar';
+
+    const totalWeight = evoResult.signals.reduce((s, x) => s + x.weight, 0);
+    for (const sig of evoResult.signals) {
+      const seg = document.createElement('div');
+      seg.className = 'overview__evolution-bar-seg';
+      seg.dataset.signal = sig.id;
+      seg.style.flex = '0 0 ' + ((sig.weight / totalWeight) * 100) + '%';
+      seg.title = sig.label + ' \u2014 ' + sig.value + '/100';
+      barWrap.appendChild(seg);
+    }
+    evoCard.appendChild(barWrap);
+
+    // ----- GRID DE TILES (2x3) -----
+    const grid = document.createElement('div');
+    grid.className = 'overview__evolution-grid';
+
+    const SIG_META = {
+      tasks:      { icon: 'check',   label: 'Tarefas' },
+      habits:     { icon: 'refresh', label: 'Hábitos' },
+      goals:      { icon: 'target',  label: 'Objetivos' },
+      finances:   { icon: 'dollar',  label: 'Finanças' },
+      studies:    { icon: 'book',    label: 'Estudos' },
+      reflection: { icon: 'note',    label: 'Reflexão' }
+    };
+
+    for (const sig of evoResult.signals) {
+      const meta = SIG_META[sig.id] || { icon: 'chart', label: sig.label };
+      const tile = document.createElement('div');
+      tile.className = 'overview__evolution-tile';
+      tile.dataset.signal = sig.id;
+
+      const ic = document.createElement('span');
+      ic.className = 'overview__evolution-tile-icon';
+      if (ICONS[meta.icon]) ic.innerHTML = ICONS[meta.icon];
+      tile.appendChild(ic);
+
+      const name = document.createElement('span');
+      name.className = 'overview__evolution-tile-name';
+      name.textContent = meta.label;
+      tile.appendChild(name);
+
+      const score = document.createElement('span');
+      score.className = 'overview__evolution-tile-score';
+      score.textContent = sig.value;
+      tile.appendChild(score);
+
+      grid.appendChild(tile);
+    }
+    evoCard.appendChild(grid);
+  } else {
+    // Sem dados — mensagem informativa
+    const emptyMsg = document.createElement('p');
+    emptyMsg.className = 'overview__evolution-empty';
+    emptyMsg.textContent = 'Sem base de dados ainda. Regista hábitos, tarefas ou objetivos para começar.';
+    evoCard.appendChild(emptyMsg);
+  }
+
   section.appendChild(evoCard);
 
   // Card — HOJE
