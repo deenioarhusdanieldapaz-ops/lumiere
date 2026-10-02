@@ -534,7 +534,7 @@
 }
 
 .progress__how-calc-summary::after {
-  content: '\\25BE';
+  content: '▾';
   margin-left: auto;
   font-size: 0.7rem;
   transition: transform 0.2s ease;
