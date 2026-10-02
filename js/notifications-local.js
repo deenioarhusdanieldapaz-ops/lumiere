@@ -3,6 +3,7 @@
  * Mostra notificacoes contextuais quando a app e aberta.
  */
 import { dataManager } from '../core/dataManager.js';
+import { showToast } from '../components/toast/toast.js';
 
 const KEY_LAST_NOTIF = 'lumiereLastNotification';
 const MIN_INTERVAL_MS = 90 * 60 * 1000; // 1.5 horas
@@ -30,6 +31,9 @@ function markNotified() {
 }
 
 async function showNotification(title, body) {
+  // Toast in-app (funciona mesmo sem permissao)
+  try { showToast({ type: 'info', title: title, body: body, duration: 4000 }); } catch (e) {}
+
   try {
     if (navigator.serviceWorker && navigator.serviceWorker.ready) {
       const reg = await navigator.serviceWorker.ready;
