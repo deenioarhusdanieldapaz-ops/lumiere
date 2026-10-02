@@ -28,7 +28,9 @@ let _state = {
   templates: [],
   filterAppliesTo: 'all',
   loading: false,
-  error: null
+  error: null,
+  showForm: false,
+  editingId: null
 };
 let _unsubscribe = null;
 
@@ -77,13 +79,21 @@ function render() {
   page.className = 'templates-page';
 
   page.appendChild(renderHeader());
-  page.appendChild(renderFilters());
+
+  if (_state.showForm) {
+    page.appendChild(renderForm());
+  } else {
+    page.appendChild(renderFilters());
+  }
 
   if (_state.loading) {
     page.appendChild(renderState('A carregar templates…'));
   } else if (_state.error) {
     page.appendChild(renderState(_state.error, true));
   } else {
+    if (_state.showForm) {
+      // Formulário aberto — não mostra lista
+    } else {
     const visible = getVisibleTemplates();
     if (visible.length === 0) {
       page.appendChild(renderState('Ainda não tens templates. Guarda um hábito/tarefa como template para começares.'));
@@ -92,6 +102,7 @@ function render() {
       list.className = 'templates-list';
       for (const tpl of visible) list.appendChild(renderTemplateItem(tpl));
       page.appendChild(list);
+    }
     }
   }
 
@@ -129,10 +140,7 @@ function renderHeader() {
   btnNew.type = 'button';
   btnNew.className = 'templates-btn templates-btn--primary';
   btnNew.textContent = '+ Novo';
-  btnNew.addEventListener('click', () => {
-    // Bloco 2.3 — formulário ainda não implementado
-    alert('Formulário de criação chega no Bloco 2.3.');
-  });
+  btnNew.addEventListener('click', () => openForm());
   actions.appendChild(btnNew);
 
   header.appendChild(actions);
@@ -202,7 +210,7 @@ function renderTemplateItem(tpl) {
     align: 'right',
     onSelect: (id) => {
       if (id === 'edit') {
-        alert('Edição chega no Bloco 2.3.');
+        openForm(tpl.id);
       } else if (id === 'duplicate') {
         handleDuplicate(tpl);
       } else if (id === 'delete') {
@@ -237,6 +245,312 @@ function renderTemplateItem(tpl) {
   }
 
   return item;
+}
+
+// ============================================================
+// Formulário — criar / editar template (Ecrã 2)
+// ============================================================
+const CATEGORIES = ['personal','work','study','health','finance','home','lumiere','leisure','other'];
+
+function openForm(id) {
+  _state.editingId = id || null;
+  _state.showForm = true;
+  render();
+}
+
+function closeForm() {
+  _state.showForm = false;
+  _state.editingId = null;
+  render();
+}
+
+function renderForm() {
+  const isEdit = Boolean(_state.editingId);
+  const tpl = isEdit ? _state.templates.find(t => t.id === _state.editingId) : null;
+  const payload = (tpl && tpl.payload) ? tpl.payload : {};
+
+  const form = document.createElement('form');
+  form.className = 'templates-form';
+  form.noValidate = true;
+  form.addEventListener('submit', handleSubmit);
+
+  const title = document.createElement('h3');
+  title.className = 'templates-form__title';
+  title.textContent = isEdit ? 'Editar template' : 'Novo template';
+  form.appendChild(title);
+
+  const grid = document.createElement('div');
+  grid.className = 'templates-form__grid';
+
+  // --- Campos base ---
+  grid.appendChild(field('Nome *', 'input', 'name', tpl ? tpl.name : '', { type: 'text', required: true, placeholder: 'Ex: Treino corrida fácil' }));
+  grid.appendChild(field('Descrição', 'textarea', 'description', tpl ? tpl.description : '', { full: true }));
+  grid.appendChild(field('Aplica-se a *', 'select', 'appliesTo', tpl ? tpl.appliesTo : 'tasks', {
+    options: APPLIES_TO_ORDER,
+    labels: APPLIES_TO_ORDER.map(k => APPLIES_TO_META[k].label)
+  }));
+  grid.appendChild(field('Categoria *', 'select', 'category', tpl ? tpl.category : 'personal', {
+    options: CATEGORIES,
+    translate: 'category'
+  }));
+
+  form.appendChild(grid);
+
+  // --- Secção "O que pré-preencher?" ---
+  const payloadSection = document.createElement('section');
+  payloadSection.className = 'templates-form__payload';
+
+  const payloadTitle = document.createElement('h4');
+  payloadTitle.className = 'templates-form__payload-title';
+  payloadTitle.textContent = 'O que pré-preencher?';
+  payloadSection.appendChild(payloadTitle);
+
+  const payloadHint = document.createElement('p');
+  payloadHint.className = 'templates-form__payload-hint';
+  payloadHint.textContent = 'Configura os detalhes que serão aplicados quando usares este template.';
+  payloadSection.appendChild(payloadHint);
+
+  const payloadGrid = document.createElement('div');
+  payloadGrid.className = 'templates-form__grid';
+  payloadGrid.id = 'templates-payload-grid';
+
+  // Renderizar campos do módulo atual
+  renderPayloadInto(payloadGrid, tpl ? tpl.appliesTo : 'tasks', payload);
+  payloadSection.appendChild(payloadGrid);
+
+  form.appendChild(payloadSection);
+
+  // --- Erro + Ações ---
+  const error = document.createElement('p');
+  error.className = 'templates-form__error';
+  error.hidden = true;
+  form.appendChild(error);
+
+  const actions = document.createElement('div');
+  actions.className = 'templates-form__actions';
+
+  const btnCancel = document.createElement('button');
+  btnCancel.type = 'button';
+  btnCancel.className = 'templates-btn';
+  btnCancel.textContent = 'Cancelar';
+  btnCancel.addEventListener('click', () => closeForm());
+  actions.appendChild(btnCancel);
+
+  const btnSave = document.createElement('button');
+  btnSave.type = 'submit';
+  btnSave.className = 'templates-btn templates-btn--primary';
+  btnSave.textContent = isEdit ? 'Guardar' : 'Criar';
+  actions.appendChild(btnSave);
+
+  form.appendChild(actions);
+
+  // --- Listener para trocar o módulo destino ---
+  const selectAppliesTo = form.querySelector('select[name="appliesTo"]');
+  if (selectAppliesTo) {
+    selectAppliesTo.addEventListener('change', () => {
+      renderPayloadInto(payloadGrid, selectAppliesTo.value, {});
+    });
+  }
+
+  return form;
+}
+
+// ------------------------------------------------------------
+// Renderiza os campos dinâmicos dentro do grid de payload
+// ------------------------------------------------------------
+function renderPayloadInto(grid, appliesTo, payload) {
+  grid.innerHTML = '';
+  payload = payload || {};
+
+  if (appliesTo === 'tasks') {
+    grid.appendChild(field('Nome da tarefa', 'input', 'payload.name', payload.name || '', { type: 'text' }));
+    grid.appendChild(field('Descrição', 'textarea', 'payload.description', payload.description || '', { full: true }));
+    grid.appendChild(field('Prioridade', 'select', 'payload.priority', payload.priority || 'medium', {
+      options: ['low','medium','high','urgent'],
+      translate: 'priority'
+    }));
+    grid.appendChild(field('Estado', 'select', 'payload.status', payload.status || 'pending', {
+      options: ['pending','in-progress','completed','cancelled'],
+      translate: 'status'
+    }));
+    grid.appendChild(field('Prazo', 'input', 'payload.dueDate', payload.dueDate || '', { type: 'date' }));
+    grid.appendChild(field('Etiquetas', 'input', 'payload.tags', (payload.tags || []).join(', '), { type: 'text', full: true }));
+    grid.appendChild(field('Notas', 'textarea', 'payload.notes', payload.notes || '', { full: true }));
+  } else if (appliesTo === 'habits') {
+    grid.appendChild(field('Nome do hábito', 'input', 'payload.name', payload.name || '', { type: 'text' }));
+    grid.appendChild(field('Descrição', 'textarea', 'payload.description', payload.description || '', { full: true }));
+    grid.appendChild(field('Frequência', 'select', 'payload.frequency', payload.frequency || 'daily', {
+      options: ['daily','weekly','monthly'],
+      translate: 'frequency'
+    }));
+    grid.appendChild(field('Meta', 'input', 'payload.target', payload.target || 1, { type: 'number', min: 1 }));
+    grid.appendChild(field('Unidade', 'input', 'payload.unit', payload.unit || 'times', { type: 'text' }));
+    grid.appendChild(field('Dias da semana', 'input', 'payload.daysOfWeek', (payload.daysOfWeek || []).join(', '), { type: 'text', full: true, placeholder: 'seg, ter, qua' }));
+    grid.appendChild(field('Notas', 'textarea', 'payload.notes', payload.notes || '', { full: true }));
+  } else if (appliesTo === 'studies') {
+    grid.appendChild(field('Nome do estudo', 'input', 'payload.name', payload.name || '', { type: 'text' }));
+    grid.appendChild(field('Descrição', 'textarea', 'payload.description', payload.description || '', { full: true }));
+    grid.appendChild(field('Disciplina', 'input', 'payload.subject', payload.subject || '', { type: 'text', placeholder: 'Ex: Física' }));
+    grid.appendChild(field('Duração (min)', 'input', 'payload.duration', payload.duration || 60, { type: 'number', min: 1 }));
+    grid.appendChild(field('Notas', 'textarea', 'payload.notes', payload.notes || '', { full: true }));
+  } else if (appliesTo === 'goals') {
+    grid.appendChild(field('Nome do objetivo', 'input', 'payload.name', payload.name || '', { type: 'text' }));
+    grid.appendChild(field('Descrição', 'textarea', 'payload.description', payload.description || '', { full: true }));
+    grid.appendChild(field('Prazo', 'input', 'payload.targetDate', payload.targetDate || '', { type: 'date' }));
+    grid.appendChild(field('Notas', 'textarea', 'payload.notes', payload.notes || '', { full: true }));
+  } else if (appliesTo === 'notes') {
+    grid.appendChild(field('Título', 'input', 'payload.title', payload.title || '', { type: 'text', required: false }));
+    grid.appendChild(field('Conteúdo', 'textarea', 'payload.content', payload.content || '', { full: true }));
+    grid.appendChild(field('Etiquetas', 'input', 'payload.tags', (payload.tags || []).join(', '), { type: 'text', full: true }));
+  }
+}
+
+// ------------------------------------------------------------
+// Helper: campo genérico
+// ------------------------------------------------------------
+function field(labelText, tag, name, value, opts = {}) {
+  const wrap = document.createElement('div');
+  wrap.className = 'templates-form__field' + (opts.full ? ' templates-form__field--full' : '');
+
+  const label = document.createElement('label');
+  const safeId = 'tpl-' + name.replace(/\./g, '-');
+  label.setAttribute('for', safeId);
+  label.textContent = labelText;
+  wrap.appendChild(label);
+
+  let input;
+  if (tag === 'textarea') {
+    input = document.createElement('textarea');
+    input.value = value || '';
+  } else if (tag === 'select') {
+    input = document.createElement('select');
+    const options = opts.options || [];
+    const labels = opts.labels || null;
+    options.forEach((opt, idx) => {
+      const el = document.createElement('option');
+      el.value = opt;
+      let text = opt;
+      if (opts.translate) text = t(opts.translate, opt);
+      else if (labels) text = labels[idx];
+      el.textContent = text;
+      if (String(opt) === String(value)) el.selected = true;
+      input.appendChild(el);
+    });
+  } else {
+    input = document.createElement('input');
+    input.type = opts.type || 'text';
+    input.value = value !== undefined && value !== null ? String(value) : '';
+  }
+
+  input.id = safeId;
+  input.name = name;
+  if (opts.required) input.required = true;
+  if (opts.placeholder) input.placeholder = opts.placeholder;
+  if (opts.type === 'number') {
+    if (opts.min !== undefined) input.min = opts.min;
+    if (opts.max !== undefined) input.max = opts.max;
+  }
+
+  wrap.appendChild(input);
+  return wrap;
+}
+
+// ------------------------------------------------------------
+// Submissão do formulário
+// ------------------------------------------------------------
+async function handleSubmit(ev) {
+  ev.preventDefault();
+  const form = ev.target;
+  const errorEl = form.querySelector('.templates-form__error');
+  if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
+
+  const fd = new FormData(form);
+
+  const base = {
+    name: (fd.get('name') || '').trim(),
+    description: (fd.get('description') || '').trim(),
+    appliesTo: fd.get('appliesTo') || 'tasks',
+    category: fd.get('category') || 'personal'
+  };
+
+  if (!base.name) {
+    showFormError(form, 'O nome do template é obrigatório.');
+    return;
+  }
+
+  // Construir payload conforme o módulo
+  const payload = {};
+  const appliesTo = base.appliesTo;
+
+  const getVal = (k) => {
+    const v = fd.get('payload.' + k);
+    if (v === null) return undefined;
+    const s = String(v).trim();
+    return s === '' ? undefined : s;
+  };
+
+  if (appliesTo === 'tasks') {
+    const name = getVal('name'); if (name !== undefined) payload.name = name;
+    const description = getVal('description'); if (description !== undefined) payload.description = description;
+    const priority = getVal('priority'); if (priority !== undefined) payload.priority = priority;
+    const status = getVal('status'); if (status !== undefined) payload.status = status;
+    const dueDate = getVal('dueDate'); if (dueDate !== undefined) payload.dueDate = dueDate;
+    const tags = getVal('tags'); if (tags !== undefined) payload.tags = tags.split(',').map(s => s.trim()).filter(Boolean);
+    const notes = getVal('notes'); if (notes !== undefined) payload.notes = notes;
+  } else if (appliesTo === 'habits') {
+    const name = getVal('name'); if (name !== undefined) payload.name = name;
+    const description = getVal('description'); if (description !== undefined) payload.description = description;
+    const frequency = getVal('frequency'); if (frequency !== undefined) payload.frequency = frequency;
+    const target = getVal('target'); if (target !== undefined) payload.target = Number(target);
+    const unit = getVal('unit'); if (unit !== undefined) payload.unit = unit;
+    const days = getVal('daysOfWeek'); if (days !== undefined) payload.daysOfWeek = days.split(',').map(s => s.trim()).filter(Boolean);
+    const notes = getVal('notes'); if (notes !== undefined) payload.notes = notes;
+  } else if (appliesTo === 'studies') {
+    const name = getVal('name'); if (name !== undefined) payload.name = name;
+    const description = getVal('description'); if (description !== undefined) payload.description = description;
+    const subject = getVal('subject'); if (subject !== undefined) payload.subject = subject;
+    const duration = getVal('duration'); if (duration !== undefined) payload.duration = Number(duration);
+    const notes = getVal('notes'); if (notes !== undefined) payload.notes = notes;
+  } else if (appliesTo === 'goals') {
+    const name = getVal('name'); if (name !== undefined) payload.name = name;
+    const description = getVal('description'); if (description !== undefined) payload.description = description;
+    const targetDate = getVal('targetDate'); if (targetDate !== undefined) payload.targetDate = targetDate;
+    const notes = getVal('notes'); if (notes !== undefined) payload.notes = notes;
+  } else if (appliesTo === 'notes') {
+    const title = getVal('title'); if (title !== undefined) payload.title = title;
+    const content = getVal('content'); if (content !== undefined) payload.content = content;
+    const tags = getVal('tags'); if (tags !== undefined) payload.tags = tags.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  const data = Object.assign({}, base, { payload });
+
+  const btnSave = form.querySelector('button[type="submit"]');
+  if (btnSave) btnSave.disabled = true;
+
+  try {
+    if (_state.editingId) {
+      data.updatedAt = new Date().toISOString();
+      await dataManager.update('templates', _state.editingId, data);
+      console.log('[Templates] Atualizado:', _state.editingId);
+    } else {
+      await dataManager.create('templates', data);
+      console.log('[Templates] Criado');
+    }
+    _state.showForm = false;
+    _state.editingId = null;
+    loadTemplates();
+  } catch (err) {
+    console.error('[Templates] Erro ao guardar:', err);
+    showFormError(form, err.message || 'Erro ao guardar.');
+    if (btnSave) btnSave.disabled = false;
+  }
+}
+
+function showFormError(form, msg) {
+  const errorEl = form.querySelector('.templates-form__error');
+  if (!errorEl) return;
+  errorEl.textContent = msg;
+  errorEl.hidden = false;
 }
 
 function metaTag(text) {
