@@ -577,8 +577,19 @@ export async function initOverview(container) {
   // Construir o card
   container.innerHTML = '';
 
+/**
+ * Deteta o período do dia pela hora local.
+ * @returns {'manha'|'tarde'|'noite'}
+ */
+function getDayPeriod() {
+  const h = new Date().getHours();
+  if (h >= 6 && h < 11) return 'manha';
+  if (h >= 11 && h < 18) return 'tarde';
+  return 'noite';
+}
+
   const section = document.createElement('section');
-  section.className = 'overview';
+  section.className = 'overview overview--' + getDayPeriod();
 
   // Header — saudação premium
   const header = document.createElement('header');
