@@ -48,6 +48,7 @@ let _fab = null;
 let _menu = null;
 let _open = false;
 let _currentActions = [];
+let _activeForm = null;
 
 function getActionsForPage(page) {
   return PAGE_ACTIONS[page] || PAGE_ACTIONS.overview;
@@ -134,6 +135,18 @@ export function initFloatingAction() {
       closeMenu();
       renderMenuForPage(payload.page);
     }
+  });
+
+  eventBus.on('form:opened', (payload) => {
+    _activeForm = payload || null;
+    console.log('[FAB] Form aberto:', payload);
+    // Bloco 2.4b: re-render do menu com opcao 'Guardar como template'
+  });
+
+  eventBus.on('form:closed', () => {
+    _activeForm = null;
+    console.log('[FAB] Form fechado');
+    // Bloco 2.4b: re-render do menu sem essa opcao
   });
 
   document.addEventListener('click', (e) => {

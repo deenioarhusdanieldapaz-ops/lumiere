@@ -174,12 +174,14 @@ function openForm(noteId = null) {
   _state.editingId = noteId;
   _state.showForm = true;
   render();
+  eventBus.emit('form:opened', { page: 'notes', editingId: noteId || null });
 }
 
 function closeForm() {
   _state.editingId = null;
   _state.showForm = false;
   render();
+  eventBus.emit('form:closed', { page: 'notes' });
 }
 
 function updateFormError(message) {
@@ -433,6 +435,7 @@ async function handleSubmit(e) {
     }
     _state.showForm = false;
     _state.editingId = null;
+    eventBus.emit('form:closed', { page: 'notes' });
   } catch (err) {
     console.error('[Notes] Erro ao guardar:', err);
     updateFormError(err.message || 'Erro ao guardar.');

@@ -384,6 +384,7 @@ function openForm(habitId = null) {
   _state.showForm = true;
   _state.error = null;
   render();
+  eventBus.emit('form:opened', { page: 'habits', editingId: habitId || null });
 }
 
 function closeForm() {
@@ -391,6 +392,7 @@ function closeForm() {
   _state.showForm = false;
   _state.error = null;
   render();
+  eventBus.emit('form:closed', { page: 'habits' });
 }
 
 function updateFormError(message) {
@@ -581,6 +583,7 @@ async function handleSubmit(e) {
     }
     _state.showForm = false;
     _state.editingId = null;
+    eventBus.emit('form:closed', { page: 'habits' });
   } catch (err) {
     console.error('[Habits] Erro ao guardar:', err);
     updateFormError(err.message || 'Erro ao guardar.');

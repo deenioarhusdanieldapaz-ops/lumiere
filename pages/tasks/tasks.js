@@ -390,6 +390,7 @@ function openForm(taskId = null) {
   _state.showForm = true;
   _state.error = null;
   render();
+  eventBus.emit('form:opened', { page: 'tasks', editingId: taskId || null });
 }
 
 /**
@@ -400,6 +401,7 @@ function closeForm() {
   _state.showForm = false;
   _state.error = null;
   render();
+  eventBus.emit('form:closed', { page: 'tasks' });
 }
 
 /**
@@ -602,6 +604,7 @@ async function handleSubmit(e) {
     }
     _state.showForm = false;
     _state.editingId = null;
+    eventBus.emit('form:closed', { page: 'tasks' });
     // loadTasks() é chamado automaticamente via eventBus 'data:changed'
   } catch (err) {
     console.error('[Tasks] Erro ao guardar:', err);
