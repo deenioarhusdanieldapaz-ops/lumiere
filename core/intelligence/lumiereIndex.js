@@ -22,8 +22,9 @@ function daysBetween(isoA, isoB) {
   return Math.round((b - a) / DAY_MS);
 }
 
-function today() {
-  return new Date().toISOString().split('T')[0];
+function today(refDate) {
+  const d = refDate ? new Date(refDate) : new Date();
+  return d.toISOString().split('T')[0];
 }
 
 function clamp(v, min, max) {
@@ -36,8 +37,8 @@ export const lumiereIndex = {
    * @param {Object} collections
    * @returns {{score: number|null, reason: string, signals: Array<{id,label,weight,value,raw}>}}
    */
-  calculate(collections = {}) {
-    const now = today();
+  calculate(collections = {}, refDate = null) {
+    const now = today(refDate);
     const signals = [];
 
     const tasks = Array.isArray(collections.tasks) ? collections.tasks : [];
@@ -66,7 +67,8 @@ export const lumiereIndex = {
     const activeHabits = habits.filter(h => h.status === 'active');
     if (activeHabits.length > 0) {
       // Registos completos nos últimos 7 dias / (hábitos ativos * 7)
-      const weekAgo = new Date(Date.now() - 7 * DAY_MS).toISOString().split('T')[0];
+      const refMs = refDate ? new Date(refDate).getTime() : Date.now();
+      const weekAgo = new Date(refMs - 7 * DAY_MS).toISOString().split('T')[0];
       const recentLogs = habitLogs.filter(l =>
         l.completed && l.date && l.date >= weekAgo && l.date <= now
       );
@@ -117,7 +119,8 @@ export const lumiereIndex = {
     }
 
     /* ---------- 5) Estudos (peso 10) ---------- */
-    const weekAgoStr = new Date(Date.now() - 7 * DAY_MS).toISOString().split('T')[0];
+    const refMsStudies = refDate ? new Date(refDate).getTime() : Date.now();
+    const weekAgoStr = new Date(refMsStudies - 7 * DAY_MS).toISOString().split('T')[0];
     const recentSessions = studySessions.filter(s => s.date && s.date >= weekAgoStr && s.date <= now);
     if (studySessions.length > 0) {
       const totalMin = recentSessions.reduce((s, x) => s + (Number(x.duration) || 0), 0);
@@ -170,6 +173,44 @@ export const lumiereIndex = {
       reason: 'calculado a partir de ' + signals.length + ' sinal(is)',
       signals
     };
+  },
+
+  /**
+   * Calcula o delta do score semanal.
+   * @returns {{delta: number|null, current: number|null, previous: number|null}}
+   */
+  computeWeeklyDelta(collections = {}) {
+    const current = this.calculate(collections).score;
+    const sevenDaysAgo = new Date(Date.now() - 7 * DAY_MS).toISOString();
+    const previous = this.calculate(collections, sevenDaysAgo).score;
+    if (current === null || previous === null) {
+      return { delta: null, current, previous };
+    }
+    return { delta: current - previous, current, previous };
+  },
+
+  /**
+   * Frase interpretativa baseada no score.
+   */
+  interpret(score) {
+    if (score === null || score === undefined) {
+      return 'Sem dados suficientes para interpretar.';
+    }
+    if (score >= 85) return 'Excelente! Estás no teu melhor momento.';
+    if (score >= 70) return 'Estás a evoluir! Continua assim.';
+    if (score >= 50) return 'Estás estável. Bom caminho.';
+    if (score >= 30) return 'Há espaço para melhorar. Foca-te nos hábitos.';
+    return 'Estás a começar. Pequenos passos contam.';
+  },
+
+  /**
+   * Frase interpretativa sobre o delta.
+   */
+  interpretDelta(delta) {
+    if (delta === null || delta === undefined) return null;
+    if (delta > 3) return { sign: 'up',   text: '+' + delta + ' vs. semana passada' };
+    if (delta < -3) return { sign: 'down', text: delta + ' vs. semana passada' };
+    return { sign: 'flat', text: 'Sem alterações significativas' };
   }
 };
 
