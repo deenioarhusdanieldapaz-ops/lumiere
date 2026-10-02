@@ -585,7 +585,9 @@ async function handleDuplicate(tpl) {
     delete copy.id;
     delete copy.createdAt;
     delete copy.updatedAt;
-    copy.name = (tpl.name || 'Template') + ' (cópia)';
+    let baseName = tpl.name || 'Template';
+    baseName = baseName.replace(/\s*\(cópia(?:\s+\d+)?\)\s*$/i, '');
+    copy.name = baseName + ' (cópia)';
     await dataManager.create('templates', copy);
     console.log('[Templates] Duplicado:', tpl.id);
   } catch (err) {
