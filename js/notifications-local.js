@@ -5,7 +5,7 @@
 import { dataManager } from '../core/dataManager.js';
 
 const KEY_LAST_NOTIF = 'lumiereLastNotification';
-const MIN_INTERVAL_MS = 4 * 60 * 60 * 1000;
+const MIN_INTERVAL_MS = 90 * 60 * 1000; // 1.5 horas
 
 function todayYMD() {
   return new Date().toISOString().split('T')[0];
@@ -37,7 +37,9 @@ async function showNotification(title, body) {
         body: body,
         icon: './public/icons/android-chrome-192x192.png',
         badge: './public/icons/android-chrome-192x192.png',
-        tag: 'lumiere-ctx'
+        tag: 'lumiere-ctx',
+        silent: false,
+        vibrate: [200, 100, 200]
       });
       markNotified();
       console.log('[NotifLocal] Mostrada:', title);
@@ -95,7 +97,72 @@ function objetivoMaisUrgente(goals, milestones, tasks) {
   return candidatos[0];
 }
 
-async function buildPriorityNotification() {
+async const STREAK_THRESHOLDS = [30, 10, 5];
+const KEY_LAST_STREAK = 'lumiereLastStreakNotif';
+
+function calcStreakSimple(habit, logs) {
+  const dowMap = ['sun','mon','tue','wed','thu','fri','sat'];
+  const daysOfWeek = Array.isArray(habit.daysOfWeek) ? habit.daysOfWeek : [];
+  const isApplicable = (d) => daysOfWeek.length === 0 || daysOfWeek.includes(dowMap[d.getDay()]);
+  const doneDates = new Set((logs || []).filter(l => l.completed).map(l => l.date));
+  let streak = 0;
+  let cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  let isFirst = true;
+  for (let i = 0; i < 365; i++) {
+    const ymd = cursor.getFullYear() + '-' + String(cursor.getMonth()+1).padStart(2,'0') + '-' + String(cursor.getDate()).padStart(2,'0');
+    if (isApplicable(cursor)) {
+      if (doneDates.has(ymd)) streak++;
+      else if (isFirst) { /* hoje ainda nao marcado, nao quebra */ }
+      else break;
+    }
+    isFirst = false;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
+function getLastStreakNotif() {
+  try {
+    const raw = localStorage.getItem(KEY_LAST_STREAK);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+
+function setLastStreakNotif(obj) {
+  try { localStorage.setItem(KEY_LAST_STREAK, JSON.stringify(obj)); } catch (e) { /* noop */ }
+}
+
+async function buildStreakNotification() {
+  try {
+    const habits = await dataManager.list('habits');
+    const logs = await dataManager.list('habitLogs');
+    const memory = getLastStreakNotif();
+
+    for (const h of (habits || [])) {
+      if (h.status !== 'active') continue;
+      const streak = calcStreakSimple(h, logs);
+      if (streak < 5) continue;
+
+      // Encontrar o maior threshold atingido
+      const threshold = STREAK_THRESHOLDS.find(t => streak >= t);
+      if (!threshold) continue;
+
+      // Ja notificamos este threshold para este habito?
+      if (memory[h.id] === threshold) continue;
+
+      memory[h.id] = threshold;
+      setLastStreakNotif(memory);
+      return {
+        title: '\uD83D\uDD25 ' + streak + ' dias seguidos!',
+        body: h.name + ' \u2022 Continua assim'
+      };
+    }
+  } catch (e) { /* noop */ }
+  return null;
+}
+
+function buildPriorityNotification() {
   const today = todayYMD();
 
   // 1. Tarefas com prazo hoje
@@ -166,6 +233,35 @@ async function buildPriorityNotification() {
         title: 'Prazo em ' + dias + ' dia' + (dias > 1 ? 's' : ''),
         body: proximas[0].name
       };
+    }
+  } catch (e) { /* noop */ }
+
+  // 5. Streak atingido (5/10/30)
+  const streakNotif = await buildStreakNotification();
+  if (streakNotif) return streakNotif;
+
+  // 6. 7 dias sem registar notas
+  try {
+    const notes = await dataManager.list('notes');
+    if (!notes || notes.length === 0) {
+      // Sem notas nunca — primeira nota
+      return {
+        title: 'Ainda nao tens notas',
+        body: 'Regista a primeira ideia ou reflexao'
+      };
+    }
+    const latest = notes.reduce((max, n) => {
+      const d = n.updatedAt || n.createdAt || '';
+      return d > max ? d : max;
+    }, '');
+    if (latest) {
+      const days = Math.floor((Date.now() - new Date(latest).getTime()) / 86400000);
+      if (days >= 7) {
+        return {
+          title: 'Faz ' + days + ' dias sem notas',
+          body: 'Uma reflexao diaria ajuda a clarear'
+        };
+      }
     }
   } catch (e) { /* noop */ }
 
