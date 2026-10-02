@@ -438,3 +438,152 @@
   .progress__signal-status { font-size: 0.56rem; }
   .progress__signal-footer { font-size: 0.54rem; }
 }
+
+/* ============================================================
+   Progresso — enriquecimento (Bloco 4.3)
+   ============================================================ */
+
+/* Badge período "Últimos 7 dias" */
+.progress__hero-period {
+  display: inline-block;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary, #b8956a);
+  padding: 0.15rem 0.5rem;
+  background: rgba(184, 149, 106, 0.1);
+  border-radius: 40px;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Delta pill (substitui a antiga pill estática) */
+.progress__hero-pill {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 40px;
+  margin-bottom: 0.5rem;
+}
+
+.progress__hero-pill--up {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.progress__hero-pill--down {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+}
+
+.progress__hero-pill--flat {
+  background: rgba(184, 149, 106, 0.15);
+  color: #b8956a;
+}
+
+/* Empty state: contagem de dias */
+.progress__empty-days {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #f5f0eb);
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.progress__empty-days-bar {
+  width: 100%;
+  max-width: 200px;
+  height: 6px;
+  margin: 0.4rem auto 0.6rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress__empty-days-fill {
+  height: 100%;
+  background: var(--color-gold, #d4af37);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Secção "Como é calculado?" */
+.progress__how-calc {
+  margin-top: 1.25rem;
+  background: var(--color-bg-secondary, #1a1715);
+  border: 1px solid var(--color-border, #4a3f38);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress__how-calc-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--color-gold, #d4af37);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  user-select: none;
+}
+
+.progress__how-calc-summary::-webkit-details-marker {
+  display: none;
+}
+
+.progress__how-calc-summary::after {
+  content: '\\25BE';
+  margin-left: auto;
+  font-size: 0.7rem;
+  transition: transform 0.2s ease;
+}
+
+.progress__how-calc[open] .progress__how-calc-summary::after {
+  transform: rotate(180deg);
+}
+
+.progress__how-calc-body {
+  padding: 0 1rem 1rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.progress__how-calc-hint {
+  margin: 0.6rem 0 0.8rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #b8956a);
+  line-height: 1.5;
+}
+
+.progress__how-calc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.progress__how-calc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.progress__how-calc-item:last-child {
+  border-bottom: none;
+}
+
+.progress__how-calc-name {
+  color: var(--color-text-primary, #f5f0eb);
+}
+
+.progress__how-calc-weight {
+  color: var(--color-gold, #d4af37);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

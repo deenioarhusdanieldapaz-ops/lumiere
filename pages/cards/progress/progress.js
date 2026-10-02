@@ -118,6 +118,74 @@ function buildSignalTile(def, signal) {
   return tile;
 }
 
+function countActiveDays(collections) {
+  const daySet = new Set();
+  const cutoff = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const pushDate = (iso) => {
+    if (!iso) return;
+    const d = String(iso).split('T')[0];
+    if (d >= cutoff && d <= todayStr) daySet.add(d);
+  };
+
+  (collections.tasks || []).forEach(t => pushDate(t.createdAt));
+  (collections.habitLogs || []).forEach(l => pushDate(l.date));
+  (collections.studySessions || []).forEach(s => pushDate(s.date));
+  (collections.financeTransactions || []).forEach(t => pushDate(t.date));
+  (collections.notes || []).forEach(n => pushDate(n.updatedAt));
+
+  return daySet.size;
+}
+
+function buildHowCalculated(result) {
+  const details = document.createElement('details');
+  details.className = 'progress__how-calc';
+
+  const summary = document.createElement('summary');
+  summary.className = 'progress__how-calc-summary';
+  summary.innerHTML = '<span aria-hidden="true">\u2699\uFE0F</span> Como é calculado?';
+  details.appendChild(summary);
+
+  const body = document.createElement('div');
+  body.className = 'progress__how-calc-body';
+
+  const hint = document.createElement('p');
+  hint.className = 'progress__how-calc-hint';
+  hint.textContent = 'O Índice de Evolução combina os sinais disponíveis com pesos fixos. Sinais sem base mínima são excluídos e o peso é redistribuído.';
+  body.appendChild(hint);
+
+  const list = document.createElement('ul');
+  list.className = 'progress__how-calc-list';
+
+  const SIG_LABEL = {
+    tasks: 'Tarefas', habits: 'Hábitos', goals: 'Objetivos',
+    finances: 'Finanças', studies: 'Estudos', reflection: 'Reflexão'
+  };
+
+  for (const sig of result.signals) {
+    const li = document.createElement('li');
+    li.className = 'progress__how-calc-item';
+    li.dataset.signal = sig.id;
+
+    const name = document.createElement('span');
+    name.className = 'progress__how-calc-name';
+    name.textContent = SIG_LABEL[sig.id] || sig.label;
+    li.appendChild(name);
+
+    const weight = document.createElement('span');
+    weight.className = 'progress__how-calc-weight';
+    weight.textContent = sig.weight + '%';
+    li.appendChild(weight);
+
+    list.appendChild(li);
+  }
+
+  body.appendChild(list);
+  details.appendChild(body);
+  return details;
+}
+
 function buildSignalsSection(defs, signalsMap, titleSub) {
   const section = document.createElement('section');
   section.className = 'progress__signals-section';
@@ -179,7 +247,7 @@ function buildHeader() {
   return header;
 }
 
-function buildEmptyState() {
+function buildEmptyState(collections) {
   const wrap = document.createElement('div');
   wrap.className = 'progress__empty-state';
 
@@ -200,9 +268,24 @@ function buildEmptyState() {
   msg.textContent = 'Ainda não tens dados suficientes para calcular a tua evolução.';
   wrap.appendChild(msg);
 
+  // Contagem de dias ativos nos últimos 7
+  const activeDays = countActiveDays(collections);
+  const dayInfo = document.createElement('div');
+  dayInfo.className = 'progress__empty-days';
+  dayInfo.textContent = activeDays + ' de 7 dias';
+  wrap.appendChild(dayInfo);
+
+  const dayBar = document.createElement('div');
+  dayBar.className = 'progress__empty-days-bar';
+  const dayFill = document.createElement('div');
+  dayFill.className = 'progress__empty-days-fill';
+  dayFill.style.width = Math.min(100, Math.round((activeDays / 7) * 100)) + '%';
+  dayBar.appendChild(dayFill);
+  wrap.appendChild(dayBar);
+
   const hint = document.createElement('p');
   hint.className = 'progress__empty-hint';
-  hint.textContent = 'Começa por registar uma tarefa, hábito, objetivo ou estudo.';
+  hint.textContent = 'Precisas de pelo menos 7 dias de registos para calcular o teu Índice de Evolução.';
   wrap.appendChild(hint);
 
   const cta = document.createElement('button');
@@ -217,7 +300,7 @@ function buildEmptyState() {
   return wrap;
 }
 
-function buildWithDataState(result) {
+function buildWithDataState(result, collections) {
   const wrap = document.createElement('div');
   wrap.className = 'progress__data-state';
 
@@ -243,19 +326,28 @@ function buildWithDataState(result) {
   const right = document.createElement('div');
   right.className = 'progress__hero-right';
 
-  const pill = document.createElement('div');
-  pill.className = 'progress__hero-pill';
-  pill.innerHTML = '<span class="progress__hero-pill-arrow" aria-hidden="true">\u2191</span> \u2014 esta semana';
-  right.appendChild(pill);
+  // Badge "Últimos 7 dias"
+  const badge7d = document.createElement('div');
+  badge7d.className = 'progress__hero-period';
+  const todayDate = new Date();
+  const fmtDate = todayDate.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' });
+  badge7d.textContent = 'Últimos 7 dias · ' + fmtDate;
+  right.appendChild(badge7d);
 
-  const quote = document.createElement('p');
-  quote.className = 'progress__hero-quote';
-  quote.innerHTML = 'Disciplina hoje,<br>liberdade amanhã.';
-  right.appendChild(quote);
+  // Delta real
+  const deltaInfo = lumiereIndex.computeWeeklyDelta(collections);
+  const deltaBadge = lumiereIndex.interpretDelta(deltaInfo.delta);
+  if (deltaBadge) {
+    const pill = document.createElement('div');
+    pill.className = 'progress__hero-pill progress__hero-pill--' + deltaBadge.sign;
+    pill.textContent = deltaBadge.text;
+    right.appendChild(pill);
+  }
 
+  // Frase interpretativa dinâmica
   const text = document.createElement('p');
   text.className = 'progress__hero-text';
-  text.textContent = 'A tua evolução é o resultado das pequenas escolhas que fazes todos os dias.';
+  text.textContent = lumiereIndex.interpret(result.score);
   right.appendChild(text);
 
   card.appendChild(right);
@@ -323,14 +415,15 @@ export async function initProgress(container) {
   if (ctx) page.appendChild(ctx);
 
   if (hasScore) {
-    page.appendChild(buildWithDataState(result));
+    page.appendChild(buildWithDataState(result, collections));
     page.appendChild(buildSignalsSection(
       SIGNAL_DEFS,
       signalsMap,
       'Cada área contribui para o teu índice geral.'
     ));
+    page.appendChild(buildHowCalculated(result));
   } else {
-    page.appendChild(buildEmptyState());
+    page.appendChild(buildEmptyState(collections));
     page.appendChild(buildSignalsSection(
       SIGNAL_DEFS,
       signalsMap,
