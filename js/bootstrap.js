@@ -29,7 +29,7 @@ import { initReports } from '../pages/cards/reports/reports.js';
 import { splash } from './splash.js';
 import { injectIcons } from './icons.js';
 import { notifications } from './notifications.js';
-import { initLocalNotifications } from './notifications-local.js';
+import { initLocalNotifications } from './notifications-contextual.js';
 import { initFloatingAction } from '../components/floating-action/floatingAction.js';
 
 /**

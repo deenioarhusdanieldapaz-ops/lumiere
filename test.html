@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script type="importmap">
+    { "imports": { "dexie": "./vendor/dexie.mjs" } }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
+</head>
+<body>
+<h1>Diagnóstico 2</h1>
+<script type="module">
+const files = [
+  // Imports diretos do app.js
+  '/core/index.js',
+  '/core/eventBus.js',
+  '/core/dataManager.js',
+  '/core/stateManager.js',
+  '/js/navigation.js',
+  '/pages/tasks/tasks.js',
+  '/pages/habits/habits.js',
+  '/pages/goals/goals.js',
+  '/pages/studies/studies.js',
+  '/pages/lumiere/lumiere.js',
+  '/pages/notes/notes.js',
+  '/pages/templates/templates.js',
+  '/pages/calendar/calendar.js',
+  '/pages/finances/finances.js',
+  '/pages/settings/settings.js',
+  '/pages/profile/profile.js',
+  '/pages/cards/overview/overview.js',
+  '/pages/cards/progress/progress.js',
+  '/pages/cards/mainGoal/mainGoal.js',
+  '/pages/cards/lumiere/lumiere.js',
+  '/pages/cards/finances/finances.js',
+  '/pages/cards/today/today.js',
+  '/pages/cards/weeklyProgress/weeklyProgress.js',
+  '/pages/cards/insights/insights.js',
+  '/pages/cards/reports/reports.js',
+  '/js/splash.js',
+  '/js/icons.js',
+  '/js/notifications.js',
+  '/js/notifications-local.js',
+  '/components/floating-action/floatingAction.js'
+];
+console.log('═══ TESTE 2 INICIO ═══');
+for (const f of files) {
+  try {
+    await import(f);
+    console.log('✅', f);
+  } catch (e) {
+    console.error('❌ FALHA:', f);
+    console.error('   →', e.message);
+  }
+}
+console.log('═══ TESTE 2 FIM ═══');
+</script>
+</body>
+</html>
