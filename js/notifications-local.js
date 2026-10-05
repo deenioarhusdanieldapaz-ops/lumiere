@@ -97,7 +97,7 @@ function objetivoMaisUrgente(goals, milestones, tasks) {
   return candidatos[0];
 }
 
-async const STREAK_THRESHOLDS = [30, 10, 5];
+const STREAK_THRESHOLDS = [30, 10, 5];
 const KEY_LAST_STREAK = 'lumiereLastStreakNotif';
 
 function calcStreakSimple(habit, logs) {
@@ -162,7 +162,7 @@ async function buildStreakNotification() {
   return null;
 }
 
-function buildPriorityNotification() {
+async function buildPriorityNotification() {
   const today = todayYMD();
 
   // 1. Tarefas com prazo hoje
