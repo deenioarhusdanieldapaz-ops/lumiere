@@ -1,0 +1,206 @@
+name: Lumiere Startup Diagnostic
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install playwright@latest
+          npx playwright install chromium --with-deps
+
+      - name: Write diagnostic script
+        run: |
+          mkdir -p .github/scripts
+          cat > .github/scripts/startup-diagnostic.js << 'JSEOF'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+
+          const PROD_URL = 'https://lumiere-83s.pages.dev';
+          const CB = '?diag=' + Date.now();
+
+          (async () => {
+            const report = {
+              timestamp: new Date().toISOString(),
+              url: PROD_URL,
+              events: [],
+              requests: [],
+              responses: [],
+              requestFailed: [],
+              pageErrors: [],
+              consoleErrors: [],
+              domState: null,
+              indexHtml: null,
+              dexieCheck: null,
+              swCheck: null,
+              conclusion: {}
+            };
+
+            const browser = await chromium.launch({ headless: true });
+            const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+            const page = await context.newPage();
+
+            page.on('console', msg => {
+              const entry = { level: msg.type(), text: msg.text(), ts: Date.now() };
+              report.events.push({ type: 'console', ...entry });
+              if (msg.type() === 'error') report.consoleErrors.push(entry);
+            });
+
+            page.on('pageerror', err => {
+              report.pageErrors.push({ message: err.message, stack: err.stack, ts: Date.now() });
+            });
+
+            await page.addInitScript(() => {
+              window.__unhandled = [];
+              window.addEventListener('unhandledrejection', e => {
+                window.__unhandled.push({
+                  reason: e.reason ? String(e.reason) : 'unknown',
+                  stack: e.reason && e.reason.stack ? e.reason.stack : null
+                });
+              });
+            });
+
+            page.on('request', req => {
+              report.requests.push({ url: req.url(), method: req.method(), type: req.resourceType() });
+            });
+
+            page.on('response', async res => {
+              const h = res.headers();
+              report.responses.push({
+                url: res.url(),
+                status: res.status(),
+                contentType: h['content-type'] || null,
+                cacheControl: h['cache-control'] || null,
+                fromSW: res.fromServiceWorker()
+              });
+            });
+
+            page.on('requestfailed', req => {
+              report.requestFailed.push({
+                url: req.url(),
+                failure: req.failure() ? req.failure().errorText : 'unknown',
+                ts: Date.now()
+              });
+            });
+
+            try {
+              await page.goto(PROD_URL + CB, { waitUntil: 'networkidle', timeout: 30000 });
+            } catch (e) {
+              report.pageErrors.push({ message: 'NAVIGATION: ' + e.message, ts: Date.now() });
+            }
+
+            await page.waitForTimeout(6000);
+
+            report.domState = await page.evaluate(() => {
+              const splash = document.getElementById('splash');
+              const app = document.getElementById('app');
+              const appShell = document.getElementById('app-shell');
+              const content = document.getElementById('content');
+              const scripts = Array.from(document.querySelectorAll('script')).map((s, i) => ({
+                i, type: s.type || 'classic', src: s.src || 'inline', async: s.async, defer: s.defer
+              }));
+              return {
+                documentReadyState: document.readyState,
+                splashExists: !!splash,
+                splashHidden: splash ? splash.hidden : null,
+                splashDisplay: splash ? getComputedStyle(splash).display : null,
+                appExists: !!app,
+                appHidden: app ? app.hidden : null,
+                appShellHidden: appShell ? appShell.hidden : null,
+                contentChildren: content ? content.children.length : null,
+                scripts,
+                unhandled: window.__unhandled || [],
+                hasLumiereGlobal: typeof window.__lumiere !== 'undefined',
+                hasSW: 'serviceWorker' in navigator,
+                swController: navigator.serviceWorker.controller ? navigator.serviceWorker.controller.scriptURL : null
+              };
+            });
+
+            try {
+              const r = await page.request.get(PROD_URL + '/?cb=' + Date.now());
+              const html = await r.text();
+              const im = html.match(/<script type="importmap">([\s\S]*?)<\/script>/);
+              report.indexHtml = {
+                length: html.length,
+                hasImportmap: html.includes('type="importmap"'),
+                importmapContent: im ? im[1].trim() : null,
+                hasAppJs: html.includes('src="js/app.js"'),
+                hasBootstrapJs: html.includes('src="js/bootstrap.js"'),
+                scriptTags: (html.match(/<script[^>]*>/g) || []).slice(0, 15)
+              };
+            } catch (e) { report.indexHtml = { error: e.message }; }
+
+            try {
+              const r = await page.request.get(PROD_URL + '/vendor/dexie.mjs?cb=' + Date.now());
+              const txt = await r.text();
+              report.dexieCheck = {
+                status: r.status(),
+                contentType: r.headers()['content-type'],
+                length: txt.length,
+                firstChars: txt.slice(0, 100)
+              };
+            } catch (e) { report.dexieCheck = { error: e.message }; }
+
+            try {
+              const r = await page.request.get(PROD_URL + '/sw.js?cb=' + Date.now());
+              const txt = await r.text();
+              const m = txt.match(/CACHE_NAME\s*=\s*['"]([^'"]+)['"]/);
+              report.swCheck = {
+                status: r.status(),
+                cacheName: m ? m[1] : null,
+                hasImportScripts: txt.includes('importScripts')
+              };
+            } catch (e) { report.swCheck = { error: e.message }; }
+
+            await page.screenshot({ path: 'lumiere-startup.png', fullPage: false });
+
+            const fatalErrors = [
+              ...report.pageErrors,
+              ...report.requestFailed.filter(f => f.url && f.url.includes('.js'))
+            ];
+
+            report.conclusion = {
+              firstFatalError: fatalErrors[0] || null,
+              totalConsoleErrors: report.consoleErrors.length,
+              totalPageErrors: report.pageErrors.length,
+              totalRequestFailed: report.requestFailed.length,
+              appBootstrapped: report.domState.hasLumiereGlobal,
+              splashStillVisible: report.domState.splashDisplay !== 'none',
+              swActive: !!report.domState.swController,
+              importmapPresent: report.indexHtml && report.indexHtml.hasImportmap
+            };
+
+            fs.writeFileSync('lumiere-startup-report.json', JSON.stringify(report, null, 2));
+            await browser.close();
+
+            console.log('===== CONCLUSAO =====');
+            console.log(JSON.stringify(report.conclusion, null, 2));
+          })();
+          JSEOF
+
+      - name: Run diagnostic
+        run: node .github/scripts/startup-diagnostic.js
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumiere-startup-diagnostic
+          path: |
+            lumiere-startup-report.json
+            lumiere-startup.png
+          retention-days: 30
