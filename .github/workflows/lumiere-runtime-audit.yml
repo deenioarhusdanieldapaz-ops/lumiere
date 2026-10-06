@@ -1,0 +1,57 @@
+name: Lumière Runtime Audit
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/lumiere-runtime-audit.yml'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install playwright@1.48.0 >/dev/null 2>&1
+          npx playwright install chromium --with-deps >/dev/null 2>&1
+
+      - name: Run runtime audit
+        run: node audit.js
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumiere-runtime-audit
+          path: |
+            audit-report.json
+            screenshots/
+          retention-days: 14
+
+      - name: Print summary
+        if: always()
+        run: |
+          if [ -f audit-report.json ]; then
+            node -e '
+              const r=require("./audit-report.json");
+              console.log("=== SUMMARY ===");
+              console.log("appLoaded:", r.summary.appLoaded);
+              console.log("splashHidden:", r.summary.splashHidden);
+              console.log("consoleTotal:", r.summary.consoleTotal);
+              console.log("consoleErrors:", r.summary.consoleErrors);
+              console.log("pageErrors:", r.summary.pageErrors);
+              console.log("requestFailed:", r.summary.requestFailed);
+              console.log("badResponses:", r.summary.badResponses);
+              console.log("interactions:", r.summary.interactions);
+              console.log("firstFatal:", JSON.stringify(r.summary.firstFatal));
+            '
+          fi
