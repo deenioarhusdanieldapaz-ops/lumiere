@@ -9,7 +9,7 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
           npm install playwright@1.48.0 >/dev/null 2>&1
           npx playwright install chromium --with-deps >/dev/null 2>&1
 
-      - name: Run runtime audit
+      - name: Run runtime audit v2
         run: node audit.js
 
       - name: Upload artifacts
@@ -33,25 +33,16 @@ jobs:
         with:
           name: lumiere-runtime-audit
           path: |
-            audit-report.json
-            screenshots/
+            audit-output/
           retention-days: 14
 
       - name: Print summary
         if: always()
         run: |
-          if [ -f audit-report.json ]; then
-            node -e '
-              const r=require("./audit-report.json");
-              console.log("=== SUMMARY ===");
-              console.log("appLoaded:", r.summary.appLoaded);
-              console.log("splashHidden:", r.summary.splashHidden);
-              console.log("consoleTotal:", r.summary.consoleTotal);
-              console.log("consoleErrors:", r.summary.consoleErrors);
-              console.log("pageErrors:", r.summary.pageErrors);
-              console.log("requestFailed:", r.summary.requestFailed);
-              console.log("badResponses:", r.summary.badResponses);
-              console.log("interactions:", r.summary.interactions);
-              console.log("firstFatal:", JSON.stringify(r.summary.firstFatal));
-            '
+          if [ -f audit-output/summary.json ]; then
+            echo "=== SUMMARY ==="
+            cat audit-output/summary.json
+          else
+            echo "❌ audit-output/summary.json não encontrado"
+            ls -la
           fi
