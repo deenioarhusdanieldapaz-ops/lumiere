@@ -1,4 +1,4 @@
-// audit.js v3 — Interação real com layouts responsivos
+// audit.js v4 — Fase 3 (abrir/fechar forms) + Fase 4 (CRUD em tasks)
 const { chromium } = require('playwright');
 const fs = require('fs');
 
@@ -9,66 +9,159 @@ if (!fs.existsSync(OUT)) fs.mkdirSync(OUT, { recursive: true });
 if (!fs.existsSync(`${OUT}/screenshots`)) fs.mkdirSync(`${OUT}/screenshots`, { recursive: true });
 
 const safeName = (s) => String(s).replace(/[^a-z0-9_-]+/gi, '_').slice(0, 60);
-const stamp = () => new Date().toISOString();
 
-async function snapshotDOM(page) {
-  return await page.evaluate(() => {
-    const visible = (el) => {
-      if (!el) return false;
-      const st = getComputedStyle(el);
-      const rect = el.getBoundingClientRect();
-      return st.display !== 'none' && st.visibility !== 'hidden'
-        && parseFloat(st.opacity) > 0.01 && rect.width > 0 && rect.height > 0;
-    };
-    const textOf = (el, max = 120) => (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, max);
-    const all = (sel) => Array.from(document.querySelectorAll(sel));
-
-    return {
-      url: location.href,
-      readyState: document.readyState,
-      appShellHidden: document.getElementById('app-shell')?.hidden ?? null,
-      appHidden: document.getElementById('app')?.hidden ?? null,
-      splash: (() => {
-        const s = document.querySelector('.splash, #splash, [data-splash]');
-        if (!s) return null;
-        const st = getComputedStyle(s);
-        return { display: st.display, opacity: st.opacity, visibility: st.visibility };
-      })(),
-      counts: {
-        buttons: all('button').length,
-        buttonsVisible: all('button').filter(visible).length,
-        inputs: all('input').length,
-        inputsVisible: all('input').filter(visible).length,
-        cardsVisible: all('[class*="card"]').filter(visible).length,
-        navItemsVisible: all('[data-page]').filter(visible).length,
-        svgs: all('svg').length
-      },
-      // Texto visível (para detetar página vazia)
-      visibleText: all('h1,h2,h3,h4,p')
-        .filter(visible)
-        .map(el => textOf(el, 80))
-        .filter(t => t.length > 3)
-        .slice(0, 25),
-      // Botões visíveis com texto
-      visibleButtons: all('button')
-        .filter(visible)
-        .map(el => textOf(el, 40))
-        .filter(t => t.length > 0)
-        .slice(0, 40)
-    };
-  });
+async function waitFor(page, sel, timeout = 5000) {
+  try { await page.waitForSelector(sel, { state: 'visible', timeout }); return true; }
+  catch { return false; }
+}
+async function waitGone(page, sel, timeout = 5000) {
+  try { await page.waitForSelector(sel, { state: 'detached', timeout }); return true; }
+  catch {
+    try { await page.waitForSelector(sel, { state: 'hidden', timeout: 1000 }); return true; }
+    catch { return false; }
+  }
 }
 
-async function findVisibleElement(page, selector) {
-  const matches = page.locator(selector);
-  const count = await matches.count();
-  for (let i = 0; i < count; i++) {
-    const el = matches.nth(i);
+async function openFormFor(page, entity) {
+  // entity: 'tasks' | 'habits' | 'notes'
+  const btn = page.locator(`.${entity}-btn--primary`).first();
+  if (!await btn.isVisible({ timeout: 3000 })) return { ok: false, error: 'botão nova não visível' };
+  await btn.click({ timeout: 3000 });
+  const appeared = await waitFor(page, `.${entity}-form`, 4000);
+  return { ok: appeared, error: appeared ? null : 'form não apareceu' };
+}
+
+async function closeFormFor(page, entity) {
+  const cancel = page.locator(`.${entity}-form button[type="button"]`).first();
+  if (!await cancel.isVisible({ timeout: 2000 })) return { ok: false, error: 'botão cancelar não visível' };
+  await cancel.click({ timeout: 2000 });
+  const gone = await waitGone(page, `.${entity}-form`, 3000);
+  return { ok: gone, error: gone ? null : 'form não desapareceu' };
+}
+
+async function runFase3(page, tag) {
+  const results = [];
+  for (const entity of ['tasks', 'habits', 'notes']) {
+    // Navegar
     try {
-      if (await el.isVisible({ timeout: 500 })) return el;
-    } catch (_) {}
+      await page.locator(`[data-page="${entity}"]`).first().click({ timeout: 4000 });
+      await page.waitForTimeout(1200);
+    } catch (e) {
+      results.push({ entity, phase: 3, step: 'navigate', ok: false, error: String(e.message).slice(0, 200) });
+      continue;
+    }
+
+    // Abrir
+    const opened = await openFormFor(page, entity);
+    if (!opened.ok) {
+      results.push({ entity, phase: 3, step: 'open', ok: false, error: opened.error });
+      continue;
+    }
+    await page.screenshot({ path: `${OUT}/screenshots/${tag}-p3-${entity}-form-open.png`, fullPage: false });
+
+    // Fechar
+    const closed = await closeFormFor(page, entity);
+    results.push({ entity, phase: 3, step: 'open+close', ok: closed.ok, error: closed.error });
+    if (closed.ok) {
+      await page.screenshot({ path: `${OUT}/screenshots/${tag}-p3-${entity}-form-closed.png`, fullPage: false });
+    }
+    await page.waitForTimeout(600);
   }
-  return null;
+  return results;
+}
+
+async function runFase4Tasks(page, tag) {
+  const results = [];
+  const TEST_NAME = '[audit] Tarefa de teste';
+  const SELECTOR_TASK_ITEM = 'article.task-item';
+  const SELECTOR_TASK_NAME = 'h3';
+
+  // Navegar para tasks
+  try {
+    await page.locator('[data-page="tasks"]').first().click({ timeout: 4000 });
+    await page.waitForTimeout(1000);
+  } catch (e) {
+    return [{ step: 'navigate', ok: false, error: String(e.message).slice(0, 200) }];
+  }
+
+  // Estado inicial
+  const beforeCount = await page.locator(SELECTOR_TASK_ITEM).count();
+  results.push({ step: 'initial-count', ok: true, count: beforeCount });
+
+  // Abrir form
+  const opened = await openFormFor(page, 'tasks');
+  if (!opened.ok) return [...results, { step: 'open', ok: false, error: opened.error }];
+
+  // Preencher
+  try {
+    await page.fill('#task-name', TEST_NAME, { timeout: 3000 });
+  } catch (e) {
+    return [...results, { step: 'fill-name', ok: false, error: String(e.message).slice(0, 200) }];
+  }
+
+  // Submeter
+  try {
+    await page.locator('.tasks-form button[type="submit"]').first().click({ timeout: 3000 });
+  } catch (e) {
+    return [...results, { step: 'submit', ok: false, error: String(e.message).slice(0, 200) }];
+  }
+
+  // Esperar form desaparecer
+  const formGone = await waitGone(page, '.tasks-form', 4000);
+  results.push({ step: 'form-closed-after-submit', ok: formGone });
+
+  // Esperar item aparecer (por texto)
+  let itemAppeared = false;
+  try {
+    await page.waitForFunction((name) => {
+      return Array.from(document.querySelectorAll('article.task-item'))
+        .some(el => (el.textContent || '').includes(name));
+    }, TEST_NAME, { timeout: 5000 });
+    itemAppeared = true;
+  } catch (_) {}
+  results.push({ step: 'item-appeared', ok: itemAppeared });
+  await page.screenshot({ path: `${OUT}/screenshots/${tag}-p4-tasks-created.png`, fullPage: false });
+
+  if (!itemAppeared) return results;
+
+  // Localizar o artigo específico da tarefa de teste
+  const testItem = page.locator('article.task-item').filter({ hasText: TEST_NAME }).first();
+  const itemVisible = await testItem.isVisible({ timeout: 2000 }).catch(() => false);
+  results.push({ step: 'find-test-item', ok: itemVisible });
+  if (!itemVisible) return results;
+
+  // Clicar botão apagar dentro daquele artigo (o último button — padrão)
+  // Estratégia: procurar botão com ícone "trash"/"delete" ou último botão
+  let deleted = false;
+  try {
+    // Tentar por aria-label primeiro
+    let btn = testItem.locator('button[aria-label*="pagar" i], button[aria-label*="delete" i]').first();
+    if (await btn.count() === 0) {
+      // Fallback: último button do artigo
+      btn = testItem.locator('button').last();
+    }
+    await btn.click({ timeout: 3000 });
+    deleted = true;
+  } catch (e) {
+    results.push({ step: 'click-delete', ok: false, error: String(e.message).slice(0, 200) });
+  }
+  results.push({ step: 'click-delete', ok: deleted });
+
+  if (!deleted) return results;
+
+  // Esperar item desaparecer
+  let gone = false;
+  try {
+    await page.waitForFunction((name) => {
+      return !Array.from(document.querySelectorAll('article.task-item'))
+        .some(el => (el.textContent || '').includes(name));
+    }, TEST_NAME, { timeout: 5000 });
+    gone = true;
+  } catch (_) {}
+  results.push({ step: 'item-gone-after-delete', ok: gone });
+  await page.screenshot({ path: `${OUT}/screenshots/${tag}-p4-tasks-deleted.png`, fullPage: false });
+
+  return results;
 }
 
 async function runViewport(browser, viewport, tag) {
@@ -82,7 +175,6 @@ async function runViewport(browser, viewport, tag) {
     locale: 'pt-PT'
   });
 
-  // Injetar user existente (evita onboarding completo)
   await ctx.addInitScript(() => {
     try {
       localStorage.setItem('lumiereUserName', 'Playwright Test');
@@ -94,157 +186,52 @@ async function runViewport(browser, viewport, tag) {
 
   const page = await ctx.newPage();
 
-  // NÃO bloquear eruda — esconder via CSS após load
+  // Handler de dialog (para confirm() do delete)
+  page.on('dialog', async (dialog) => {
+    events.push({ ts: ts(), tag, kind: 'dialog', type: dialog.type(), message: dialog.message().slice(0, 200) });
+    try { await dialog.accept(); } catch (_) {}
+  });
+
   page.on('console', (msg) => {
-    events.push({ ts: ts(), viewport: tag, kind: 'console', level: msg.type(), text: msg.text().slice(0, 400) });
+    const lvl = msg.type();
+    // Filtrar logs de FAB/NotifLocal para reduzir ruído
+    const text = msg.text();
+    if (text.startsWith('[FAB]') || text.startsWith('[NotifLocal]')) return;
+    events.push({ ts: ts(), tag, kind: 'console', level: lvl, text: text.slice(0, 300) });
   });
   page.on('pageerror', (err) => {
-    events.push({ ts: ts(), viewport: tag, kind: 'pageerror', message: String(err.message || err).slice(0, 400), stack: String(err.stack || '').slice(0, 800) });
+    events.push({ ts: ts(), tag, kind: 'pageerror', message: String(err.message || err).slice(0, 400) });
   });
   page.on('requestfailed', (req) => {
-    // Ignorar falhas do eruda (não são da app)
     if (req.url().includes('eruda')) return;
-    events.push({ ts: ts(), viewport: tag, kind: 'requestfailed', url: req.url(), failure: req.failure()?.errorText || 'unknown' });
-  });
-  page.on('response', (res) => {
-    if (res.status() >= 400) {
-      events.push({ ts: ts(), viewport: tag, kind: 'badResponse', url: res.url(), status: res.status() });
-    }
+    events.push({ ts: ts(), tag, kind: 'requestfailed', url: req.url(), failure: req.failure()?.errorText || 'unknown' });
   });
 
   try {
     await page.goto(TARGET + '?audit=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 30000 });
   } catch (e) {
-    events.push({ ts: ts(), viewport: tag, kind: 'navigationError', message: String(e.message) });
+    events.push({ ts: ts(), tag, kind: 'navigationError', message: String(e.message) });
   }
 
-  // Esconder eruda via CSS
-  try {
-    await page.addStyleTag({ content: '.eruda-container, .eruda, #eruda { display: none !important; }' });
-  } catch (_) {}
+  // Esconder eruda
+  try { await page.addStyleTag({ content: '.eruda-container, .eruda, #eruda { display: none !important; }' }); } catch (_) {}
 
-  // Esperar splash desaparecer
-  let splashHidden = false;
-  try {
-    await page.waitForFunction(() => {
-      const s = document.querySelector('.splash, #splash, [data-splash]');
-      if (!s) return true;
-      const st = getComputedStyle(s);
-      return st.display === 'none' || st.visibility === 'hidden' || parseFloat(st.opacity) < 0.01;
-    }, { timeout: 20000 });
-    splashHidden = true;
-  } catch (_) {}
-
-  // Esperar app-shell visível
-  let appReady = false;
+  // Esperar app-shell
   try {
     await page.waitForFunction(() => {
       const shell = document.getElementById('app-shell');
       return shell && !shell.hidden;
     }, { timeout: 10000 });
-    appReady = true;
   } catch (_) {}
 
   await page.waitForTimeout(2000);
-  await page.screenshot({ path: `${OUT}/screenshots/${tag}-00-home.png`, fullPage: false });
 
-  const discovery = await page.evaluate(() => {
-    const navs = Array.from(document.querySelectorAll('[data-page]'));
-    const pages = [...new Set(navs.map(el => el.getAttribute('data-page')).filter(Boolean))];
-    return { pagesFromMenu: pages };
-  });
-
-  const homeSnapshot = await snapshotDOM(page);
-
-  // Abrir sidebar se estiver escondida (mobile)
-  let sidebarOpened = false;
-  try {
-    const toggle = page.locator('.app-topbar__toggle, [aria-label*="sidebar"], [aria-label*="menu"]').first();
-    if (await toggle.isVisible({ timeout: 1000 })) {
-      await toggle.click({ timeout: 2000 });
-      await page.waitForTimeout(800);
-      sidebarOpened = true;
-    }
-  } catch (_) {}
-
-  const pageResults = [];
-  for (const pageName of discovery.pagesFromMenu) {
-    const before = events.length;
-    const result = {
-      name: pageName,
-      loaded: false,
-      error: null,
-      screenshot: null,
-      snapshot: null,
-      eventsDuringNav: []
-    };
-
-    try {
-      // Tentar primeiro encontrar um elemento VISÍVEL com este data-page
-      const selector = `[data-page="${pageName}"]`;
-      const matches = page.locator(selector);
-      const count = await matches.count();
-      let clicked = false;
-      let lastError = null;
-
-      for (let i = 0; i < count; i++) {
-        const el = matches.nth(i);
-        try {
-          if (!await el.isVisible({ timeout: 300 })) continue;
-          await el.click({ timeout: 3000, force: false });
-          clicked = true;
-          break;
-        } catch (e) {
-          lastError = e.message;
-        }
-      }
-
-      if (!clicked) {
-        // Se sidebar não estava aberta, abrir e tentar de novo
-        if (!sidebarOpened) {
-          try {
-            const toggle = page.locator('.app-topbar__toggle').first();
-            await toggle.click({ timeout: 2000 });
-            await page.waitForTimeout(800);
-            sidebarOpened = true;
-            const el2 = page.locator(selector).first();
-            await el2.click({ timeout: 3000 });
-            clicked = true;
-          } catch (e) {
-            lastError = e.message;
-          }
-        }
-      }
-
-      if (!clicked) {
-        result.error = lastError || `Não encontrou elemento visível para ${pageName}`;
-      } else {
-        await page.waitForTimeout(1800);
-        result.loaded = true;
-        result.screenshot = `${tag}-nav-${safeName(pageName)}.png`;
-        await page.screenshot({ path: `${OUT}/screenshots/${result.screenshot}`, fullPage: false });
-        result.snapshot = await snapshotDOM(page);
-
-        // Fechar sidebar se a abrimos
-        if (sidebarOpened) {
-          try {
-            await page.locator('.app-topbar__toggle').first().click({ timeout: 1500 });
-            await page.waitForTimeout(500);
-            sidebarOpened = false;
-          } catch (_) {}
-        }
-      }
-    } catch (e) {
-      result.error = String(e.message).slice(0, 300);
-    }
-
-    result.eventsDuringNav = events.slice(before);
-    pageResults.push(result);
-  }
+  const fase3 = await runFase3(page, tag);
+  const fase4 = await runFase4Tasks(page, tag);
 
   await ctx.close();
 
-  return { viewport, tag, splashHidden, appReady, sidebarOpened, discovery, homeSnapshot, pageResults, events };
+  return { viewport, tag, fase3, fase4, events };
 }
 
 (async () => {
@@ -252,29 +239,17 @@ async function runViewport(browser, viewport, tag) {
   const mobile = await runViewport(browser, { width: 414, height: 896 }, 'mobile');
   const desktop = await runViewport(browser, { width: 1280, height: 800 }, 'desktop');
 
-  const summarize = (r) => {
-    const consoleErrors = r.events.filter(e => e.kind === 'console' && e.level === 'error');
-    const pageErrors = r.events.filter(e => e.kind === 'pageerror');
-    const requestFailed = r.events.filter(e => e.kind === 'requestfailed');
-    const badResponses = r.events.filter(e => e.kind === 'badResponse');
-    return {
-      tag: r.tag,
-      splashHidden: r.splashHidden,
-      appReady: r.appReady,
-      pagesDiscovered: r.discovery.pagesFromMenu.length,
-      pagesLoaded: r.pageResults.filter(p => p.loaded).length,
-      pagesFailed: r.pageResults.filter(p => !p.loaded).length,
-      consoleErrors: consoleErrors.length,
-      pageErrors: pageErrors.length,
-      requestFailed: requestFailed.length,
-      badResponses: badResponses.length,
-      appShellHidden: r.homeSnapshot.appShellHidden,
-      firstFatal: pageErrors[0] || consoleErrors[0] || null
-    };
-  };
+  const summarize = (r) => ({
+    tag: r.tag,
+    fase3Ok: r.fase3.filter(x => x.ok).length + '/' + r.fase3.length,
+    fase4Steps: r.fase4.map(s => `${s.step}:${s.ok ? 'OK' : 'FAIL'}`).join(' | '),
+    pageErrors: r.events.filter(e => e.kind === 'pageerror').length,
+    consoleErrors: r.events.filter(e => e.kind === 'console' && e.level === 'error').length,
+    dialogs: r.events.filter(e => e.kind === 'dialog').length
+  });
 
   const report = {
-    timestamp: stamp(),
+    timestamp: new Date().toISOString(),
     target: TARGET,
     summary: { mobile: summarize(mobile), desktop: summarize(desktop) },
     mobile, desktop
@@ -284,6 +259,6 @@ async function runViewport(browser, viewport, tag) {
   fs.writeFileSync(`${OUT}/summary.json`, JSON.stringify(report.summary, null, 2));
 
   await browser.close();
-  console.log('=== AUDIT v3 COMPLETE ===');
+  console.log('=== AUDIT v4 COMPLETE ===');
   console.log(JSON.stringify(report.summary, null, 2));
 })();
