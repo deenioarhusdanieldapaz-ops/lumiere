@@ -7,6 +7,8 @@
 import { dataManager } from '../../core/dataManager.js';
 import { storageManager } from '../../core/storageManager.js';
 import { eventBus } from '../../core/eventBus.js';
+import { createSheet } from '../../components/sheet/sheet.js';
+import { dailyReviewTrigger } from '../../js/dailyReviewTrigger.js';
 
 let _container = null;
 let _state = {
@@ -124,6 +126,8 @@ function renderPreferences() {
     { value: 'pt', label: 'Português' },
     { value: 'en', label: 'English (brevemente)' }
   ]));
+
+  sec.appendChild(makeHourPicker());
 
   // Notificações (checkbox)
   const wrap = document.createElement('div');
@@ -292,3 +296,70 @@ async function handleWipeAll() {
 
 export const settingsPage = { init: initSettings };
 export default settingsPage;
+
+function makeHourPicker() {
+  const wrap = document.createElement('div');
+  wrap.className = 'settings-hour-row';
+  wrap.setAttribute('role', 'button');
+  wrap.setAttribute('tabindex', '0');
+
+  const ico = document.createElement('span');
+  ico.className = 'settings-hour-row__icon';
+  ico.textContent = '🕐';
+  wrap.appendChild(ico);
+
+  const textWrap = document.createElement('div');
+  textWrap.className = 'settings-hour-row__text';
+
+  const label = document.createElement('div');
+  label.className = 'settings-hour-row__label';
+  label.textContent = 'Hora da revisão diária';
+  textWrap.appendChild(label);
+
+  const hint = document.createElement('div');
+  hint.className = 'settings-hour-row__hint';
+  hint.textContent = 'A revisão aparece a partir desta hora. Por defeito: 18:00.';
+  textWrap.appendChild(hint);
+
+  wrap.appendChild(textWrap);
+
+  const valueEl = document.createElement('span');
+  valueEl.className = 'settings-hour-row__value';
+  const initial = dailyReviewTrigger.getConfiguredHour();
+  valueEl.textContent = String(initial).padStart(2, '0') + ':00';
+  wrap.appendChild(valueEl);
+
+  const chev = document.createElement('span');
+  chev.className = 'settings-hour-row__chevron';
+  chev.textContent = '›';
+  wrap.appendChild(chev);
+
+  const open = function() {
+    const items = [];
+    for (let i = 0; i < 24; i++) {
+      items.push({
+        label: String(i).padStart(2, '0') + ':00',
+        value: i
+      });
+    }
+    const sheet = createSheet({
+      title: 'Hora da revisão diária',
+      items: items,
+      onSelect: function(item) {
+        const ok = dailyReviewTrigger.setConfiguredHour(item.value);
+        if (ok) {
+          valueEl.textContent = String(item.value).padStart(2, '0') + ':00';
+          try { eventBus.emit('toast:show', { type: 'success', text: 'Hora atualizada: ' + valueEl.textContent }); } catch (e) {}
+        }
+      }
+    });
+    sheet.open();
+  };
+
+  wrap.addEventListener('click', open);
+  wrap.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+  });
+
+  return wrap;
+}

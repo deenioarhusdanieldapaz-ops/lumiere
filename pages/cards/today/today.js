@@ -21,7 +21,8 @@ import { priorities } from '../../../core/intelligence/priorities.js';
 const RELEVANT_COLLECTIONS = [
   'tasks', 'habits', 'habitLogs',
   'studySessions', 'studies',
-  'calendarEvents'
+  'calendarEvents',
+  'dailyReviews'
 ];
 
 let _unsubscribe = null;
@@ -938,6 +939,9 @@ export async function initToday(container) {
     page.appendChild(buildTip());
   }
 
+  const lastReview = buildLastReviewSection(collections);
+  if (lastReview) page.appendChild(lastReview);
+
   container.appendChild(page);
 
   _unsubscribe = eventBus.on('data:changed', (payload) => {
@@ -951,3 +955,75 @@ export default {
   initToday,
   calculateTodayStats
 };
+
+function buildLastReviewSection(collections) {
+  const reviews = Array.isArray(collections.dailyReviews) ? collections.dailyReviews : [];
+  if (!reviews.length) return null;
+
+  const sorted = [...reviews].sort((a, b) => {
+    const da = a.createdAt || '';
+    const db = b.createdAt || '';
+    return db.localeCompare(da);
+  });
+  const latest = sorted[0];
+  if (!latest) return null;
+
+  const section = document.createElement('section');
+  section.className = 'today__last-review';
+
+  const title = document.createElement('h3');
+  title.className = 'today__last-review-title';
+  title.textContent = 'Última revisão';
+  section.appendChild(title);
+
+  const card = document.createElement('div');
+  card.className = 'today__last-review-card';
+
+  const moodEmojis = ['😞', '😕', '😐', '🙂', '😄'];
+  const moodVal = Number(latest.mood) || 3;
+  const moodEl = document.createElement('div');
+  moodEl.className = 'today__last-review-mood';
+  moodEl.textContent = moodEmojis[moodVal - 1] || '😐';
+  card.appendChild(moodEl);
+
+  const content = document.createElement('div');
+  content.className = 'today__last-review-content';
+
+  const meta = document.createElement('div');
+  meta.className = 'today__last-review-meta';
+  const dateStr = latest.date || '';
+  let timeStr = '';
+  if (latest.createdAt) {
+    try {
+      const d = new Date(latest.createdAt);
+      timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    } catch (e) { /* ignora */ }
+  }
+  meta.textContent = dateStr + (timeStr ? ', ' + timeStr : '');
+  content.appendChild(meta);
+
+  if (latest.note) {
+    const note = document.createElement('p');
+    note.className = 'today__last-review-note';
+    note.textContent = latest.note;
+    content.appendChild(note);
+  }
+
+  const moodLabel = document.createElement('div');
+  moodLabel.className = 'today__last-review-mood-label';
+  moodLabel.textContent = 'Humor: ' + moodVal + '/5';
+  content.appendChild(moodLabel);
+
+  const link = document.createElement('button');
+  link.type = 'button';
+  link.className = 'today__last-review-link';
+  link.textContent = 'Ver todas →';
+  link.addEventListener('click', function() {
+    try { eventBus.emit('toast:show', { type: 'info', text: 'Histórico de revisões em breve.' }); } catch (e) {}
+  });
+  content.appendChild(link);
+
+  card.appendChild(content);
+  section.appendChild(card);
+  return section;
+}

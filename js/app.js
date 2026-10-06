@@ -3,6 +3,8 @@
  */
 import { core } from '../core/index.js';
 import { eventBus } from '../core/eventBus.js';
+import { dailyReviewTrigger } from './dailyReviewTrigger.js';
+import { initDailyReview } from '../components/daily-review/dailyReview.js';
 import { dataManager } from '../core/dataManager.js';
 import { stateManager } from '../core/stateManager.js';
 import { navigation } from './navigation.js';
@@ -241,6 +243,12 @@ async function bootstrap() {
     try { initLocalNotifications(); } catch (e) { console.warn('[App] NotifLocal:', e); }
 
     splash.hide();
+
+    // Revisao Diaria - agenda verificacao (Bloco 2)
+    try { dailyReviewTrigger.scheduleCheck(eventBus); } catch (e) { console.warn('[App] DailyReview:', e); }
+
+    // Revisao Diaria - UI (Bloco 3)
+    try { initDailyReview(); } catch (e) { console.warn('[App] DailyReview UI:', e); }
   } catch (err) {
     console.error('[App] Falha ao inicializar:', err);
     splash.hide(0);

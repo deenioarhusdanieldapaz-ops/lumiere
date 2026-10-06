@@ -20,3 +20,5 @@ export { tagContract } from './tagContract.js?v=20260912a';
 export { preferencesContract } from './preferencesContract.js?v=20260912a';
 export { userProfileContract } from './userProfileContract.js?v=20260912a';
 export { templateContract } from './templateContract.js?v=20260927a';
+
+export { dailyReviewContract } from './dailyReviewContract.js?v=20261006a';
