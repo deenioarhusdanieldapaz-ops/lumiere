@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Orb — Demo (2D vs Three.js)</title>
+  <link rel="stylesheet" href="voice-orb.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../../vendor/three.module.js"
+      }
+    }
+  </script>
+  <style>
+    html, body {
+      margin: 0; padding: 0; background: #0a0a0a; color: #f0e6d2;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh; overflow-x: hidden;
+    }
+    .wrap {
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh; padding: 16px 12px; box-sizing: border-box;
+    }
+    h1 {
+      font-size: 14px; color: #d4af37; letter-spacing: 2px;
+      text-transform: uppercase; margin: 0 0 4px; font-weight: 500;
+    }
+    .sub { font-size: 11px; color: rgba(240,230,210,0.45); margin-bottom: 10px; }
+    .mode-toggle {
+      display: flex; gap: 0; margin-bottom: 12px;
+      border: 1px solid rgba(212,175,55,0.3); border-radius: 8px;
+      overflow: hidden;
+    }
+    .mode-toggle button {
+      padding: 6px 14px; background: transparent; border: none;
+      color: #f0e6d2; font-size: 11px; cursor: pointer;
+      font-family: inherit; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .mode-toggle button.active {
+      background: rgba(212,175,55,0.25); color: #fff;
+    }
+    .stage {
+      width: clamp(240px, 78vw, 340px);
+      height: clamp(240px, 78vw, 340px);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .stage > * { position: absolute; inset: 0; }
+    .stage > *.hidden { display: none; }
+    .voice-label {
+      font-family: 'Cinzel', Georgia, serif; font-size: 18px;
+      color: #f0e6d2; letter-spacing: 3px; text-transform: uppercase;
+      margin: 10px 0 4px; text-align: center;
+    }
+    .state-label {
+      font-size: 12px; color: #d4af37; margin-bottom: 10px;
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 5px; justify-content: center;
+      max-width: 380px;
+    }
+    .controls button {
+      background: rgba(212,175,55,0.06);
+      border: 1px solid rgba(212,175,55,0.28);
+      color: #f0e6d2; padding: 6px 10px; border-radius: 7px;
+      font-size: 10px; cursor: pointer; font-family: inherit;
+    }
+    .controls button.active {
+      background: rgba(212,175,55,0.30);
+      border-color: #d4af37; color: #fff;
+    }
+    .audio-row {
+      margin-top: 12px; display: flex; flex-direction: column;
+      align-items: center; gap: 5px;
+    }
+    .audio-row label { font-size: 10px; color: rgba(240,230,210,0.55); letter-spacing: 1px; }
+    input[type="range"] { width: 220px; accent-color: #d4af37; }
+    #err {
+      margin-top: 12px; color: #ff7777; font-size: 11px;
+      font-family: ui-monospace, monospace;
+      max-width: 340px; word-break: break-word; text-align: center;
+      white-space: pre-wrap;
+    }
+    .clear-cache-btn {
+      margin-top: 14px; padding: 8px 16px; border-radius: 8px;
+      background: rgba(255, 119, 119, 0.10);
+      border: 1px solid rgba(255, 119, 119, 0.4);
+      color: #ff9999; font-size: 11px; cursor: pointer;
+      font-family: inherit; letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .clear-cache-btn:hover { background: rgba(255, 119, 119, 0.20); }
+    .clear-cache-btn.busy { opacity: 0.6; cursor: wait; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Voice Orb</h1>
+    <div class="sub">Comparação 2D Canvas vs Three.js</div>
+
+    <div class="mode-toggle" id="modeToggle">
+      <button data-mode="2d" class="active">2D</button>
+      <button data-mode="three">Three.js</button>
+    </div>
+
+    <div class="stage">
+      <div id="orb2d" class="hidden"></div>
+      <div id="orbThree" class="hidden"></div>
+    </div>
+
+    <div class="voice-label" id="voiceLabel">TOCA NO MICROFONE</div>
+    <div id="wave" class="voice-wave-container"></div>
+
+    <div class="state-label" id="stateLabel">IDLE</div>
+
+    <div class="controls" id="controls">
+      <button data-state="idle">IDLE</button>
+      <button data-state="listening">A OUVIR</button>
+      <button data-state="processing">PROCESSANDO</button>
+      <button data-state="understood">ENTENDI</button>
+      <button data-state="not_understood">NÃO ENTENDI</button>
+    </div>
+
+    <div class="audio-row">
+      <label>Audio level <span id="audioVal">0.00</span></label>
+      <input type="range" id="audioSlider" min="0" max="1" step="0.01" value="0">
+    </div>
+
+    <button id="clearCache" class="clear-cache-btn" type="button">🧹 Limpar cache SW</button>
+
+    <div id="err"></div>
+  </div>
+
+  <script type="module">
+    let currentMode = '2d';
+    let orb2d = null;
+    let orbThree = null;
+    let wave = null;
+    let currentState = 'idle';
+    let currentAudio = 0;
+
+    const orb2dEl = document.getElementById('orb2d');
+    const orbThreeEl = document.getElementById('orbThree');
+    const stateLabel = document.getElementById('stateLabel');
+    const voiceLabel = document.getElementById('voiceLabel');
+    const errEl = document.getElementById('err');
+    const buttons = document.querySelectorAll('#controls button');
+    const modeButtons = document.querySelectorAll('#modeToggle button');
+
+    const LABELS = {
+      idle: 'TOCA NO MICROFONE',
+      listening: 'A OUVIR...',
+      processing: 'A PROCESSA R...',
+      understood: 'ENTENDI ISTO',
+      not_understood: 'NÃO ENTENDI'
+    };
+
+    function logErr(msg) {
+      errEl.textContent = msg;
+      console.error(msg);
+    }
+
+    function setState(s) {
+      currentState = s;
+      if (orb2d) orb2d.setState(s);
+      if (orbThree) orbThree.setState(s);
+      stateLabel.textContent = s.replace('_', ' ').toUpperCase();
+      voiceLabel.textContent = LABELS[s] || '';
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.state === s));
+    }
+
+    function applyAudio(v) {
+      currentAudio = v;
+      if (orb2d) orb2d.setAudioLevel(v);
+      if (orbThree) orbThree.setAudioLevel(v);
+      if (wave) wave.setAudioLevel(v);
+    }
+
+    async function switchMode(mode) {
+      currentMode = mode;
+      modeButtons.forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+      errEl.textContent = '';
+
+      if (mode === '2d') {
+        orbThreeEl.classList.add('hidden');
+        orb2dEl.classList.remove('hidden');
+
+        if (!orb2d) {
+          try {
+            const m = await import('./voice-orb.js');
+            orb2d = m.createVoiceOrb(orb2dEl);
+            orb2d.start();
+            orb2d.setState(currentState);
+            orb2d.setAudioLevel(currentAudio);
+            if (!wave) {
+              wave = m.createVoiceWaveform(document.getElementById('wave'));
+              wave.start();
+              wave.setAudioLevel(currentAudio);
+            }
+          } catch (e) {
+            logErr('Falha 2D: ' + e.message);
+          }
+        }
+      } else {
+        orb2dEl.classList.add('hidden');
+        orbThreeEl.classList.remove('hidden');
+
+        if (!orbThree) {
+          try {
+            const m = await import('./voice-orb-three.js');
+            orbThree = m.createVoiceOrbThree(orbThreeEl);
+            orbThree.start();
+            orbThree.setState(currentState);
+            orbThree.setAudioLevel(currentAudio);
+          } catch (e) {
+            logErr('Falha Three.js: ' + e.message);
+          }
+        }
+      }
+    }
+
+    modeButtons.forEach(b => b.addEventListener('click', () => switchMode(b.dataset.mode)));
+    buttons.forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+    const slider = document.getElementById('audioSlider');
+    const audioVal = document.getElementById('audioVal');
+    slider.addEventListener('input', () => {
+      const v = parseFloat(slider.value);
+      audioVal.textContent = v.toFixed(2);
+      applyAudio(v);
+    });
+
+    // Estado inicial: 2D
+    switchMode('2d');
+    setState('idle');
+    console.log('[Demo] Voice Orb iniciado (2D + Three.js).');
+
+    // Botão "Limpar cache SW" — solução definitiva contra SW stale
+    const clearBtn = document.getElementById('clearCache');
+    clearBtn.addEventListener('click', async () => {
+      clearBtn.classList.add('busy');
+      clearBtn.textContent = 'A limpar...';
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const r of regs) await r.unregister();
+        const keys = await caches.keys();
+        for (const k of keys) await caches.delete(k);
+        console.log('[Demo] SW desregistado + caches limpas.');
+        clearBtn.textContent = '✅ Limpo — a recarregar...';
+        setTimeout(() => location.reload(true), 800);
+      } catch (e) {
+        console.error('[Demo] Erro ao limpar:', e);
+        clearBtn.textContent = '❌ Erro — ver consola';
+        clearBtn.classList.remove('busy');
+      }
+    });
+  </script>
+</body>
+</html>

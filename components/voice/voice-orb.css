@@ -1,0 +1,49 @@
+/* Voice Orb v2 */
+
+.voice-orb-container {
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: transparent;
+}
+
+.voice-orb-canvas {
+  width: clamp(240px, 78vw, 340px);
+  height: clamp(220px, 72vw, 320px);
+  display: block;
+  will-change: transform;
+}
+
+.voice-wave-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  background: transparent;
+}
+
+.voice-wave-canvas {
+  width: clamp(220px, 72vw, 300px);
+  height: 44px;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-orb-canvas,
+  .voice-wave-canvas {
+    transition: none;
+  }
+}
+
+/* Etapa 2 — canvas Three.js (centrado e responsivo) */
+.voice-orb-three-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
