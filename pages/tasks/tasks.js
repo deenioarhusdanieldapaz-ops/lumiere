@@ -97,10 +97,12 @@ let _state = {
   editingId: null,
   showForm: false,
   loading: false,
-  error: null
+  error: null,
+  prefill: null
 };
 
 let _unsubscribe = null;
+let _voiceUnsub = null;
 
 /**
  * Inicializa a página.
@@ -119,6 +121,15 @@ export function initTasks(container) {
     if (payload && payload.collection === 'tasks') {
       loadTasks();
     }
+  });
+
+  // Voice prefill: o VoiceCommandRouter emite isto quando a rota é para tasks
+  if (_voiceUnsub) _voiceUnsub();
+  _voiceUnsub = eventBus.on('voice:prefill-form', (route) => {
+    if (!route || route.page !== 'tasks') return;
+    if (route.action !== 'new') return;
+    console.log('[Tasks] voice:prefill-form recebido', route.payload);
+    openForm(null, route.payload || {});
   });
 
   loadTasks();
@@ -385,12 +396,13 @@ function renderState(message, isError = false) {
  * Abre o formulário (criação ou edição).
  * @param {string|null} taskId
  */
-function openForm(taskId = null) {
+function openForm(taskId = null, prefill = null) {
   _state.editingId = taskId;
   _state.showForm = true;
   _state.error = null;
+  _state.prefill = (taskId ? null : prefill); // prefill só faz sentido em form novo
   render();
-  eventBus.emit('form:opened', { page: 'tasks', editingId: taskId || null });
+  eventBus.emit('form:opened', { page: 'tasks', editingId: taskId || null, voiceOrigin: Boolean(prefill) });
 }
 
 /**
@@ -400,6 +412,7 @@ function closeForm() {
   _state.editingId = null;
   _state.showForm = false;
   _state.error = null;
+  _state.prefill = null;
   render();
   eventBus.emit('form:closed', { page: 'tasks' });
 }
@@ -421,6 +434,7 @@ function updateFormError(message) {
 function renderForm() {
   const isEdit = Boolean(_state.editingId);
   const task = isEdit ? _state.tasks.find(t => t.id === _state.editingId) : null;
+  const pf = isEdit ? null : (_state.prefill || null); // atalho
 
   const form = document.createElement('form');
   form.className = 'tasks-form';
@@ -432,17 +446,27 @@ function renderForm() {
   title.textContent = isEdit ? 'Editar tarefa' : 'Nova tarefa';
   form.appendChild(title);
 
+  // Banner "Preenchido por voz"
+  if (pf && _state.prefill) {
+    const banner = document.createElement('div');
+    banner.className = 'tasks-form__voice-banner';
+    banner.textContent = '\u26A1 Preenchido por voz \u2014 podes editar antes de criar';
+    form.appendChild(banner);
+  }
+
   const grid = document.createElement('div');
   grid.className = 'tasks-form__grid';
 
-  grid.appendChild(field('Nome *', 'input', 'name', task ? task.name : '', { type: 'text', required: true }));
+  grid.appendChild(field('Nome *', 'input', 'name', task ? task.name : (pf && pf.name ? pf.name : ''), { type: 'text', required: true, voice: Boolean(pf && pf.name) }));
   grid.appendChild(field('Descrição', 'textarea', 'description', task ? task.description : '', { full: true }));
-  grid.appendChild(field('Categoria *', 'select', 'category', task ? task.category : 'personal', {
+  grid.appendChild(field('Categoria *', 'select', 'category', task ? task.category : (pf && pf.category ? pf.category : 'personal'), {
     options: ['personal','work','study','health','finance','home','lumiere','leisure','other'],
-    translate: 'category'
+    translate: 'category',
+    voice: Boolean(pf && pf.category)
   }));
-  grid.appendChild(field('Prioridade', 'select', 'priority', task ? task.priority : 'medium', {
+  grid.appendChild(field('Prioridade', 'select', 'priority', task ? task.priority : (pf && pf.priority ? pf.priority : 'medium'), {
     options: ['low','medium','high','urgent'],
+    voice: Boolean(pf && pf.priority),
     translate: 'priority'
   }));
   grid.appendChild(field('Estado *', 'select', 'status', task ? task.status : 'pending', {
@@ -451,7 +475,7 @@ function renderForm() {
   }));
   grid.appendChild(field('Data de início', 'input', 'startDate', task ? task.startDate : '', { type: 'date' }));
   grid.appendChild(field('Hora', 'input', 'startTime', task ? task.startTime : '', { type: 'time' }));
-  grid.appendChild(field('Prazo', 'input', 'dueDate', task ? task.dueDate : '', { type: 'date' }));
+  grid.appendChild(field('Prazo', 'input', 'dueDate', task ? task.dueDate : (pf && pf.dueDate ? pf.dueDate : ''), { type: 'date', voice: Boolean(pf && pf.dueDate) }));
   grid.appendChild(field('Recorrência', 'select', 'recurrence', task ? task.recurrence : 'none', {
     options: ['none','daily','weekly','monthly','yearly']
   }));
@@ -521,6 +545,7 @@ function renderForm() {
 function field(labelText, tag, name, value, opts = {}) {
   const wrap = document.createElement('div');
   wrap.className = 'tasks-form__field' + (opts.full ? ' tasks-form__field--full' : '');
+  if (opts.voice) wrap.classList.add('tasks-form__field--voice');
 
   const label = document.createElement('label');
   label.setAttribute('for', 'task-' + name);

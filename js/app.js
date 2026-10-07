@@ -5,6 +5,7 @@ import { core } from '../core/index.js';
 import { eventBus } from '../core/eventBus.js';
 import { dailyReviewTrigger } from './dailyReviewTrigger.js';
 import { initDailyReview } from '../components/daily-review/dailyReview.js';
+import { VoiceManager } from '../core/voice/VoiceManager.js';
 import { dataManager } from '../core/dataManager.js';
 import { stateManager } from '../core/stateManager.js';
 import { navigation } from './navigation.js';
@@ -229,7 +230,7 @@ async function bootstrap() {
     });
 
     if (typeof window !== 'undefined') {
-      window.__lumiere = { core, navigation, renderDashboard };
+      window.__lumiere = { core, navigation, renderDashboard, VoiceManager };
 
       // Landing page — Visão Geral Rápida
       stateManager.navigateTo('overview');

@@ -317,3 +317,27 @@
   border-radius: 4px;
   vertical-align: middle;
 }
+
+/* === Voice prefill === */
+.tasks-form__voice-banner {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  background: rgba(212, 175, 55, 0.10);
+  border: 1px solid rgba(212, 175, 55, 0.40);
+  border-radius: 8px;
+  color: #F5D76E;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+.tasks-form__field--voice input,
+.tasks-form__field--voice textarea,
+.tasks-form__field--voice select {
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.55), 0 0 10px rgba(212, 175, 55, 0.30);
+  transition: box-shadow 0.3s ease;
+}
+.tasks-form__field--voice label::after {
+  content: ' \2728 ';
+  color: #F5D76E;
+  font-size: 10px;
+  vertical-align: super;
+}

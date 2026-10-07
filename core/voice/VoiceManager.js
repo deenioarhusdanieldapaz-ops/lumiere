@@ -23,6 +23,7 @@
  */
 
 import { eventBus } from '../eventBus.js';
+import { stateManager } from '../stateManager.js';
 import voiceSession, { VOICE_STATES } from './VoiceSession.js';
 import { SpeechRecognizer, isSpeechSupported } from './SpeechRecognizer.js';
 import VoiceInterpreter from './VoiceInterpreter.js';
@@ -269,6 +270,20 @@ export const VoiceManager = {
       emit('voice:state', { state: VOICE_STATES.ERROR });
       return { ok: false, reason: 'no-route' };
     }
+
+    // 1) Navegar primeiro — garante que initTasks() corre e regista o listener
+    try {
+      stateManager.navigateTo(route.page);
+    } catch (e) {
+      console.warn('[VoiceManager] navigateTo falhou:', e);
+    }
+
+    // 2) Emitir o prefill com pequeno delay (módulo destino faz init + registo do listener)
+    setTimeout(() => {
+      try { eventBus.emit('voice:prefill-form', route); } catch (e) {
+        console.warn('[VoiceManager] emit prefill falhou:', e);
+      }
+    }, 250);
 
     emit('voice:confirmed', { route });
     session.end(VOICE_STATES.CONFIRMING);
