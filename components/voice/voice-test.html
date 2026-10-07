@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice — Teste (Etapa C)</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../../vendor/three.module.js"
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
+  <style>
+    html, body { margin: 0; padding: 0; background: #0a0a0a; color: #f0e6d2;
+      font-family: system-ui, -apple-system, sans-serif; min-height: 100vh; }
+    .wrap { max-width: 480px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+    h1 { font-size: 14px; color: #d4af37; letter-spacing: 2px;
+      text-transform: uppercase; margin: 0 0 4px; }
+    .sub { font-size: 11px; color: rgba(240,230,210,0.5); margin-bottom: 20px; }
+    .state {
+      padding: 14px; background: rgba(212,175,55,0.08);
+      border: 1px solid rgba(212,175,55,0.3); border-radius: 10px;
+      margin-bottom: 14px; font-family: monospace;
+    }
+    .state__label { font-size: 10px; color: rgba(240,230,210,0.5); letter-spacing: 1px; }
+    .state__value { font-size: 18px; color: #F5D76E; font-weight: 600; margin-top: 4px; }
+    .transcript {
+      padding: 12px; background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(212,175,55,0.15); border-radius: 8px;
+      min-height: 40px; font-size: 13px; margin-bottom: 14px;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .transcript__label { font-size: 10px; color: rgba(240,230,210,0.5);
+      margin-bottom: 6px; letter-spacing: 1px; }
+    .buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    button { padding: 12px; border-radius: 8px; font-family: inherit;
+      font-size: 12px; cursor: pointer; border: 1px solid; transition: opacity 0.2s; }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-start { background: rgba(76, 175, 80, 0.15); border-color: rgba(76, 175, 80, 0.5); color: #a5d6a7; }
+    .btn-cancel { background: rgba(255, 100, 100, 0.12); border-color: rgba(255, 100, 100, 0.4); color: #ff9999; }
+    .btn-confirm { background: rgba(212, 175, 55, 0.20); border-color: rgba(212, 175, 55, 0.5); color: #F5D76E; }
+    .debug {
+      padding: 12px; background: rgba(100, 100, 200, 0.05);
+      border: 1px dashed rgba(150, 150, 255, 0.3); border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .debug__label { font-size: 10px; color: rgba(180, 180, 255, 0.7);
+      margin-bottom: 6px; letter-spacing: 1px; }
+    .debug input { width: 100%; padding: 8px; background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(150,150,255,0.3); border-radius: 6px;
+      color: #f0e6d2; font-family: monospace; font-size: 12px;
+      box-sizing: border-box; margin-bottom: 6px; }
+    .debug button { width: 100%; background: rgba(150,150,255,0.15);
+      border-color: rgba(150,150,255,0.5); color: #b0b0ff; }
+    .log {
+      padding: 10px; background: #000; border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 8px; font-family: monospace; font-size: 10px;
+      max-height: 300px; overflow-y: auto; line-height: 1.6;
+    }
+    .log__line { color: #9a9a9a; padding: 2px 0; }
+    .log__line--state { color: #F5D76E; }
+    .log__line--error { color: #ff7777; }
+    .log__line--ok { color: #a5d6a7; }
+    .log__line--info { color: #b0b0ff; }
+    .meter {
+      padding: 12px; background: rgba(212,175,55,0.04);
+      border: 1px solid rgba(212,175,55,0.2); border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .meter__label { font-size: 10px; color: rgba(240,230,210,0.5);
+      margin-bottom: 6px; letter-spacing: 1px; }
+    .meter__bar {
+      width: 100%; height: 10px; background: rgba(0,0,0,0.4);
+      border-radius: 5px; overflow: hidden; margin-bottom: 6px;
+    }
+    .meter__fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #D4AF37, #F5D76E);
+      transition: width 0.06s linear;
+    }
+    .meter__value { font-size: 11px; color: #F5D76E;
+      font-family: monospace; text-align: right; }
+    .orb-slot {
+      width: 100%; max-width: 320px; height: 320px;
+      margin: 14px auto 8px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .orb-slot > * { position: absolute; inset: 0; }
+    .orb-caption { text-align: center; font-size: 10px;
+      color: rgba(240,230,210,0.4); margin-bottom: 14px;
+      letter-spacing: 1px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Voice Manager</h1>
+    <div class="sub">Teste isolado · Etapa C</div>
+
+    <div class="state">
+      <div class="state__label">ESTADO ATUAL</div>
+      <div class="state__value" id="stateValue">—</div>
+    </div>
+
+    <div class="transcript">
+      <div class="transcript__label">TRANSCRIÇÃO</div>
+      <div id="transcriptValue">—</div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn-start" id="btnStart" type="button">▶ Iniciar</button>
+      <button class="btn-cancel" id="btnCancel" type="button">✕ Cancelar</button>
+      <button class="btn-confirm" id="btnConfirm" type="button" disabled>✓ Confirmar</button>
+    </div>
+
+    <div class="meter">
+      <div class="meter__label">NÍVEL DE ÁUDIO (meter)</div>
+      <div class="meter__bar"><div class="meter__fill" id="meterFill"></div></div>
+      <div class="meter__value" id="meterValue">0.00</div>
+    </div>
+
+    <div class="orb-slot" id="orbSlot"></div>
+    <div class="orb-caption">Orbe Three.js — reage ao áudio</div>
+
+    <div class="debug">
+      <div class="debug__label">DEBUG: INJETAR TRANSCRIÇÃO (sem microfone)</div>
+      <input type="text" id="debugText" placeholder="criar tarefa estudar matemática amanhã" value="criar tarefa estudar matemática amanhã">
+      <button id="btnInject" type="button">Injetar</button>
+    </div>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <script type="module">
+    import { VoiceManager } from '../../core/voice/VoiceManager.js';
+    import { eventBus } from '../../core/eventBus.js';
+
+    const stateValue = document.getElementById('stateValue');
+    const transcriptValue = document.getElementById('transcriptValue');
+    const log = document.getElementById('log');
+    const btnStart = document.getElementById('btnStart');
+    const btnCancel = document.getElementById('btnCancel');
+    const btnConfirm = document.getElementById('btnConfirm');
+    const btnInject = document.getElementById('btnInject');
+    const debugText = document.getElementById('debugText');
+
+    function logLine(text, cls = '') {
+      const el = document.createElement('div');
+      el.className = 'log__line ' + (cls ? 'log__line--' + cls : '');
+      const t = new Date().toLocaleTimeString('pt-PT', { hour12: false });
+      el.textContent = '[' + t + '] ' + text;
+      log.appendChild(el);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function updateButtons(state) {
+      btnStart.disabled = (state === 'listening' || state === 'interpreting');
+      btnConfirm.disabled = (state !== 'confirming');
+    }
+
+    // Subscrever eventos do VoiceManager
+    eventBus.on('voice:state', (p) => {
+      stateValue.textContent = (p.state || '—').toUpperCase();
+      updateButtons(p.state);
+      logLine('state → ' + p.state, p.state === 'error' ? 'error' : 'state');
+    });
+
+    eventBus.on('voice:interim', (p) => {
+      transcriptValue.textContent = p.text || '—';
+      logLine('interim: "' + p.text + '"');
+    });
+
+    eventBus.on('voice:transcript', (p) => {
+      transcriptValue.textContent = p.transcript || '—';
+      logLine('transcript: "' + p.transcript + '"', 'info');
+    });
+
+    eventBus.on('voice:understood', (p) => {
+      logLine('ENTENDIDO: intent=' + JSON.stringify(p.intent), 'ok');
+    });
+
+    eventBus.on('voice:clarify', (p) => {
+      logLine('CLARIFICAR: ' + JSON.stringify(p.decision), 'info');
+    });
+
+    eventBus.on('voice:error', (p) => {
+      logLine('ERRO: ' + (p.reason || '?'), 'error');
+    });
+
+    eventBus.on('voice:cancelled', () => {
+      logLine('CANCELADO', 'error');
+    });
+
+    eventBus.on('voice:confirmed', (p) => {
+      logLine('CONFIRMADO: route=' + JSON.stringify(p.route), 'ok');
+    });
+
+    // Handlers dos botões
+    btnStart.addEventListener('click', async () => {
+      logLine('▶ Iniciar clicado', 'info');
+      const res = await VoiceManager.start();
+      logLine('start() → ' + JSON.stringify(res), res.ok ? 'ok' : 'error');
+    });
+
+    btnCancel.addEventListener('click', () => {
+      logLine('✕ Cancelar clicado', 'info');
+      VoiceManager.cancel();
+    });
+
+    btnConfirm.addEventListener('click', () => {
+      logLine('✓ Confirmar clicado', 'info');
+      const res = VoiceManager.confirm();
+      logLine('confirm() → ' + JSON.stringify(res), res.ok ? 'ok' : 'error');
+    });
+
+    btnInject.addEventListener('click', () => {
+      const text = debugText.value.trim();
+      logLine('🧪 Injectar: "' + text + '"', 'info');
+      VoiceManager.debugInjectTranscript(text);
+    });
+
+    // Meter UI
+    const meterFill = document.getElementById('meterFill');
+    const meterValue = document.getElementById('meterValue');
+
+    // Orbe Three.js
+    let _orb = null;
+    const orbSlot = document.getElementById('orbSlot');
+    (async () => {
+      try {
+        const { createVoiceOrbThree } = await import('./voice-orb-three.js');
+        _orb = createVoiceOrbThree(orbSlot);
+        _orb.start();
+        _orb.setState('idle');
+        logLine('Orbe Three.js carregado', 'ok');
+      } catch (e) {
+        logLine('Falha ao carregar orbe: ' + e.message, 'error');
+      }
+    })();
+
+    // Subscrever audioLevel
+    eventBus.on('voice:audioLevel', (p) => {
+      const v = (typeof p.level === 'number') ? p.level : 0;
+      meterFill.style.width = (v * 100).toFixed(1) + '%';
+      meterValue.textContent = v.toFixed(2);
+      if (_orb) _orb.setAudioLevel(v);
+    });
+
+    // Estado: sincronizar orbe com state
+    eventBus.on('voice:state', (p) => {
+      if (!_orb) return;
+      const map = {
+        'idle': 'idle',
+        'listening': 'listening',
+        'interpreting': 'processing',
+        'confirming': 'understood',
+        'error': 'not_understood',
+        'cancelled': 'idle'
+      };
+      const orbState = map[p.state] || 'idle';
+      _orb.setState(orbState);
+    });
+
+    // Estado inicial
+    logLine('Página carregada. Suporte: ' + (VoiceManager.isSupported() ? 'SIM' : 'NÃO'), VoiceManager.isSupported() ? 'ok' : 'error');
+    stateValue.textContent = '—';
+    transcriptValue.textContent = '—';
+    updateButtons('idle');
+    console.log('[Test] Voice test page ready.');
+  </script>
+</body>
+</html>
