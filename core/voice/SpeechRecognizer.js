@@ -1,23 +1,9 @@
 /**
- * SpeechRecognizer
+ * SpeechRecognizer (MVP 2.4 — sem auto-restart)
  *
- * Encapsula a Web Speech API (window.SpeechRecognition / webkitSpeechRecognition).
- * Responsabilidades:
- *   - Verificar suporte do browser
- *   - Pedir permissão de microfone (apenas na primeira utilização)
- *   - Iniciar / parar / abortar reconhecimento
- *   - Emitir eventos de transcrição (final e interim)
- *   - Lidar com erros e recusa de permissão sem quebrar a app
- *
- * NÃO interpreta o texto. Só transcreve.
- * NÃO cria entidades. NÃO fala com o DataManager.
- *
- * Eventos emitidos (via callbacks):
- *   onStart()        — reconhecimento iniciou
- *   onInterim(text)  — transcrição parcial (a crescer)
- *   onFinal(text)    — transcrição final de um utterance
- *   onError(code)    — erro de reconhecimento
- *   onEnd()          — reconhecimento terminou (natural ou por stop)
+ * Encapsula a Web Speech API. Uma única sessão.
+ * Quando o Chrome termina a captura (`onend`), NÃO reinicia.
+ * O utilizador controla quando terminar via o botão "TERMINEI DE FALAR".
  */
 
 const SpeechRecognitionImpl = typeof window !== 'undefined'
@@ -31,8 +17,7 @@ export function isSpeechSupported() {
 export class SpeechRecognizer {
   constructor(options = {}) {
     this.lang = options.lang || 'pt-PT';
-    this.continuous = options.continuous !== false;
-    this.interimResults = options.interimResults !== false;
+    this.interimResults = true;
 
     this._recognition = null;
     this._active = false;
@@ -45,15 +30,12 @@ export class SpeechRecognizer {
   }
 
   async requestPermission() {
-    if (!isSpeechSupported()) {
-      return { granted: false, reason: 'unsupported' };
-    }
+    if (!isSpeechSupported()) return { granted: false, reason: 'unsupported' };
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       return { granted: false, reason: 'no-mediadevices' };
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Fecha as tracks imediatamente — só queríamos a permissão
       stream.getTracks().forEach(t => t.stop());
       return { granted: true };
     } catch (e) {
@@ -66,23 +48,22 @@ export class SpeechRecognizer {
   }
 
   start() {
-    if (!isSpeechSupported()) {
-      this.onError('unsupported');
-      return false;
-    }
+    if (!isSpeechSupported()) { this.onError('unsupported'); return false; }
     if (this._active) return true;
 
     try {
       const rec = new SpeechRecognitionImpl();
       rec.lang = this.lang;
-      rec.continuous = this.continuous;
+      rec.continuous = false;      // single utterance — o Chrome Android ignora true
       rec.interimResults = this.interimResults;
       rec.maxAlternatives = 1;
 
       rec.onstart = () => {
         this._active = true;
+        console.log('[SR] onstart');
         this.onStart();
       };
+
       rec.onresult = (event) => {
         let interim = '';
         let final = '';
@@ -91,22 +72,38 @@ export class SpeechRecognizer {
           if (r.isFinal) final += r[0].transcript;
           else interim += r[0].transcript;
         }
-        if (final) this.onFinal(final.trim());
-        if (interim) this.onInterim(interim.trim());
+        if (final) {
+          console.log('[SR] onresult FINAL: "' + final.trim() + '"');
+          this.onFinal(final.trim());
+        }
+        if (interim) {
+          this.onInterim(interim.trim());
+        }
       };
+
       rec.onerror = (event) => {
         const code = event && event.error ? event.error : 'unknown';
+        console.log('[SR] onerror:', code);
+        if (code === 'no-speech' || code === 'aborted') return;
+        if (code === 'not-allowed' || code === 'service-not-allowed') {
+          this.onError('permission-denied');
+          return;
+        }
         this.onError(code);
       };
+
       rec.onend = () => {
+        console.log('[SR] onend');
         this._active = false;
         this.onEnd();
       };
 
       this._recognition = rec;
+      console.log('[SR] rec.start() chamado | lang=' + rec.lang);
       rec.start();
       return true;
     } catch (e) {
+      console.warn('[SR] start() falhou:', e && e.message);
       this.onError('start-failed');
       return false;
     }

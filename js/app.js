@@ -6,6 +6,8 @@ import { eventBus } from '../core/eventBus.js';
 import { dailyReviewTrigger } from './dailyReviewTrigger.js';
 import { initDailyReview } from '../components/daily-review/dailyReview.js';
 import { VoiceManager } from '../core/voice/VoiceManager.js';
+import { initVoiceMicButton } from '../components/voice/voice-mic-button.js';
+import { initVoiceOverlay } from '../components/voice/voice-overlay.js';
 import { dataManager } from '../core/dataManager.js';
 import { stateManager } from '../core/stateManager.js';
 import { navigation } from './navigation.js';
@@ -250,6 +252,10 @@ async function bootstrap() {
 
     // Revisao Diaria - UI (Bloco 3)
     try { initDailyReview(); } catch (e) { console.warn('[App] DailyReview UI:', e); }
+
+    // Voice UI
+    try { initVoiceOverlay(); } catch (e) { console.warn('[App] VoiceOverlay:', e); }
+    try { initVoiceMicButton(); } catch (e) { console.warn('[App] VoiceMicButton:', e); }
   } catch (err) {
     console.error('[App] Falha ao inicializar:', err);
     splash.hide(0);

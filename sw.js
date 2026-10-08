@@ -26,7 +26,7 @@ try {
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v239';
+const CACHE_NAME = 'lumiere-cache-v250';
 const OFFLINE_URLS = [
   './',
   './index.html',
@@ -133,6 +133,10 @@ const OFFLINE_URLS = [
   './vendor/three.module.js',
   './components/voice/voice-orb.js',
   './components/voice/voice-orb-three.js',
+  './components/voice/voice-mic-button.js',
+  './components/voice/voice-mic-button.css',
+  './components/voice/voice-overlay.js',
+  './components/voice/voice-overlay.css',
   './components/voice/orb-base.png',
   './public/icons/android-chrome-192x192.png',
   './public/icons/android-chrome-512x512.png'

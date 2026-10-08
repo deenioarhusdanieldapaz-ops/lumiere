@@ -1,27 +1,16 @@
 /**
- * VoiceManager
+ * VoiceManager (MVP 2.4)
  *
- * Orquestra uma sessão de voz ponta a ponta:
- *   IDLE → criar sessão → pedir permissão → LISTENING
- *        → transcrição interim/final → INTERPRETING
- *        → interpretar + validar → CONFIRMING | ERROR
- *        → (se CONFIRMING) utilizador confirma → route → emitir 'voice:prefill-form'
- *        → (se CONFIRMING) utilizador cancela → CANCELLED
+ * Sem timers. Sem watchdogs. Sem silence detection.
+ * O utilizador controla QUANDO termina de falar via finishSpeaking().
  *
- * NÃO cria entidades. NÃO toca no DataManager.
- * Emite eventos que a UI (overlay + orbe) e o router consomem.
- *
- * Eventos emitidos:
- *   voice:state       { state }           — mudou o estado
- *   voice:interim     { text }            — transcrição parcial
- *   voice:transcript  { transcript }      — transcrição final
- *   voice:understood  { intent, decision }— interpretação aceita (aguarda confirmar)
- *   voice:clarify     { intent, decision }— precisa de clarificação
- *   voice:error       { reason }          — não entendi ou falhou
- *   voice:cancelled   {}                  — cancelado pelo utilizador
- *   voice:confirmed   { route }           — confirmado, pronto para prefill
+ * Fluxo:
+ *   start() → pedir permissão → recognizer.start()
+ *          → onresult (interim + final) acumula em _finalAccumulator
+ *          → onend NÃO faz nada (o recognizer reinicia sozinho para não perder fala)
+ *          → utilizador toca em "Terminei de falar" → finishSpeaking()
+ *          → finishSpeaking() para o recognizer + processFinalTranscript()
  */
-
 import { eventBus } from '../eventBus.js';
 import { stateManager } from '../stateManager.js';
 import voiceSession, { VOICE_STATES } from './VoiceSession.js';
@@ -29,53 +18,81 @@ import { SpeechRecognizer, isSpeechSupported } from './SpeechRecognizer.js';
 import VoiceInterpreter from './VoiceInterpreter.js';
 import VoiceValidator, { POLICY } from './VoiceValidator.js';
 import VoiceCommandRouter from './VoiceCommandRouter.js';
-import { AudioLevelMeter } from './AudioLevelMeter.js';
 
 let _recognizer = null;
 let _finalAccumulator = '';
-let _meter = null;
+
+/**
+ * Junta um novo utterance ao acumulado, removendo sobreposições.
+ * O Chrome às vezes reenvia o texto completo no próximo resultado,
+ * e sem esta função duplicamos tudo.
+ */
+function mergeUtterance(prev, incoming) {
+  const p = (prev || '').trim();
+  const i = (incoming || '').trim();
+  if (!p) return i;
+  if (!i) return p;
+  if (p === i) return p;
+  if (p.endsWith(i)) return p;           // novo já está no fim do anterior
+  if (i.startsWith(p)) return i;         // novo contém o anterior inteiro
+  // Procurar sobreposição de sufixo/prefixo com 3+ caracteres
+  const minOverlap = 3;
+  const maxLen = Math.min(p.length, i.length);
+  for (let len = maxLen; len >= minOverlap; len--) {
+    if (p.slice(-len) === i.slice(0, len)) {
+      return p + i.slice(len);
+    }
+  }
+  return p + ' ' + i;
+}
 
 function emit(event, payload) {
-  try { eventBus.emit(event, payload); } catch (e) {
-    console.warn('[VoiceManager] emit falhou:', event, e);
-  }
+  try { eventBus.emit(event, payload); } catch (e) { console.warn('[VoiceManager] emit falhou:', event, e); }
 }
 
 function cleanupRecognizer() {
-  if (_recognizer) {
-    try { _recognizer.abort(); } catch (_) {}
-    _recognizer = null;
-  }
+  if (_recognizer) { try { _recognizer.abort(); } catch (_) {} _recognizer = null; }
 }
 
+/* ---------- Pseudo-meter para o orbe (visual) ---------- */
+let _pseudoTimer = null;
+let _pseudoLevel = 0;
+let _lastActivity = 0;
+
+function _pseudoTick() {
+  if (!voiceSession.isActive()) return;
+  const ageMs = Date.now() - _lastActivity;
+  const decay = ageMs > 700 ? Math.max(0, 1 - (ageMs - 700) / 900) : 1;
+  emit('voice:audioLevel', { level: _pseudoLevel * decay });
+}
 function startMeter() {
-  if (_meter) return;
-  _meter = new AudioLevelMeter();
-  _meter.onLevel = (level) => {
-    emit('voice:audioLevel', { level });
-  };
-  _meter.start().then((res) => {
-    if (!res.ok) {
-      console.warn('[VoiceManager] Meter não arrancou:', res.reason);
-    }
-  }).catch((e) => {
-    console.warn('[VoiceManager] Erro ao arrancar meter:', e);
-  });
+  stopMeter();
+  _pseudoLevel = 0;
+  _lastActivity = Date.now();
+  _pseudoTimer = setInterval(_pseudoTick, 80);
+}
+function stopMeter() {
+  if (_pseudoTimer) { clearInterval(_pseudoTimer); _pseudoTimer = null; }
+  _pseudoLevel = 0;
+  emit('voice:audioLevel', { level: 0 });
+}
+function pulseMeter(textLength) {
+  const n = Math.max(0, Math.min(1, (textLength || 0) / 40));
+  _pseudoLevel = 0.25 + n * 0.65;
+  _lastActivity = Date.now();
 }
 
-function stopMeter() {
-  if (_meter) {
-    try { _meter.stop(); } catch (_) {}
-    _meter = null;
-    emit('voice:audioLevel', { level: 0 });
-  }
-}
+/* ---------- Núcleo ---------- */
 
 async function processFinalTranscript() {
   const session = voiceSession.current();
   if (!session) return;
 
+  if (_recognizer) { try { _recognizer.stop(); } catch (_) {} }
+
   const transcript = (_finalAccumulator || session.transcript || '').trim();
+  console.log('[VoiceManager] processFinalTranscript | acumulado="' + _finalAccumulator + '" | final="' + transcript + '"');
+
   session.setTranscript(transcript, '');
   emit('voice:transcript', { transcript });
 
@@ -86,28 +103,17 @@ async function processFinalTranscript() {
     return;
   }
 
-  // Estado: INTERPRETING
   session.setState(VOICE_STATES.INTERPRETING);
   emit('voice:state', { state: VOICE_STATES.INTERPRETING });
 
-  // Interpretar
   let intent;
-  try {
-    intent = VoiceInterpreter.interpret(transcript);
-  } catch (e) {
-    console.error('[VoiceManager] Interpreter falhou:', e);
-    intent = { intent: 'unknown', confidence: 0, source: 'voice' };
-  }
+  try { intent = VoiceInterpreter.interpret(transcript); }
+  catch (e) { console.error('[VoiceManager] Interpreter falhou:', e); intent = { intent: 'unknown', confidence: 0, source: 'voice' }; }
   session.setIntent(intent, intent.confidence || 0);
 
-  // Validar
   let decision;
-  try {
-    decision = VoiceValidator.validate(intent, []);
-  } catch (e) {
-    console.error('[VoiceManager] Validator falhou:', e);
-    decision = { decision: POLICY.REJECT, reason: 'validator-crash' };
-  }
+  try { decision = VoiceValidator.validate(intent, []); }
+  catch (e) { console.error('[VoiceManager] Validator falhou:', e); decision = { decision: POLICY.REJECT, reason: 'validator-crash' }; }
   session.setMissingFields(decision.missingFields || []);
   session.setAmbiguities(decision.ambiguousFields || []);
 
@@ -126,45 +132,28 @@ async function processFinalTranscript() {
 }
 
 export const VoiceManager = {
-  isSupported() {
-    return isSpeechSupported();
-  },
+  isSupported() { return isSpeechSupported(); },
+  isActive() { return voiceSession.isActive(); },
 
-  isActive() {
-    return voiceSession.isActive();
-  },
-
-  /**
-   * Inicia sessão de voz.
-   * @param {Object} options
-   *   - lang: 'pt-PT' (default)
-   *   - continuous: false (default)
-   * @returns {Promise<{ok: boolean, reason?: string}>}
-   */
   async start(options = {}) {
-    // Abortar sessão existente
     if (voiceSession.isActive()) {
-      console.warn('[VoiceManager] Sessão já ativa, a cancelar anterior.');
       this.cancel();
       await new Promise(r => setTimeout(r, 120));
     }
-
     if (!isSpeechSupported()) {
       emit('voice:error', { reason: 'unsupported' });
       emit('voice:state', { state: VOICE_STATES.ERROR });
       return { ok: false, reason: 'unsupported' };
     }
 
-    // Criar sessão
     _finalAccumulator = '';
     const session = voiceSession.create({ source: 'mic' });
     session.setState(VOICE_STATES.IDLE);
     emit('voice:state', { state: VOICE_STATES.IDLE });
 
-    // Criar recognizer
     _recognizer = new SpeechRecognizer({
       lang: options.lang || 'pt-PT',
-      continuous: options.continuous === true,
+      continuous: true,
       interimResults: true,
       onStart: () => {
         session.setState(VOICE_STATES.LISTENING);
@@ -173,12 +162,13 @@ export const VoiceManager = {
       onInterim: (text) => {
         session.setTranscript('', text);
         emit('voice:interim', { text });
+        pulseMeter((text || '').length);
       },
       onFinal: (text) => {
-        _finalAccumulator += (text ? ' ' + text : '');
-        _finalAccumulator = _finalAccumulator.trim();
+        _finalAccumulator = mergeUtterance(_finalAccumulator, text);
         session.setTranscript(_finalAccumulator, '');
         emit('voice:transcript', { transcript: _finalAccumulator, isFinal: true });
+        pulseMeter((text || '').length);
       },
       onError: (code) => {
         const reason = code === 'not-allowed' ? 'permission-denied' : code;
@@ -189,18 +179,11 @@ export const VoiceManager = {
         stopMeter();
       },
       onEnd: () => {
-        const s = voiceSession.current();
-        if (!s) return;
-        if (s.state === VOICE_STATES.LISTENING) {
-          processFinalTranscript();
-        }
-        cleanupRecognizer();
-        stopMeter();
+        // MVP 2.4: onend NÃO processa. Aguarda ação do utilizador.
+        console.log('[VoiceManager] onEnd — aguardar "Terminei de falar"');
       }
     });
 
-    // Pedir permissão ANTES de começar (o recognizer pediria implicitamente,
-    // mas assim temos controlo sobre a mensagem de erro)
     const perm = await _recognizer.requestPermission();
     if (!perm.granted) {
       session.setError(perm.reason || 'permission-denied');
@@ -211,10 +194,7 @@ export const VoiceManager = {
       return { ok: false, reason: perm.reason || 'permission-denied' };
     }
 
-    // Arrancar meter de áudio (para o orbe reagir)
     startMeter();
-
-    // Arrancar reconhecimento
     const started = _recognizer.start();
     if (!started) {
       session.setError('start-failed');
@@ -229,12 +209,23 @@ export const VoiceManager = {
   },
 
   /**
-   * Cancela a sessão.
+   * Utilizador terminou de falar. Parar recognizer e processar acumulado.
    */
+  finishSpeaking() {
+    const session = voiceSession.current();
+    if (!session || session.state !== VOICE_STATES.LISTENING) {
+      console.warn('[VoiceManager] finishSpeaking() fora de LISTENING');
+      return { ok: false, reason: 'not-listening' };
+    }
+    console.log('[VoiceManager] finishSpeaking() | acumulado="' + _finalAccumulator + '"');
+    if (_recognizer) { try { _recognizer.stop(); } catch (_) {} }
+    processFinalTranscript();
+    return { ok: true };
+  },
+
   cancel() {
     const session = voiceSession.current();
     if (!session) return;
-
     cleanupRecognizer();
     stopMeter();
     session.end(VOICE_STATES.CANCELLED);
@@ -244,45 +235,31 @@ export const VoiceManager = {
     _finalAccumulator = '';
   },
 
-  /**
-   * Confirma a interpretação — passa para o router.
-   * Só válido se a sessão estiver em CONFIRMING.
-   */
   confirm() {
     const session = voiceSession.current();
     if (!session || session.state !== VOICE_STATES.CONFIRMING) {
-      console.warn('[VoiceManager] confirm() fora de estado CONFIRMING.');
+      console.warn('[VoiceManager] confirm() fora de CONFIRMING.');
       return { ok: false, reason: 'not-confirming' };
     }
 
     let route;
-    try {
-      route = VoiceCommandRouter.route(session.intent);
-    } catch (e) {
+    try { route = VoiceCommandRouter.route(session.intent); }
+    catch (e) {
       console.error('[VoiceManager] Router falhou:', e);
       emit('voice:error', { reason: 'router-crash' });
       emit('voice:state', { state: VOICE_STATES.ERROR });
       return { ok: false, reason: 'router-crash' };
     }
-
     if (!route) {
       emit('voice:error', { reason: 'no-route' });
       emit('voice:state', { state: VOICE_STATES.ERROR });
       return { ok: false, reason: 'no-route' };
     }
 
-    // 1) Navegar primeiro — garante que initTasks() corre e regista o listener
-    try {
-      stateManager.navigateTo(route.page);
-    } catch (e) {
-      console.warn('[VoiceManager] navigateTo falhou:', e);
-    }
-
-    // 2) Emitir o prefill com pequeno delay (módulo destino faz init + registo do listener)
+    try { stateManager.navigateTo(route.page); } catch (e) { console.warn('[VoiceManager] navigateTo falhou:', e); }
     setTimeout(() => {
-      try { eventBus.emit('voice:prefill-form', route); } catch (e) {
-        console.warn('[VoiceManager] emit prefill falhou:', e);
-      }
+      try { eventBus.emit('voice:prefill-form', route); }
+      catch (e) { console.warn('[VoiceManager] emit prefill falhou:', e); }
     }, 250);
 
     emit('voice:confirmed', { route });
@@ -294,20 +271,12 @@ export const VoiceManager = {
     return { ok: true, route };
   },
 
-  /**
-   * DEBUG/TESTE: injetar transcrição sem microfone.
-   * Usado pela página de teste enquanto o interpretador é stub.
-   */
   async debugInjectTranscript(text) {
-    if (voiceSession.isActive()) {
-      this.cancel();
-      await new Promise(r => setTimeout(r, 100));
-    }
+    if (voiceSession.isActive()) { this.cancel(); await new Promise(r => setTimeout(r, 100)); }
     _finalAccumulator = String(text || '').trim();
     const session = voiceSession.create({ source: 'debug' });
     session.setTranscript(_finalAccumulator, '');
     emit('voice:state', { state: VOICE_STATES.LISTENING });
-    // Processa imediatamente
     setTimeout(() => processFinalTranscript(), 200);
     return { ok: true };
   }

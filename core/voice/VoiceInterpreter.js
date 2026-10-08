@@ -76,28 +76,28 @@ function capitalize(s) {
 
 const ACTION_PATTERNS = [
   { intent: INTENTS.CREATE_TASK, patterns: [
-    /\b(criar|nova|novo|adicionar|adiciona|marcar|marca|inserir|insere)\s+(uma\s+)?(tarefa|task)\b/,
+    /\b(criar|nova|novo|adicionar|adiciona|marcar|marca|inserir|insere)\s+(uma\s+|umas\s+)?(tarefa|tarefas|task|tasks)\b/,
     /\btarefa\s*[:\-]\s*/,
     /\btask\s*[:\-]\s*/
   ]},
   { intent: INTENTS.CREATE_HABIT, patterns: [
-    /\b(criar|novo|nova|adicionar|adiciona|instituir)\s+(um\s+|uma\s+)?(habito|habit)\b/,
+    /\b(criar|novo|nova|adicionar|adiciona|instituir)\s+(um\s+|uma\s+|uns\s+|umas\s+)?(habito|habitos|habit|habits)\b/,
     /\bhabito\s*[:\-]\s*/
   ]},
   { intent: INTENTS.CREATE_EVENT, patterns: [
-    /\b(criar|novo|nova|adicionar|adiciona|marcar|marca|agendar|agenda)\s+(um\s+|uma\s+)?(evento|compromisso|reuniao)\b/,
+    /\b(criar|novo|nova|adicionar|adiciona|marcar|marca|agendar|agenda)\s+(um\s+|uma\s+|uns\s+|umas\s+)?(evento|eventos|compromisso|compromissos|reuniao|reunioes)\b/,
     /\bevento\s*[:\-]\s*/
   ]},
   { intent: INTENTS.CREATE_NOTE, patterns: [
-    /\b(criar|nova|novo|adicionar|adiciona|anotar|anota|escrever|registar|registra)\s+(uma\s+|um\s+)?(nota|note)\b/,
+    /\b(criar|nova|novo|adicionar|adiciona|anotar|anota|escrever|registar|registra)\s+(uma\s+|um\s+|umas\s+|uns\s+)?(nota|notas|note|notes)\b/,
     /\bnota\s*[:\-]\s*/,
     /\banotar\s+que\b/
   ]},
   { intent: INTENTS.CREATE_EXPENSE, patterns: [
-    /\b(adicionar|adiciona|registar|registra|anotar|anota|gastei|paguei|comprei)\s+(uma\s+|um\s+)?(despesa|gasto|transacao|transacao|compra)\b/
+    /\b(adicionar|adiciona|registar|registra|anotar|anota|gastei|paguei|comprei)\s+(uma\s+|um\s+|umas\s+|uns\s+)?(despesa|despesas|gasto|gastos|transacao|transacoes|compra|compras)\b/
   ]},
   { intent: INTENTS.CREATE_GOAL, patterns: [
-    /\b(criar|novo|nova|adicionar|adiciona|definir|define|estabelecer)\s+(um\s+|uma\s+)?(objetivo|meta|goal)\b/,
+    /\b(criar|novo|nova|adicionar|adiciona|definir|define|estabelecer)\s+(um\s+|uma\s+|uns\s+|umas\s+)?(objetivo|objetivos|meta|metas|goal|goals)\b/,
     /\bobjetivo\s*[:\-]\s*/
   ]}
 ];
@@ -256,7 +256,7 @@ function inferPriority(normText) {
 // Frases que devem desaparecer do início
 const ACTION_PREFIXES = [
   /^(criar|nova|novo|adicionar|adiciona|marcar|marca|inserir|insere|instituir|definir|define|estabelecer|anotar|anota|escrever|registar|registra|agendar|agenda|gastei|paguei|comprei)\s+/,
-  /^((uma|um|a|o)\s+)?(tarefa|task|habito|evento|compromisso|reuniao|nota|note|despesa|gasto|transacao|compra|objetivo|meta|goal)\b\s*/,
+  /^((uma|umas|um|uns|a|as|o|os)\s+)?(tarefa|tarefas|task|tasks|habito|habitos|habit|habits|evento|eventos|compromisso|compromissos|reuniao|reunioes|nota|notas|note|notes|despesa|despesas|gasto|gastos|transacao|transacoes|compra|compras|objetivo|objetivos|meta|metas|goal|goals)\b\s*/,
   /^\s*tarefa\s*[:\-]\s*/,
   /^\s*task\s*[:\-]\s*/,
   /^\s*habito\s*[:\-]\s*/,

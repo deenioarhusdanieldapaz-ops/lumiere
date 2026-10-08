@@ -1,0 +1,32 @@
+/* Voice Mic Button — canto inferior ESQUERDO */
+.voice-mic-btn {
+  position: fixed;
+  left: 20px;
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #0f0f0f;
+  border: 1.5px solid rgba(212, 175, 55, 0.55);
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 8000;
+  transition: transform 0.15s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  font-family: inherit;
+}
+.voice-mic-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6), 0 0 12px rgba(212, 175, 55, 0.35);
+}
+.voice-mic-btn:active { transform: scale(0.96); }
+.voice-mic-btn--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: scale(0.94);
+}
