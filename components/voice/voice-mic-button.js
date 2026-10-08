@@ -8,6 +8,26 @@ import { VoiceManager } from '../../core/voice/VoiceManager.js';
 let _btn = null;
 let _busy = false;
 
+const VOICE_ENABLED_KEY = 'lumiereVoiceEnabled';
+
+function isVoiceEnabled() {
+  try { return localStorage.getItem(VOICE_ENABLED_KEY) === 'true'; } catch (_) { return false; }
+}
+
+function applyVisibility() {
+  if (!_btn) return;
+  _btn.classList.toggle('voice-mic-btn--visible', isVoiceEnabled());
+}
+
+export function setVoiceEnabled(enabled) {
+  try { localStorage.setItem(VOICE_ENABLED_KEY, enabled ? 'true' : 'false'); } catch (_) {}
+  applyVisibility();
+}
+
+export function getVoiceEnabled() {
+  return isVoiceEnabled();
+}
+
 function build() {
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -56,6 +76,12 @@ export function initVoiceMicButton() {
   if (_btn) return _btn;
   _btn = build();
   document.body.appendChild(_btn);
+  applyVisibility();
+
+  // Escutar mudanças em localStorage (caso outra tab altere)
+  window.addEventListener('storage', (e) => {
+    if (e.key === VOICE_ENABLED_KEY) applyVisibility();
+  });
 
   eventBus.on('voice:state', (p) => {
     const s = p && p.state;

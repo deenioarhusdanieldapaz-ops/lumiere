@@ -247,3 +247,19 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+/* Fix overflow do canvas — força o canvas Three.js a caber no slot */
+.voice-ov__orb-slot canvas,
+.voice-ov__orb-slot .voice-orb-three-canvas,
+.voice-ov__orb-slot .voice-orb-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

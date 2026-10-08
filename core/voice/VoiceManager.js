@@ -33,9 +33,14 @@ function mergeUtterance(prev, incoming) {
   if (!p) return i;
   if (!i) return p;
   if (p === i) return p;
-  if (p.endsWith(i)) return p;           // novo já está no fim do anterior
-  if (i.startsWith(p)) return i;         // novo contém o anterior inteiro
-  // Procurar sobreposição de sufixo/prefixo com 3+ caracteres
+
+  // Caso 1: incoming é substring do acumulado (Chrome reenvia parte já ouvida)
+  if (p.includes(i)) return p;
+
+  // Caso 2: incoming contém o acumulado inteiro (Chrome reenvia tudo + mais)
+  if (i.startsWith(p)) return i;
+
+  // Caso 3: sobreposição sufixo/prefixo com 3+ caracteres
   const minOverlap = 3;
   const maxLen = Math.min(p.length, i.length);
   for (let len = maxLen; len >= minOverlap; len--) {
@@ -43,6 +48,14 @@ function mergeUtterance(prev, incoming) {
       return p + i.slice(len);
     }
   }
+
+  // Caso 4: sobreposição onde incoming aparece em qualquer ponto de p
+  // (Chrome às vezes "reinicia" o utterance do início)
+  const idx = p.lastIndexOf(i);
+  if (idx >= 0 && (idx + i.length) >= p.length - 3) {
+    return p;
+  }
+
   return p + ' ' + i;
 }
 

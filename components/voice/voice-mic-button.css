@@ -30,3 +30,11 @@
   pointer-events: none;
   transform: scale(0.94);
 }
+
+/* Escondido por defeito — ativado via Definições */
+.voice-mic-btn {
+  display: none;
+}
+.voice-mic-btn.voice-mic-btn--visible {
+  display: flex;
+}

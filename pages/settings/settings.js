@@ -9,6 +9,7 @@ import { storageManager } from '../../core/storageManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { createSheet } from '../../components/sheet/sheet.js';
 import { dailyReviewTrigger } from '../../js/dailyReviewTrigger.js';
+import { setVoiceEnabled, getVoiceEnabled } from '../../components/voice/voice-mic-button.js';
 
 let _container = null;
 let _state = {
@@ -142,6 +143,35 @@ function renderPreferences() {
   cb.checked = Boolean(p.notificationsEnabled);
   wrap.appendChild(cb);
   sec.appendChild(wrap);
+
+  // Comandos de voz (experimental) — controla visibilidade do botão de mic
+  const voiceWrap = document.createElement('div');
+  voiceWrap.className = 'settings-field settings-field--row';
+  voiceWrap.style.marginTop = '16px';
+  voiceWrap.style.paddingTop = '14px';
+  voiceWrap.style.borderTop = '1px solid rgba(212,175,55,0.15)';
+  const voiceLabel = document.createElement('label');
+  voiceLabel.setAttribute('for', 'set-voice-enabled');
+  voiceLabel.textContent = 'Comandos de voz (experimental)';
+  voiceWrap.appendChild(voiceLabel);
+  const voiceCb = document.createElement('input');
+  voiceCb.type = 'checkbox';
+  voiceCb.id = 'set-voice-enabled';
+  voiceCb.checked = getVoiceEnabled();
+  voiceCb.addEventListener('change', () => {
+    setVoiceEnabled(voiceCb.checked);
+    try { eventBus.emit('toast:show', { type: 'success', text: voiceCb.checked ? 'Comandos de voz ativados' : 'Comandos de voz escondidos' }); } catch (_) {}
+  });
+  voiceWrap.appendChild(voiceCb);
+  sec.appendChild(voiceWrap);
+
+  const voiceHint = document.createElement('p');
+  voiceHint.className = 'settings-hint';
+  voiceHint.style.marginTop = '6px';
+  voiceHint.style.fontSize = '11px';
+  voiceHint.style.color = 'rgba(240,230,210,0.45)';
+  voiceHint.textContent = 'Mostra o botão de microfone no ecrã principal. Esta função está em desenvolvimento — comandos curtos funcionam melhor.';
+  sec.appendChild(voiceHint);
 
   const hint = document.createElement('p');
   hint.className = 'settings-hint';

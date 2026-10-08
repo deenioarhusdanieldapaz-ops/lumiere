@@ -52,3 +52,6 @@ index.html.no-eruda
 # Backups streak
 *.before-streak
 *.before-*
+
+# Laboratório de investigação ASR (não é parte da app)
+asr-lab/
