@@ -8,6 +8,7 @@ import { initDailyReview } from '../components/daily-review/dailyReview.js';
 import { VoiceManager } from '../core/voice/VoiceManager.js';
 import { initVoiceMicButton } from '../components/voice/voice-mic-button.js';
 import { initVoiceOverlay } from '../components/voice/voice-overlay.js';
+import { initDevTools } from './dev-tools.js';
 import { dataManager } from '../core/dataManager.js';
 import { stateManager } from '../core/stateManager.js';
 import { navigation } from './navigation.js';
@@ -256,6 +257,9 @@ async function bootstrap() {
     // Voice UI
     try { initVoiceOverlay(); } catch (e) { console.warn('[App] VoiceOverlay:', e); }
     try { initVoiceMicButton(); } catch (e) { console.warn('[App] VoiceMicButton:', e); }
+
+    // Dev tools (temporário)
+    try { initDevTools(); } catch (e) { console.warn('[App] DevTools:', e); }
   } catch (err) {
     console.error('[App] Falha ao inicializar:', err);
     splash.hide(0);

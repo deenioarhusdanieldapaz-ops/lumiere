@@ -10,6 +10,7 @@ import { eventBus } from '../../core/eventBus.js';
 import { createSheet } from '../../components/sheet/sheet.js';
 import { dailyReviewTrigger } from '../../js/dailyReviewTrigger.js';
 import { setVoiceEnabled, getVoiceEnabled } from '../../components/voice/voice-mic-button.js';
+import { hardReload, isDevMode, activateDevMode } from '../../js/dev-tools.js';
 
 let _container = null;
 let _state = {
@@ -81,6 +82,27 @@ function render() {
   title.textContent = 'Definições';
   header.appendChild(title);
   page.appendChild(header);
+
+  // Gesto secreto: 5 toques rápidos no título alternam modo dev
+  (function attachSecretGesture() {
+    let count = 0;
+    let timer = null;
+    title.style.userSelect = 'none';
+    title.addEventListener('click', () => {
+      count++;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { count = 0; }, 2000);
+      if (count >= 5) {
+        count = 0;
+        if (timer) { clearTimeout(timer); timer = null; }
+        const now = !isDevMode();
+        activateDevMode(now);
+        try { eventBus.emit('toast:show', { type: 'success', text: now ? 'Modo dev ativado — a recarregar...' : 'Modo dev desativado — a recarregar...' }); } catch (_) {}
+        // Reload é necessário para o eruda entrar/sair
+        setTimeout(function() { location.reload(); }, 400);
+      }
+    });
+  })();
 
   if (_state.loading) {
     page.appendChild(renderState('A carregar…'));
@@ -177,6 +199,42 @@ function renderPreferences() {
   hint.className = 'settings-hint';
   hint.textContent = 'Estas preferências são guardadas no dispositivo.';
   sec.appendChild(hint);
+
+  // Secção Avançado — só visível em modo dev
+  if (isDevMode()) {
+    const advSep = document.createElement('div');
+    advSep.style.margin = '18px 0 12px';
+    advSep.style.paddingTop = '14px';
+    advSep.style.borderTop = '1px dashed rgba(255,119,119,0.35)';
+    sec.appendChild(advSep);
+
+    const advTitle = document.createElement('h4');
+    advTitle.textContent = 'Avançado (dev)';
+    advTitle.style.color = '#ff9999';
+    advTitle.style.fontSize = '12px';
+    advTitle.style.letterSpacing = '1px';
+    advTitle.style.textTransform = 'uppercase';
+    advTitle.style.margin = '0 0 10px 0';
+    sec.appendChild(advTitle);
+
+    const btnReload = document.createElement('button');
+    btnReload.type = 'button';
+    btnReload.className = 'settings-btn';
+    btnReload.textContent = '🧹 Limpar cache + recarregar';
+    btnReload.style.background = 'rgba(255,119,119,0.10)';
+    btnReload.style.borderColor = 'rgba(255,119,119,0.5)';
+    btnReload.style.color = '#ff9999';
+    btnReload.addEventListener('click', () => { hardReload(); });
+    sec.appendChild(btnReload);
+
+    const devHint = document.createElement('p');
+    devHint.className = 'settings-hint';
+    devHint.style.marginTop = '8px';
+    devHint.style.fontSize = '11px';
+    devHint.style.color = 'rgba(240,230,210,0.4)';
+    devHint.textContent = 'Desregistra o Service Worker, apaga todas as caches e recarrega a app com URL única.';
+    sec.appendChild(devHint);
+  }
 
   const btnSave = document.createElement('button');
   btnSave.type = 'button';
