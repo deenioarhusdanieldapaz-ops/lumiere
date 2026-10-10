@@ -26,7 +26,7 @@ try {
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v254';
+const CACHE_NAME = 'lumiere-cache-v286';
 const OFFLINE_URLS = [
   './',
   './index.html',
@@ -85,6 +85,14 @@ const OFFLINE_URLS = [
   './pages/lumiere/lumiere.js',
   './pages/lumiere/lumiere.css',
   './pages/settings/settings.js',
+  './pages/focus/focus.js',
+  './pages/focus/focus-timer.js',
+  './pages/focus/focus.css',
+  './pages/focus/assets/focus-lista.webp',
+  './pages/focus/assets/focus-ativo.webp',
+  './pages/focus/assets/focus-pausa.webp',
+  './pages/focus/assets/focus-terminado.webp',
+  './pages/focus/assets/emblema-ciclo.webp',
   './pages/settings/settings.css',
   './pages/profile/profile.js',
   './pages/profile/profile.css',

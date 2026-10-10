@@ -1,0 +1,920 @@
+/* ============================================================
+   Foco Hoje + Pomodoro — 4 ecrãs
+   ============================================================ */
+
+/* Container do overlay (montado dinamicamente em body) */
+.focus-overlay-container {
+  position: fixed;
+  inset: 0;
+  z-index: 9600;
+  pointer-events: none;
+}
+.focus-overlay-container > .focus-overlay {
+  pointer-events: auto;
+}
+
+/* ---------- Raiz ---------- */
+.focus-page {
+  padding: 0 0 96px;
+  min-height: 100vh;
+  position: relative;
+  background: #0a0a0a url('./assets/focus-lista.webp') center top / cover no-repeat;
+  color: #f0e6d2;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   ECRÃ 1 — FOCO HOJE (lista)
+   ============================================================ */
+.focus-list {
+  padding: 20px 18px 24px;
+  max-width: 520px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.focus-list__header {
+  margin-bottom: 18px;
+}
+
+.focus-list__title {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: #d4af37;
+  margin: 0 0 6px;
+}
+
+.focus-list__date {
+  font-size: 12px;
+  color: rgba(240, 230, 210, 0.55);
+  letter-spacing: 0.5px;
+}
+
+/* Card resumo */
+.focus-list__summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(212, 175, 55, 0.06);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 14px;
+  margin-bottom: 22px;
+  cursor: pointer;
+}
+.focus-list__summary-stars {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.focus-list__summary-star {
+  font-size: 16px;
+  color: #d4af37;
+  line-height: 1;
+}
+.focus-list__summary-star--empty { opacity: 0.30; }
+.focus-list__summary-text {
+  flex: 1;
+  font-size: 13px;
+  color: #f0e6d2;
+}
+.focus-list__summary-delta {
+  font-size: 11px;
+  color: rgba(212, 175, 55, 0.75);
+  margin-top: 2px;
+}
+.focus-list__summary-chev {
+  color: #d4af37;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Secções */
+.focus-list__section {
+  margin-bottom: 20px;
+}
+.focus-list__section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.focus-list__section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin: 0;
+}
+.focus-list__section-count {
+  font-size: 11px;
+  color: rgba(240, 230, 210, 0.5);
+}
+
+/* Card de item */
+.focus-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+.focus-item:hover {
+  border-color: rgba(212, 175, 55, 0.40);
+}
+.focus-item--done {
+  opacity: 0.55;
+}
+.focus-item--done .focus-item__name {
+  text-decoration: line-through;
+  text-decoration-color: rgba(212, 175, 55, 0.5);
+}
+
+.focus-item__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.focus-item__body {
+  flex: 1;
+  min-width: 0;
+  padding-right: 4px;
+}
+.focus-item__name {
+  font-size: 14px;
+  color: #f0e6d2;
+  margin: 0 0 4px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.focus-item__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(240, 230, 210, 0.55);
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+.focus-item__stars {
+  display: flex;
+  gap: 3px;
+  color: #d4af37;
+  font-size: 12px;
+  line-height: 1;
+}
+.focus-item__star--empty { opacity: 0.25; }
+.focus-item__priority {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.focus-item__priority--urgent { color: #ff7777; background: rgba(255, 119, 119, 0.10); }
+.focus-item__priority--high { color: #f5a35f; background: rgba(245, 163, 95, 0.10); }
+.focus-item__priority--medium { color: #d4af37; background: rgba(212, 175, 55, 0.10); }
+.focus-item__priority--low { color: rgba(240, 230, 210, 0.5); background: rgba(240, 230, 210, 0.05); }
+
+.focus-item__play {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #d4af37;
+  color: #141414;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  font-family: inherit;
+  transition: transform 0.12s, background 0.15s;
+}
+.focus-item__play:hover { background: #e0bd45; transform: scale(1.06); }
+.focus-item__play:active { transform: scale(0.94); }
+
+.focus-item__check {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Empty state */
+.focus-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(240, 230, 210, 0.4);
+  font-size: 13px;
+  font-style: italic;
+}
+.focus-empty__icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+  display: block;
+}
+
+/* ============================================================
+   ECRÃS 2, 3, 4 — Overlays full screen
+   ============================================================ */
+.focus-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9600;
+  display: none;
+  flex-direction: column;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+.focus-overlay.is-active {
+  display: flex;
+}
+
+/* Fundo (provisório até gerarmos as imagens) */
+.focus-overlay--focus {
+  background: #030303 url('./assets/focus-ativo.webp') center center / cover no-repeat;
+}
+.focus-overlay--pause {
+  background: #0a1220 url('./assets/focus-pausa.webp') center center / cover no-repeat;
+}
+.focus-overlay--done {
+  background: #050505 url('./assets/focus-terminado.webp') center center / cover no-repeat;
+}
+
+/* ---------- Topbar comum ---------- */
+.focus-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+.focus-topbar__exit {
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #d4af37;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.focus-topbar__exit:hover { background: rgba(212, 175, 55, 0.10); }
+.focus-topbar__session {
+  font-size: 12px;
+  color: rgba(240, 230, 210, 0.55);
+}
+.focus-topbar__session strong { color: #d4af37; font-weight: 600; }
+
+/* ---------- Timer central (Ecrãs 2 e 3) ---------- */
+.focus-timer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.focus-ring {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.focus-ring__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.focus-ring__track {
+  fill: none;
+  stroke: rgba(212, 175, 55, 0.15);
+  stroke-width: 4;
+}
+.focus-ring__progress {
+  fill: none;
+  stroke: #d4af37;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s linear;
+}
+.focus-overlay--pause .focus-ring__track { stroke: rgba(120, 180, 240, 0.15); }
+.focus-overlay--pause .focus-ring__progress { stroke: #5fa8e0; }
+
+.focus-ring__time {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 56px;
+  font-weight: 500;
+  color: #f5d76e;
+  letter-spacing: 2px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.focus-overlay--pause .focus-ring__time { color: #a8c8e8; }
+
+/* Rótulos */
+.focus-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.focus-label__tag {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.7);
+}
+.focus-overlay--pause .focus-label__tag { color: rgba(168, 200, 232, 0.7); }
+.focus-label__name {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 22px;
+  color: #f0e6d2;
+  margin: 0;
+  max-width: 90vw;
+  line-height: 1.3;
+}
+.focus-label__hint {
+  font-size: 12px;
+  color: rgba(240, 230, 210, 0.5);
+  margin: 4px 0 0;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* Ciclos (estrelas ⚝) */
+.focus-cycles {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.focus-cycles__star {
+  font-size: 20px;
+  color: #d4af37;
+  line-height: 1;
+  transition: color 0.3s, transform 0.3s;
+}
+.focus-cycles__star--empty { color: rgba(212, 175, 55, 0.25); }
+.focus-cycles__star--done { color: #d4af37; }
+.focus-cycles__star--active {
+  color: #f5d76e;
+  transform: scale(1.15);
+  animation: focus-star-pulse 1.5s ease-in-out infinite;
+}
+@keyframes focus-star-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Sugestões de pausa (Ecrã 3) */
+.focus-pause-suggestions {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 8px;
+}
+.focus-pause-suggestions__title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(168, 200, 232, 0.6);
+  text-align: center;
+  margin-bottom: 12px;
+}
+.focus-pause-suggestions__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.focus-suggestion {
+  padding: 14px 8px;
+  background: rgba(120, 180, 240, 0.06);
+  border: 1px solid rgba(120, 180, 240, 0.20);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.focus-suggestion__icon { font-size: 22px; }
+.focus-suggestion__label { font-size: 11px; color: #a8c8e8; }
+.focus-suggestion__hint { font-size: 9px; color: rgba(168, 200, 232, 0.5); line-height: 1.3; }
+
+/* ---------- Botões do rodapé ---------- */
+.focus-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 16px;
+}
+.focus-btn {
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, transform 0.1s;
+}
+.focus-btn:active { transform: scale(0.97); }
+.focus-btn--primary {
+  background: #d4af37;
+  color: #141414;
+  border-color: #d4af37;
+}
+.focus-btn--primary:hover { background: #e0bd45; }
+.focus-btn--ghost {
+  background: transparent;
+  color: #f0e6d2;
+  border-color: rgba(212, 175, 55, 0.40);
+}
+.focus-btn--ghost:hover { background: rgba(212, 175, 55, 0.10); }
+.focus-overlay--pause .focus-btn--primary {
+  background: #5fa8e0;
+  border-color: #5fa8e0;
+  color: #0a1220;
+}
+.focus-overlay--pause .focus-btn--primary:hover { background: #78b8ec; }
+.focus-overlay--pause .focus-btn--ghost {
+  border-color: rgba(120, 180, 240, 0.4);
+  color: #a8c8e8;
+}
+
+/* ============================================================
+   ECRÃ 4 — Sessão Terminada
+   ============================================================ */
+.focus-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  gap: 20px;
+  padding: 20px;
+}
+.focus-done__icon {
+  width: 260px;
+  height: 260px;
+  margin-bottom: 4px;
+}
+.focus-done__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.focus-done__title {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 26px;
+  letter-spacing: 3px;
+  color: #d4af37;
+  margin: 0;
+}
+.focus-done__text {
+  font-size: 14px;
+  color: rgba(240, 230, 210, 0.75);
+  margin: 0;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.focus-done__stats {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.20);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+}
+.focus-done__stat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.10);
+}
+.focus-done__stat-row:last-child { border-bottom: none; }
+.focus-done__stat-icon {
+  font-size: 18px;
+  color: #d4af37;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+.focus-done__stat-label {
+  flex: 1;
+  font-size: 13px;
+  color: rgba(240, 230, 210, 0.75);
+  text-align: left;
+}
+.focus-done__stat-value {
+  font-size: 13px;
+  color: #f5d76e;
+  font-weight: 600;
+  text-align: right;
+}
+.focus-done__stat-sub {
+  font-size: 10px;
+  color: rgba(240, 230, 210, 0.45);
+  display: block;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.focus-done__quote {
+  font-size: 12px;
+  font-style: italic;
+  color: rgba(212, 175, 55, 0.6);
+  margin-top: 16px;
+  max-width: 300px;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-height: 700px) {
+  .focus-ring { width: 200px; height: 200px; }
+  .focus-ring__time { font-size: 44px; }
+  .focus-label__name { font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-cycles__star--active { animation: none; }
+  .focus-btn, .focus-item__play { transition: none; }
+}
+
+
+/* ---------- Marcador (círculo no anel) ---------- */
+.focus-ring__marker {
+  fill: #f5d76e;
+  filter: drop-shadow(0 0 3px rgba(245, 215, 110, 0.95));
+}
+.focus-overlay--pause .focus-ring__marker {
+  fill: #a8c8e8;
+  filter: drop-shadow(0 0 3px rgba(168, 200, 232, 0.95));
+}
+
+/* Garantir que os círculos do anel não herdam fill/stroke estranhos */
+.focus-ring__track,
+.focus-ring__progress {
+  fill: none;
+}
+
+
+/* ============================================================
+   Ecrã PAUSA — tudo azul, zero dourado (B6.2)
+   ============================================================ */
+.focus-overlay--pause .focus-topbar__exit {
+  border-color: rgba(120, 180, 240, 0.35);
+  color: #a8c8e8;
+}
+.focus-overlay--pause .focus-topbar__exit:hover {
+  background: rgba(120, 180, 240, 0.10);
+}
+.focus-overlay--pause .focus-topbar__session strong {
+  color: #a8c8e8;
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   B7.2 — Ecrã CONFIGURAR SESSÃO
+   ============================================================ */
+.focus-overlay--config {
+  background: radial-gradient(ellipse at center, #1a1206 0%, #050505 70%);
+  overflow-y: auto;
+}
+
+.focus-topbar--config {
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+.focus-topbar__close {
+  background: transparent;
+  border: none;
+  color: #d4af37;
+  font-size: 20px;
+  line-height: 1;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+.focus-topbar__close:hover {
+  background: rgba(212, 175, 55, 0.12);
+}
+
+.focus-config {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 0 4px 16px;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.focus-config__title {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  color: #d4af37;
+  margin: 6px 0 0;
+  text-transform: uppercase;
+}
+
+.focus-config__name {
+  font-size: 14px;
+  color: rgba(240, 230, 210, 0.75);
+  margin: 0 0 10px;
+  max-width: 90%;
+  line-height: 1.3;
+}
+
+.focus-config__section-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: rgba(212, 175, 55, 0.7);
+  text-transform: uppercase;
+  align-self: stretch;
+  text-align: center;
+  position: relative;
+  margin: 4px 0 6px;
+}
+.focus-config__section-label::before,
+.focus-config__section-label::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 32%;
+  height: 1px;
+  background: rgba(212, 175, 55, 0.25);
+}
+.focus-config__section-label::before { left: 0; }
+.focus-config__section-label::after { right: 0; }
+
+.focus-config__presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.focus-config__preset {
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #d4af37;
+  border-radius: 10px;
+  padding: 8px 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+  min-height: 52px;
+  overflow: hidden;
+}
+.focus-config__preset:hover {
+  background: rgba(212, 175, 55, 0.08);
+}
+.focus-config__preset.is-active {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: #d4af37;
+}
+.focus-config__preset-label {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 9px;
+  letter-spacing: 0.8px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-align: center;
+  max-width: 100%;
+}
+.focus-config__preset[data-preset="custom"] .focus-config__preset-label {
+  font-size: 18px;
+  line-height: 1;
+}
+.focus-config__preset-sub {
+  font-size: 9px;
+  color: rgba(240, 230, 210, 0.6);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.focus-config__card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.20);
+  border-radius: 14px;
+  padding: 6px 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.focus-config__slider-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 56px;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.10);
+}
+.focus-config__slider-row:last-child { border-bottom: none; }
+
+.focus-config__slider-icon {
+  font-size: 20px;
+  color: #d4af37;
+  text-align: center;
+  line-height: 1;
+}
+
+.focus-config__slider-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  min-width: 0;
+}
+
+.focus-config__slider-label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #f0e6d2;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.focus-config__range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: rgba(212, 175, 55, 0.25);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.focus-config__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f5d76e;
+  box-shadow: 0 0 6px rgba(245, 215, 110, 0.6);
+  cursor: pointer;
+  border: none;
+}
+.focus-config__range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f5d76e;
+  box-shadow: 0 0 6px rgba(245, 215, 110, 0.6);
+  cursor: pointer;
+  border: none;
+}
+
+.focus-config__slider-bounds {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: rgba(240, 230, 210, 0.4);
+}
+
+.focus-config__slider-value-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+}
+.focus-config__slider-value {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: #f5d76e;
+  line-height: 1;
+}
+.focus-config__slider-unit {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: rgba(212, 175, 55, 0.7);
+  margin-top: 2px;
+}
+
+.focus-config__toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 8px;
+  border-top: 1px solid rgba(212, 175, 55, 0.10);
+  margin-top: 4px;
+}
+.focus-config__toggle-label {
+  font-size: 12px;
+  color: #f0e6d2;
+  letter-spacing: 0.5px;
+}
+
+.focus-config__toggle {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border-radius: 12px;
+  background: rgba(212, 175, 55, 0.20);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.focus-config__toggle.is-on {
+  background: rgba(212, 175, 55, 0.55);
+}
+.focus-config__toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #d4af37;
+  transition: left 0.2s, background 0.2s;
+  display: block;
+}
+.focus-config__toggle.is-on .focus-config__toggle-knob {
+  left: 21px;
+  background: #f5d76e;
+  box-shadow: 0 0 6px rgba(245, 215, 110, 0.6);
+}
+
+.focus-config__preview {
+  margin-top: 8px;
+  padding: 12px 8px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+.focus-config__preview-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: rgba(212, 175, 55, 0.7);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.focus-config__preview-line {
+  font-size: 12px;
+  color: rgba(240, 230, 210, 0.75);
+  line-height: 1.6;
+}

@@ -9,6 +9,7 @@ import { VoiceManager } from '../core/voice/VoiceManager.js';
 import { initVoiceMicButton } from '../components/voice/voice-mic-button.js';
 import { initVoiceOverlay } from '../components/voice/voice-overlay.js';
 import { initDevTools } from './dev-tools.js';
+import { initFocus } from '../pages/focus/focus.js';
 import { dataManager } from '../core/dataManager.js';
 import { stateManager } from '../core/stateManager.js';
 import { navigation } from './navigation.js';
@@ -196,6 +197,8 @@ async function bootstrap() {
       /* dashboard antigo arquivado — routing removido */
       } else if (payload.page === 'tasks') {
         if (container) initTasks(container);
+      } else if (payload.page === 'focus') {
+        if (container) initFocus(container);
       } else if (payload.page === 'habits') {
         if (container) initHabits(container);
       } else if (payload.page === 'goals') {

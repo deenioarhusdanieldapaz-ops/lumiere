@@ -59,6 +59,27 @@ export async function hardReload() {
 /**
  * Inicializa os dev tools. Idempotente.
  */
+/* ---------- Fast Timer (dev only) ---------- */
+const FAST_KEY = 'lumiereFocusFast';
+
+export function isFastTimer() {
+  try { return localStorage.getItem(FAST_KEY) === 'true'; } catch (_) { return false; }
+}
+
+export function setFastTimer(on) {
+  try { localStorage.setItem(FAST_KEY, on ? 'true' : 'false'); } catch (_) {}
+  return on;
+}
+
+export function getFastTimerConfig() {
+  // Quando ligado: foco=10s, pausa=5s, pausa longa=15s
+  return {
+    focusSec: 10,
+    breakSec: 5,
+    longBreakSec: 15
+  };
+}
+
 export function initDevTools() {
   if (typeof window === 'undefined') return;
   if (window.__devToolsReady) return;
@@ -68,8 +89,9 @@ export function initDevTools() {
   window.__lumiere = window.__lumiere || {};
   window.__lumiere.hardReload = hardReload;
   window.__lumiere.devMode = { on: activateDevMode, is: isDevMode };
+  window.__lumiere.fastTimer = { on: setFastTimer, is: isFastTimer };
 
   console.log('[DevTools] Pronto. Usa window.__lumiere.hardReload() no eruda.');
 }
 
-export default { hardReload, initDevTools, isDevMode, activateDevMode };
+export default { hardReload, initDevTools, isDevMode, activateDevMode, isFastTimer, setFastTimer };

@@ -225,6 +225,12 @@
   min-height: 0;
 }
 
+/* Foco: fundo sangra até aos bordos laterais */
+.app-content:has(> .focus-page) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 /* ---------- OVERLAY (mobile) ---------- */
 .app-overlay {
   display: none;

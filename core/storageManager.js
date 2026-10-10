@@ -7,7 +7,7 @@ import Dexie from 'dexie';
 
 // Definir esquema do banco
 const DB_NAME = 'LumiereDB';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 class LumiereDatabase extends Dexie {
   constructor() {
@@ -35,7 +35,8 @@ class LumiereDatabase extends Dexie {
       tags: 'id, name, color, createdAt',
       preferences: 'id, key, value, updatedAt',
       templates: 'id, name, appliesTo, category, updatedAt',
-      dailyReviews: 'id, date, mood, createdAt'
+      dailyReviews: 'id, date, mood, createdAt',
+      focusSessions: 'id, entityType, entityId, date, startedAt, createdAt'
     });
   }
 }
