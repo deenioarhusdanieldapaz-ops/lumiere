@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumiere - Exportar dados (temporario)</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 20px; background: #111; color: #eee; }
+  h1 { font-size: 1.1rem; }
+  button { font-size: 1rem; padding: 14px 20px; margin: 10px 0; width: 100%; background: #c9a961; border: none; border-radius: 8px; color: #111; font-weight: bold; }
+  .warn { background: #3a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
+  pre { background: #000; padding: 10px; border-radius: 6px; overflow: auto; font-size: 0.75rem; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Lumiere - Exportacao de dados (temporario)</h1>
+<div class="warn">
+  Ficheiro temporario. Sera removido apos o backup. Nao partilhar o JSON gerado.
+</div>
+<button id="btn">Exportar dados agora</button>
+<pre id="log">Pronto. Toca em Exportar.</pre>
+<script>
+const logEl = document.getElementById('log');
+const log = (m) => { logEl.textContent += '\n' + m; };
+const BLOCKED = ['fcm', 'token', 'key', 'auth', 'firebase'];
+const isBlocked = (k) => BLOCKED.some(b => k.toLowerCase().includes(b));
+document.getElementById('btn').addEventListener('click', () => {
+  logEl.textContent = 'A iniciar...';
+  const DB_NAME = 'LumiereDB';
+  const openReq = indexedDB.open(DB_NAME);
+  openReq.onerror = () => log('Erro: nao foi possivel abrir ' + DB_NAME);
+  openReq.onsuccess = async (e) => {
+    const db = e.target.result;
+    const stores = Array.from(db.objectStoreNames);
+    log('Base: ' + DB_NAME + ' v' + db.version);
+    log('Stores: ' + stores.length);
+    const dump = {
+      dbName: DB_NAME, version: db.version,
+      exportedAt: new Date().toISOString(),
+      localStorage: {}, indexedDB: {}
+    };
+    let kept = 0, skipped = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (isBlocked(k)) { skipped++; continue; }
+      dump.localStorage[k] = localStorage.getItem(k);
+      kept++;
+    }
+    log('localStorage: ' + kept + ' chaves (ignoradas ' + skipped + ' sensiveis)');
+    for (const name of stores) {
+      const data = await new Promise((res) => {
+        const tx = db.transaction(name, 'readonly');
+        const r = tx.objectStore(name).getAll();
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => res([]);
+      });
+      dump.indexedDB[name] = data;
+      log('  - ' + name + ': ' + data.length);
+    }
+    const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lumiere-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    log('Backup criado. Ver pasta Downloads.');
+  };
+});
+</script>
+</body>
+</html>
