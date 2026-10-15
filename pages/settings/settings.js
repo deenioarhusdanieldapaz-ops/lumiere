@@ -11,6 +11,7 @@ import { createSheet } from '../../components/sheet/sheet.js';
 import { dailyReviewTrigger } from '../../js/dailyReviewTrigger.js';
 import { setVoiceEnabled, getVoiceEnabled } from '../../components/voice/voice-mic-button.js';
 import { hardReload, isDevMode, activateDevMode } from '../../js/dev-tools.js';
+import { openConfigFor } from '../focus/focus-timer.js';
 
 let _container = null;
 let _state = {
@@ -110,6 +111,7 @@ function render() {
     page.appendChild(renderState(_state.error, true));
   } else {
     page.appendChild(renderPreferences());
+    page.appendChild(renderPomodoro());
     page.appendChild(renderActions());
   }
 
@@ -266,6 +268,41 @@ function makeSelect(labelText, name, value, options) {
   }
   wrap.appendChild(sel);
   return wrap;
+}
+
+function renderPomodoro() {
+  const sec = document.createElement('section');
+  sec.className = 'settings-section';
+
+  const t = document.createElement('h3');
+  t.className = 'settings-section__title';
+  t.textContent = 'Pomodoro';
+  sec.appendChild(t);
+
+  const hint = document.createElement('p');
+  hint.className = 'settings-hint';
+  hint.style.marginBottom = '12px';
+  hint.textContent = 'Define os tempos predefinidos para as sessões de foco. Estes valores aparecem pré-preenchidos quando inicias uma sessão.';
+  sec.appendChild(hint);
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'settings-btn';
+  btn.textContent = 'Configurar tempos Pomodoro';
+  btn.addEventListener('click', () => {
+    try {
+      openConfigFor(
+        { type: 'habit', id: 'settings-default', name: 'Tempos padrão' },
+        { configOnly: true }
+      );
+    } catch (e) {
+      console.error('[Settings] Erro a abrir config Pomodoro:', e);
+      try { eventBus.emit('toast:show', { type: 'error', text: 'Não foi possível abrir a configuração' }); } catch (_) {}
+    }
+  });
+  sec.appendChild(btn);
+
+  return sec;
 }
 
 function renderActions() {

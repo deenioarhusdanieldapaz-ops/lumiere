@@ -60,6 +60,7 @@ const RING_CIRC = 2 * Math.PI * RING_R;
 let _root = null;
 let _refs = null;
 let _pendingEntity = null;
+let _pendingOpts = null;
 let _tickTimer = null;
 let _session = null;
 /* _session = {
@@ -306,7 +307,7 @@ function saveCfgToStorage(cfg) {
 }
 
 /* ---------- Ecrã de configuração (B7.1) ---------- */
-function buildOverlayConfig(entity) {
+function buildOverlayConfig(entity, opts) {
   const ov = el('div', 'focus-overlay focus-overlay--config');
 
   const topbar = el('div', 'focus-topbar focus-topbar--config');
@@ -403,7 +404,8 @@ function buildOverlayConfig(entity) {
   const actions = el('div', 'focus-actions');
   const cancel = el('button', 'focus-btn focus-btn--ghost', 'Cancelar');
   cancel.type = 'button';
-  const start = el('button', 'focus-btn focus-btn--primary', 'Iniciar');
+  const startLabel = (opts && opts.configOnly) ? 'Guardar' : 'Iniciar';
+  const start = el('button', 'focus-btn focus-btn--primary', startLabel);
   start.type = 'button';
   actions.appendChild(cancel);
   actions.appendChild(start);
@@ -579,7 +581,7 @@ function mountOverlay(which) {
     _root.appendChild(_refs.done.ov);
     wireDoneHandlers();
   } else if (which === 'config') {
-    _refs.config = buildOverlayConfig(_pendingEntity || { name: '\u2014' });
+    _refs.config = buildOverlayConfig(_pendingEntity || { name: '\u2014' }, _pendingOpts);
     _refs.current = _refs.config;
     _refs.config.ov.classList.add('is-active');
     _root.appendChild(_refs.config.ov);
@@ -592,6 +594,7 @@ function unmountOverlay() {
   _root = null;
   _refs = null;
   _pendingEntity = null;
+  _pendingOpts = null;
   if (_tickTimer) { clearInterval(_tickTimer); _tickTimer = null; }
   _session = null;
 }
@@ -613,8 +616,9 @@ function showDone() {
   updateDoneUI();
 }
 
-function showConfig(entity) {
+function showConfig(entity, opts) {
   _pendingEntity = entity || null;
+  _pendingOpts = opts || null;
   mountOverlay('config');
 }
 
@@ -680,6 +684,7 @@ function wireConfigHandlers() {
 
   const closeAll = () => {
     _pendingEntity = null;
+    _pendingOpts = null;
     unmountOverlay();
   };
   c.close.addEventListener('click', closeAll);
@@ -688,9 +693,16 @@ function wireConfigHandlers() {
   c.start.addEventListener('click', () => {
     const entity = _pendingEntity;
     const cfg = readConfigFromDOM();
+    const configOnly = Boolean(_pendingOpts && _pendingOpts.configOnly);
     saveCfgToStorage(cfg);
     _pendingEntity = null;
+    _pendingOpts = null;
     unmountOverlay();
+    if (configOnly) {
+      console.log('[FocusTimer] Config Pomodoro guardada (config-only)');
+      try { eventBus.emit('toast:show', { type: 'success', text: 'Tempos Pomodoro guardados' }); } catch (_) {}
+      return;
+    }
     if (entity) {
       setTimeout(() => startSession(entity, cfg), 100);
     }
@@ -723,12 +735,21 @@ function wireConfigHandlers() {
   updateConfigPreview();
 }
 
+function buildSessionCounterHTML(sessNum, total, done) {
+  let dots = '';
+  for (let i = 0; i < total; i++) {
+    const cls = i < done ? 'focus-dots__dot focus-dots__dot--done' : 'focus-dots__dot';
+    dots += '<span class="' + cls + '"></span>';
+  }
+  return 'Sess\u00E3o <strong>' + sessNum + ' de ' + total + '</strong><span class="focus-dots">' + dots + '</span>';
+}
+
 function updateFocusUI() {
   if (!_refs || !_refs.focus || !_session) return;
   _refs.focus.name.textContent = _session.entity.name || '—';
   const cfg = getCFG();
   const sessNum = Math.min(_session.cyclesCompleted + 1, cfg.cyclesBeforeLong);
-  _refs.focus.sesso.innerHTML = 'Sessão <strong>' + sessNum + ' de ' + cfg.cyclesBeforeLong + '</strong>';
+  _refs.focus.sesso.innerHTML = buildSessionCounterHTML(sessNum, cfg.cyclesBeforeLong, _session.cyclesCompleted);
   // Atualizar estrelas
   const parent = _refs.focus.stars.parentNode;
   const newStars = buildCyclesStars(_session.cyclesCompleted);
@@ -740,7 +761,7 @@ function updatePauseUI() {
   if (!_refs || !_refs.pause || !_session) return;
   const cfg = getCFG();
   const sessNum = Math.min(_session.cyclesCompleted, cfg.cyclesBeforeLong);
-  _refs.pause.sesso.innerHTML = 'Sessão <strong>' + sessNum + ' de ' + cfg.cyclesBeforeLong + '</strong>';
+  _refs.pause.sesso.innerHTML = buildSessionCounterHTML(sessNum, cfg.cyclesBeforeLong, _session.cyclesCompleted);
 }
 
 function updateDoneUI() {
@@ -767,9 +788,7 @@ function updateDoneUI() {
 /* ---------- Handlers ---------- */
 function wireFocusHandlers() {
   _refs.focus.exit.addEventListener('click', () => {
-    console.log('[FocusTimer] Exit — sessão abandonada, nada guardado');
-    unmountOverlay();
-    eventBus.emit('focus:session:end', { saved: false });
+    requestExit();
   });
   _refs.focus.pauseBtn.addEventListener('click', () => {
     if (!_session.isPaused) {
@@ -805,14 +824,77 @@ function wireFocusHandlers() {
 
 function wirePauseHandlers() {
   _refs.pause.exit.addEventListener('click', () => {
-    console.log('[FocusTimer] Exit durante pausa — nada guardado');
-    unmountOverlay();
-    eventBus.emit('focus:session:end', { saved: false });
+    requestExit();
   });
   _refs.pause.skipBtn.addEventListener('click', () => {
     console.log('[FocusTimer] Pausa saltada');
     startPhase('focus');
     showFocus();
+  });
+}
+
+function requestExit() {
+  const s = _session;
+  if (!s) {
+    unmountOverlay();
+    eventBus.emit('focus:session:end', { saved: false });
+    return;
+  }
+  const hasProgress = (s.cyclesCompleted > 0) || (s.focusMsTotal > 0);
+  if (!hasProgress) {
+    console.log('[FocusTimer] Exit sem progresso — sai direto');
+    unmountOverlay();
+    eventBus.emit('focus:session:end', { saved: false });
+    return;
+  }
+  showExitConfirm();
+}
+
+function buildExitConfirm() {
+  const wrap = el('div', 'focus-confirm');
+  const card = el('div', 'focus-confirm__card');
+  const title = el('h2', 'focus-confirm__title', 'SAIR DA SESS\u00C3O?');
+  card.appendChild(title);
+  const stats = el('div', 'focus-confirm__stats');
+  const cyc = _session.cyclesCompleted;
+  const focusMin = Math.round(_session.focusMsTotal / 60000);
+  stats.appendChild(el('p', 'focus-confirm__stat', 'J\u00E1 completaste ' + cyc + (cyc === 1 ? ' ciclo' : ' ciclos')));
+  stats.appendChild(el('p', 'focus-confirm__stat', 'Tempo de foco: ' + focusMin + ' min'));
+  card.appendChild(stats);
+  const btnContinue = el('button', 'focus-confirm__btn focus-confirm__btn--primary', 'Continuar');
+  btnContinue.type = 'button';
+  const btnSave = el('button', 'focus-confirm__btn focus-confirm__btn--ghost', 'Sair e guardar');
+  btnSave.type = 'button';
+  const btnDiscard = el('button', 'focus-confirm__btn focus-confirm__btn--link', 'Sair sem guardar');
+  btnDiscard.type = 'button';
+  card.appendChild(btnContinue);
+  card.appendChild(btnSave);
+  card.appendChild(btnDiscard);
+  wrap.appendChild(card);
+  return { wrap, btnContinue, btnSave, btnDiscard };
+}
+
+function showExitConfirm() {
+  if (!_root) return;
+  if (_root.querySelector('.focus-confirm')) return;
+  const ui = buildExitConfirm();
+  _root.appendChild(ui.wrap);
+
+  ui.btnContinue.addEventListener('click', () => {
+    console.log('[FocusTimer] Exit cancelado — continua a sessao');
+    ui.wrap.remove();
+  });
+  ui.btnSave.addEventListener('click', async () => {
+    console.log('[FocusTimer] Exit com guardar — sessao parcial guardada');
+    await saveSession(true);
+    unmountOverlay();
+    eventBus.emit('focus:session:end', { saved: true });
+    eventBus.emit('data:changed', { collection: 'focusSessions', action: 'create' });
+  });
+  ui.btnDiscard.addEventListener('click', () => {
+    console.log('[FocusTimer] Exit sem guardar — sessao descartada');
+    unmountOverlay();
+    eventBus.emit('focus:session:end', { saved: false });
   });
 }
 
@@ -837,7 +919,7 @@ function startTick() {
 }
 
 /* ---------- Entrada pública ---------- */
-export function openConfigFor(entity) {
+export function openConfigFor(entity, opts) {
   if (_session) {
     console.warn('[FocusTimer] Sessão ativa, não abre config.');
     return;
@@ -846,7 +928,7 @@ export function openConfigFor(entity) {
     console.warn('[FocusTimer] Entity inválida:', entity);
     return;
   }
-  showConfig(entity);
+  showConfig(entity, opts);
 }
 
 export function startSession(entity, customCfg) {

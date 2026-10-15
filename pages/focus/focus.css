@@ -269,6 +269,7 @@
 }
 .focus-overlay--done {
   background: #050505 url('./assets/focus-terminado.webp') center center / cover no-repeat;
+  overflow-y: auto;
 }
 
 /* ---------- Topbar comum ---------- */
@@ -336,9 +337,15 @@
   stroke-width: 4;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.5s linear;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.55))
+          drop-shadow(0 0 14px rgba(212, 175, 55, 0.25));
 }
 .focus-overlay--pause .focus-ring__track { stroke: rgba(120, 180, 240, 0.15); }
-.focus-overlay--pause .focus-ring__progress { stroke: #5fa8e0; }
+.focus-overlay--pause .focus-ring__progress {
+  stroke: #5fa8e0;
+  filter: drop-shadow(0 0 6px rgba(120, 180, 240, 0.55))
+          drop-shadow(0 0 14px rgba(120, 180, 240, 0.25));
+}
 
 .focus-ring__time {
   font-family: 'Cinzel', Georgia, serif;
@@ -496,8 +503,8 @@
   padding: 20px;
 }
 .focus-done__icon {
-  width: 260px;
-  height: 260px;
+  width: 200px;
+  height: 200px;
   margin-bottom: 4px;
 }
 .focus-done__icon img {
@@ -917,4 +924,143 @@
   font-size: 12px;
   color: rgba(240, 230, 210, 0.75);
   line-height: 1.6;
+}
+
+
+/* ============================================================
+   D1a — Diálogo "Sair da sessão?"
+   ============================================================ */
+.focus-confirm {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9700;
+  pointer-events: auto;
+}
+
+.focus-confirm__card {
+  background: #0a0a0a;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 16px;
+  padding: 24px 20px 18px;
+  width: 100%;
+  max-width: 360px;
+  box-sizing: border-box;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.08);
+}
+
+.focus-confirm__title {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: #d4af37;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.focus-confirm__stats {
+  margin-bottom: 8px;
+}
+
+.focus-confirm__stat {
+  font-size: 13px;
+  color: rgba(240, 230, 210, 0.75);
+  margin: 2px 0;
+  line-height: 1.4;
+}
+
+.focus-confirm__btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  border: 1px solid transparent;
+}
+.focus-confirm__btn:active { transform: scale(0.98); }
+
+.focus-confirm__btn--primary {
+  background: linear-gradient(180deg, #e0bd45 0%, #d4af37 100%);
+  color: #141414;
+  border-color: #d4af37;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.focus-confirm__btn--primary:hover {
+  background: linear-gradient(180deg, #ecc956 0%, #dcb945 100%);
+}
+
+.focus-confirm__btn--ghost {
+  background: transparent;
+  color: #d4af37;
+  border: 2px double rgba(212, 175, 55, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.focus-confirm__btn--ghost:hover {
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.focus-confirm__btn--link {
+  background: transparent;
+  border: none;
+  color: rgba(240, 230, 210, 0.55);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-decoration: underline;
+  text-decoration-color: rgba(240, 230, 210, 0.3);
+  text-underline-offset: 3px;
+  padding: 8px 16px;
+}
+.focus-confirm__btn--link:hover {
+  color: rgba(240, 230, 210, 0.85);
+}
+
+/* ============================================================
+   D1b — Dots de progresso no topbar
+   ============================================================ */
+.focus-dots {
+  display: inline-flex;
+  gap: 5px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.focus-dots__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  background: transparent;
+  display: inline-block;
+  transition: background 0.2s;
+}
+
+.focus-dots__dot--done {
+  background: #d4af37;
+  border-color: #d4af37;
+  box-shadow: 0 0 4px rgba(212, 175, 55, 0.6);
+}
+
+/* Variante azul no ecrã de pausa */
+.focus-overlay--pause .focus-dots__dot {
+  border-color: rgba(120, 180, 240, 0.5);
+}
+.focus-overlay--pause .focus-dots__dot--done {
+  background: #5fa8e0;
+  border-color: #5fa8e0;
+  box-shadow: 0 0 4px rgba(95, 168, 224, 0.6);
 }
