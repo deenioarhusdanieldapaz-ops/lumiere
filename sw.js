@@ -26,7 +26,7 @@ try {
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v294';
+const CACHE_NAME = 'lumiere-cache-v307';
 const OFFLINE_URLS = [
   './',
   './index.html',
@@ -137,6 +137,12 @@ const OFFLINE_URLS = [
   './components/mini-card/miniCard.js',
   './components/mini-card/miniCard.css',
   './firebase-config-sw.js',
+  './core/firebase-config.js',
+  './core/auth.js',
+  './js/account-menu.js',
+  './pages/auth/auth.js',
+  './pages/auth/auth.css',
+  './CSS/account-menu.css',
   './vendor/dexie.mjs',
   './vendor/three.module.js',
   './components/voice/voice-orb.js',

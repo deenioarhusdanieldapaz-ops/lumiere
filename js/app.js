@@ -38,6 +38,8 @@ import { injectIcons } from './icons.js';
 import { notifications } from './notifications.js';
 import { initLocalNotifications } from './notifications-local.js';
 import { initFloatingAction } from '../components/floating-action/floatingAction.js';
+import { initAuth, hasActiveAccess } from '../core/auth.js';
+import { initAccountMenu } from './account-menu.js';
 
 /**
  * Monta o Dashboard no container #content.
@@ -114,10 +116,26 @@ async function bootstrap() {
       const btnProfile = document.getElementById('btn-profile');
       const topbarUser = document.getElementById('topbar-user');
       if (btnProfile) btnProfile.addEventListener('click', triggerProfile);
-      if (topbarUser) topbarUser.addEventListener('click', triggerProfile);
+      // #topbar-user é gerido por js/account-menu.js
     })();
     await core.init();
     console.log('[App] Core pronto.');
+
+    // Auth + menu de conta (D5.2e)
+    initAuth();
+    initAccountMenu();
+    console.log('[App] Auth e AccountMenu inicializados.');
+
+    // D5.2f — Observar estado de acesso (só log, não bloqueia ainda)
+    eventBus.on('auth:changed', (payload) => {
+      const user = payload && payload.user;
+      const sub = payload && payload.subscription;
+      console.log('[App] auth:changed', {
+        email: user ? user.email : null,
+        status: sub ? sub.status : null,
+        hasAccess: hasActiveAccess()
+      });
+    });
 
     navigation.init();
     console.log('[App] Navegação inicializada.');

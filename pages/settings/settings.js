@@ -12,6 +12,7 @@ import { dailyReviewTrigger } from '../../js/dailyReviewTrigger.js';
 import { setVoiceEnabled, getVoiceEnabled } from '../../components/voice/voice-mic-button.js';
 import { hardReload, isDevMode, activateDevMode } from '../../js/dev-tools.js';
 import { openConfigFor } from '../focus/focus-timer.js';
+import { setForceExpired, hasActiveAccess } from '../../core/auth.js';
 
 let _container = null;
 let _state = {
@@ -236,6 +237,39 @@ function renderPreferences() {
     devHint.style.color = 'rgba(240,230,210,0.4)';
     devHint.textContent = 'Desregistra o Service Worker, apaga todas as caches e recarrega a app com URL única.';
     sec.appendChild(devHint);
+
+    // Botão: Simular trial expirado
+    const btnExpire = document.createElement('button');
+    btnExpire.type = 'button';
+    btnExpire.className = 'settings-btn';
+    btnExpire.textContent = '\u23F1 Simular trial expirado (60s)';
+    btnExpire.style.background = 'rgba(255,153,153,0.10)';
+    btnExpire.style.borderColor = 'rgba(255,153,153,0.5)';
+    btnExpire.style.color = '#ff9999';
+    btnExpire.style.marginTop = '12px';
+    btnExpire.addEventListener('click', () => {
+      setForceExpired(true);
+      try { eventBus.emit('toast:show', { type: 'warning', text: 'Trial simulado expirado (60s)' }); } catch (_) {}
+      console.log('[Settings] forceExpired = true, hasAccess =', hasActiveAccess());
+      btnExpire.disabled = true;
+      btnExpire.textContent = '\u23F1 Expirado... aguarda 60s';
+      setTimeout(() => {
+        setForceExpired(false);
+        btnExpire.disabled = false;
+        btnExpire.textContent = '\u23F1 Simular trial expirado (60s)';
+        console.log('[Settings] forceExpired reset, hasAccess =', hasActiveAccess());
+        try { eventBus.emit('toast:show', { type: 'success', text: 'Trial restaurado' }); } catch (_) {}
+      }, 60000);
+    });
+    sec.appendChild(btnExpire);
+
+    const expireHint = document.createElement('p');
+    expireHint.className = 'settings-hint';
+    expireHint.style.marginTop = '6px';
+    expireHint.style.fontSize = '11px';
+    expireHint.style.color = 'rgba(240,230,210,0.4)';
+    expireHint.textContent = 'Força hasActiveAccess() a devolver false durante 60 segundos. Não altera o Firestore. Só para testar a UI.';
+    sec.appendChild(expireHint);
   }
 
   const btnSave = document.createElement('button');

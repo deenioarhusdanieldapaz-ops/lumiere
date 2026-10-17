@@ -333,7 +333,7 @@
       }
     }
   </script>
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=306"></script>
 
   <script>
     (function() {
@@ -415,15 +415,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
-    const firebaseConfig = {
-      apiKey: "AIzaSyD8n3Igc9qD-ZVyC_ONdgFmCBaskoV8P_U",
-      authDomain: "lumiere-notificacoes.firebaseapp.com",
-      projectId: "lumiere-notificacoes",
-      storageBucket: "lumiere-notificacoes.firebasestorage.app",
-      messagingSenderId: "668210725053",
-      appId: "1:668210725053:web:c55dd5ad4762ab7e0a37d4",
-      measurementId: "G-90PHG64T77"
-    };
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { firebaseConfig } from "./core/firebase-config.js";
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
     async function pedirPermissaoNotificacoes() {
