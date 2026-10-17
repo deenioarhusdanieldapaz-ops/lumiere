@@ -12,7 +12,8 @@ import { dailyReviewTrigger } from '../../js/dailyReviewTrigger.js';
 import { setVoiceEnabled, getVoiceEnabled } from '../../components/voice/voice-mic-button.js';
 import { hardReload, isDevMode, activateDevMode } from '../../js/dev-tools.js';
 import { openConfigFor } from '../focus/focus-timer.js';
-import { setForceExpired, hasActiveAccess } from '../../core/auth.js';
+import { setForceExpired, hasActiveAccess, getCurrentUser } from '../../core/auth.js';
+import { getLatestCloudBackup, forceUploadBackup } from '../../core/backup.js';
 
 let _container = null;
 let _state = {
@@ -113,6 +114,7 @@ function render() {
   } else {
     page.appendChild(renderPreferences());
     page.appendChild(renderPomodoro());
+    page.appendChild(renderBackup());
     page.appendChild(renderActions());
   }
 
@@ -335,6 +337,76 @@ function renderPomodoro() {
     }
   });
   sec.appendChild(btn);
+
+  return sec;
+}
+
+function renderBackup() {
+  const sec = document.createElement('section');
+  sec.className = 'settings-section';
+
+  const t = document.createElement('h3');
+  t.className = 'settings-section__title';
+  t.textContent = 'Backup';
+  sec.appendChild(t);
+
+  const hint = document.createElement('p');
+  hint.className = 'settings-hint';
+  hint.style.marginBottom = '12px';
+  hint.textContent = 'Mantém os teus dados seguros na cloud. O backup é feito automaticamente uma vez por dia, mas podes forçar um agora.';
+  sec.appendChild(hint);
+
+  const statusTxt = document.createElement('p');
+  statusTxt.className = 'settings-hint';
+  statusTxt.style.marginBottom = '12px';
+  statusTxt.style.color = '#d4af37';
+  statusTxt.textContent = 'A verificar último backup...';
+  sec.appendChild(statusTxt);
+
+  const btnBackup = document.createElement('button');
+  btnBackup.type = 'button';
+  btnBackup.className = 'settings-btn';
+  btnBackup.textContent = 'Fazer Backup Agora';
+  
+  const user = getCurrentUser();
+  if (!user) {
+    btnBackup.disabled = true;
+    statusTxt.textContent = 'Inicia sessão para ativar o backup.';
+    statusTxt.style.color = 'rgba(240,230,210,0.5)';
+  } else {
+    // Procurar último backup assincronamente
+    getLatestCloudBackup(user.uid).then(backup => {
+      if (backup) {
+        statusTxt.textContent = 'Último backup: ' + backup.date;
+      } else {
+        statusTxt.textContent = 'Nenhum backup encontrado na cloud.';
+      }
+    }).catch(() => {
+      statusTxt.textContent = 'Erro ao verificar backup.';
+    });
+
+    btnBackup.addEventListener('click', async () => {
+      btnBackup.disabled = true;
+      const original = btnBackup.textContent;
+      btnBackup.textContent = 'A enviar...';
+      
+      const res = await forceUploadBackup(user.uid);
+      if (res.ok) {
+        statusTxt.textContent = 'Último backup: ' + res.date;
+        btnBackup.textContent = 'Backup concluído!';
+        try { eventBus.emit('toast:show', { type: 'success', text: 'Backup guardado na cloud.' }); } catch (_) {}
+      } else {
+        btnBackup.textContent = 'Erro. Tentar novamente';
+        try { eventBus.emit('toast:show', { type: 'error', text: res.error || 'Falha no backup.' }); } catch (_) {}
+      }
+      
+      setTimeout(() => {
+        btnBackup.disabled = false;
+        btnBackup.textContent = original;
+      }, 3000);
+    });
+  }
+  sec.appendChild(btnBackup);
 
   return sec;
 }

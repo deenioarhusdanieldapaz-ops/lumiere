@@ -41,6 +41,8 @@ import { initFloatingAction } from '../components/floating-action/floatingAction
 import { initAuth, hasActiveAccess } from '../core/auth.js';
 import { initAccountMenu } from './account-menu.js';
 import { initBanner } from '../components/banner/banner.js';
+import { getLatestCloudBackup } from '../core/backup.js';
+import { showRestoreModal } from '../components/restore-modal/restore-modal.js';
 
 /**
  * Monta o Dashboard no container #content.
@@ -129,7 +131,8 @@ async function bootstrap() {
     console.log('[App] Auth, AccountMenu e Banner inicializados.');
 
     // D5.2f — Observar estado de acesso (só log, não bloqueia ainda)
-    eventBus.on('auth:changed', (payload) => {
+    let _restoreChecked = false;
+    eventBus.on('auth:changed', async (payload) => {
       const user = payload && payload.user;
       const sub = payload && payload.subscription;
       console.log('[App] auth:changed', {
@@ -137,6 +140,25 @@ async function bootstrap() {
         status: sub ? sub.status : null,
         hasAccess: hasActiveAccess()
       });
+
+      // E3 — Verificação de Restauro no arranque
+      if (user && !_restoreChecked) {
+        _restoreChecked = true;
+        try {
+          const localTasks = await dataManager.list('tasks');
+          const localHabits = await dataManager.list('habits');
+          
+          // Se a base local estiver vazia, procura backup
+          if (localTasks.length === 0 && localHabits.length === 0) {
+            const cloudBackup = await getLatestCloudBackup(user.uid);
+            if (cloudBackup) {
+              showRestoreModal(cloudBackup);
+            }
+          }
+        } catch (err) {
+          console.warn('[App] Erro ao verificar backup para restauro:', err);
+        }
+      }
     });
 
     navigation.init();
