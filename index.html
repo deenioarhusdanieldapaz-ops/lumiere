@@ -333,7 +333,8 @@
       }
     }
   </script>
-  <script type="module" src="js/app.js?v=306"></script>
+      <link rel="stylesheet" href="CSS/components/banner.css">
+    <script type="module" src="js/app.js?v=317"></script>
 
   <script>
     (function() {
@@ -406,7 +407,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function() {
-        navigator.serviceWorker.register("./sw.js?v=219")
+        navigator.serviceWorker.register("./sw.js?v=310", { updateViaCache: 'none' })
           .then(function(reg) { console.log("[SW] Registado:", reg.scope); })
           .catch(function(err) { console.error("[SW] Erro:", err); });
       });

@@ -40,6 +40,7 @@ import { initLocalNotifications } from './notifications-local.js';
 import { initFloatingAction } from '../components/floating-action/floatingAction.js';
 import { initAuth, hasActiveAccess } from '../core/auth.js';
 import { initAccountMenu } from './account-menu.js';
+import { initBanner } from '../components/banner/banner.js';
 
 /**
  * Monta o Dashboard no container #content.
@@ -124,7 +125,8 @@ async function bootstrap() {
     // Auth + menu de conta (D5.2e)
     initAuth();
     initAccountMenu();
-    console.log('[App] Auth e AccountMenu inicializados.');
+    initBanner();
+    console.log('[App] Auth, AccountMenu e Banner inicializados.');
 
     // D5.2f — Observar estado de acesso (só log, não bloqueia ainda)
     eventBus.on('auth:changed', (payload) => {

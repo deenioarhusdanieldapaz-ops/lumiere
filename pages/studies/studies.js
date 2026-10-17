@@ -5,6 +5,7 @@
  * Cada estudo carrega as suas sessões e mostra-as dentro do cartão.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
@@ -423,6 +424,7 @@ function renderState(message, isError = false) {
 
 /* __STUDIES_FORM_FUNCTIONS__ */
 function openForm(studyId = null) {
+  if (!requireAccess()) return;
   _state.editingId = studyId;
   _state.showForm = true;
   _state.error = null;

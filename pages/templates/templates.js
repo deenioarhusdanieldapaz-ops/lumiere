@@ -6,6 +6,7 @@
  * NÃO contém regras de negócio.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { createMenu } from '../../components/menu/menu.js';
 import { t } from '../../js/i18n.js';
@@ -253,6 +254,7 @@ function renderTemplateItem(tpl) {
 const CATEGORIES = ['personal','work','study','health','finance','home','lumiere','leisure','other'];
 
 function openForm(id) {
+  if (!requireAccess()) return;
   _state.editingId = id || null;
   _state.showForm = true;
   render();

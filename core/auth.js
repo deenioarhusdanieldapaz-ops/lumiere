@@ -187,9 +187,36 @@ export function setForceExpired(v) {
   emitAuthChanged();
 }
 
+export function requireAccess() {
+  if (hasActiveAccess()) return true;
+  try {
+    eventBus.emit('toast:show', {
+      type: 'error',
+      text: 'O teu trial expirou. Renova para criar ou editar.'
+    });
+  } catch (_) {}
+  return false;
+}
+
 export function initAuth() {
   if (_authInitialized) return;
   _authInitialized = true;
+
+  // Opção B: Reconexão forçada ao voltar do background
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && _currentUser) {
+      console.log('[Auth] App voltou. A aguardar rede...');
+      setTimeout(() => {
+        if (!_currentUser) return;
+        console.log('[Auth] A reconectar Firebase...');
+        try {
+          _currentUser.getIdToken(true).catch(() => {});
+        } catch (_) {}
+        attachSnapshot(_currentUser);
+      }, 2000); // Espera 2s para o Android ligar a rede
+    }
+  });
+
   onAuthStateChanged(auth, async (user) => {
     _currentUser = user || null;
     if (user) {
@@ -217,5 +244,6 @@ export default {
   getCurrentUser,
   getSubscription,
   hasActiveAccess,
+  requireAccess,
   sendPasswordReset
 };

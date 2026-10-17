@@ -4,6 +4,7 @@
  * Estrutura inicial: init + load + render list/empty.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
@@ -380,6 +381,7 @@ function renderState(message, isError = false) {
 
 /* __HABITS_FORM_FUNCTIONS__ */
 function openForm(habitId = null) {
+  if (!requireAccess()) return;
   _state.editingId = habitId;
   _state.showForm = true;
   _state.error = null;

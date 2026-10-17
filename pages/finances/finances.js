@@ -5,6 +5,7 @@
  * Sistema de tabs.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
 import { createProgress } from '../../components/progress/progress.js';
@@ -535,6 +536,7 @@ function renderState(message, isError = false) {
 
 /* __FIN_ACCOUNTS_FORM__ */
 function openForm(accountId = null) {
+  if (!requireAccess()) return;
   _state.editingId = accountId;
   _state.showForm = true;
   render();

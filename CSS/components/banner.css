@@ -1,0 +1,205 @@
+/* ============================================================
+   Trial Banner + Renew Modal
+   ============================================================ */
+
+/* Banner */
+.trial-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #140f08; /* Fundo escuro com toque quente */
+  border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 12px 16px;
+  margin: 0 16px 16px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.trial-banner__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.trial-banner__icon {
+  color: #d4af37;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.trial-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.trial-banner__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f0e6d2;
+  margin: 0;
+}
+
+.trial-banner__subtitle {
+  font-size: 11px;
+  color: rgba(240, 230, 210, 0.6);
+  margin: 0;
+}
+
+.trial-banner__btn {
+  background: transparent;
+  border: 1px solid #d4af37;
+  color: #d4af37;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.trial-banner__btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+/* Modal de Renovação */
+.renew-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  animation: fadeIn 0.2s forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.renew-modal {
+  background: #0a0a0a;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 380px;
+  padding: 24px;
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  text-align: center;
+}
+
+.renew-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: rgba(240, 230, 210, 0.5);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.renew-modal__title {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 18px;
+  color: #d4af37;
+  margin: 0 0 8px;
+  letter-spacing: 1px;
+}
+
+.renew-modal__subtitle {
+  font-size: 12px;
+  color: rgba(240, 230, 210, 0.7);
+  margin: 0 0 20px;
+  line-height: 1.4;
+}
+
+.renew-modal__options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.renew-option {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.renew-option__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.renew-option__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d4af37;
+  text-transform: uppercase;
+}
+
+.renew-option__value {
+  font-size: 15px;
+  color: #f0e6d2;
+  font-family: monospace;
+}
+
+.renew-option__name {
+  font-size: 11px;
+  color: rgba(240, 230, 210, 0.5);
+}
+
+.renew-option__btn {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #d4af37;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.renew-option__btn:active {
+  background: rgba(212, 175, 55, 0.3);
+}
+
+.renew-modal__whatsapp {
+  width: 100%;
+  background: #d4af37;
+  color: #000;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

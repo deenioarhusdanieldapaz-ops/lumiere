@@ -6,6 +6,7 @@ import { eventBus } from '../../core/eventBus.js';
 import { stateManager } from '../../core/stateManager.js';
 import { ICONS } from '../../js/icons.js';
 import { dataManager } from '../../core/dataManager.js';
+import { requireAccess } from '../../core/auth.js';
 
 const PAGE_ACTIONS = {
   overview: [
@@ -85,6 +86,10 @@ function buildMenuItems(actions) {
     btn.appendChild(labelSpan);
 
     btn.addEventListener('click', () => {
+      if (!requireAccess()) {
+        closeMenu();
+        return;
+      }
       eventBus.emit('navigation:changed', { page: a.target });
       try { eventBus.emit('page:open-form', { page: a.target, action: a.action }); } catch (e) {}
       closeMenu();

@@ -4,6 +4,7 @@
  * Eventos agrupados por data (mais próximos primeiro).
  */
 import { dataManager } from '../../core/dataManager.js';
+import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
@@ -296,6 +297,7 @@ function metaTag(text) {
    ============================================================ */
 
 function openForm(eventId = null) {
+  if (!requireAccess()) return;
   _state.editingId = eventId;
   _state.showForm = true;
   render();

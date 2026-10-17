@@ -4,6 +4,7 @@
  * Estrutura inicial: init + load + render list/empty.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 import { createProgress } from '../../components/progress/progress.js';
@@ -278,6 +279,7 @@ function renderState(message, isError = false) {
 
 /* __GOALS_FORM_FUNCTIONS__ */
 function openForm(goalId = null) {
+  if (!requireAccess()) return;
   _state.editingId = goalId;
   _state.showForm = true;
   _state.error = null;

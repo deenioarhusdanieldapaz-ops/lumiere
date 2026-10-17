@@ -9,6 +9,7 @@
 import { dataManager } from '../../core/dataManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
+import { requireAccess } from '../../core/auth.js';
 
 // ============================================================
 // Icones automaticos — 50 keywords (nome) + 9 categorias
@@ -397,6 +398,7 @@ function renderState(message, isError = false) {
  * @param {string|null} taskId
  */
 function openForm(taskId = null, prefill = null) {
+  if (!requireAccess()) return;
   _state.editingId = taskId;
   _state.showForm = true;
   _state.error = null;

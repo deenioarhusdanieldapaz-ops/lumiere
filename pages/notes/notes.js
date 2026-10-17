@@ -2,6 +2,7 @@
  * Notes Page
  */
 import { dataManager } from '../../core/dataManager.js';
+import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 
@@ -171,6 +172,7 @@ function renderState(message, isError = false) {
    ============================================================ */
 
 function openForm(noteId = null) {
+  if (!requireAccess()) return;
   _state.editingId = noteId;
   _state.showForm = true;
   render();
