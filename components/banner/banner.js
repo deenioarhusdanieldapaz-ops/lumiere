@@ -4,11 +4,10 @@
  */
 
 import { eventBus } from '../../core/eventBus.js';
+import { getCurrentUser } from '../../core/auth.js';
 
 let _bannerEl = null;
 let _modalEl = null;
-
-const WHATSAPP_URL = 'https://wa.me/258834748955?text=Ol%C3%A1%2C%20quero%20renovar%20a%20minha%20subscri%C3%A7%C3%A3o%20Lumi%C3%A8re';
 
 function el(tag, cls, txt) {
   const e = document.createElement(tag);
@@ -72,7 +71,11 @@ function openRenewModal() {
 
   const waBtn = el('button', 'renew-modal__whatsapp', 'Enviar comprovativo via WhatsApp');
   waBtn.addEventListener('click', () => {
-    window.open(WHATSAPP_URL, '_blank');
+    const user = getCurrentUser();
+    const email = user && user.email ? user.email : 'N/A';
+    const msg = 'Olá, quero renovar a minha subscrição Lumière. O meu email é: ' + email;
+    const url = 'https://wa.me/258834748955?text=' + encodeURIComponent(msg);
+    window.open(url, '_blank');
   });
   modal.appendChild(waBtn);
 
