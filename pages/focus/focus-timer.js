@@ -764,23 +764,67 @@ function updatePauseUI() {
   _refs.pause.sesso.innerHTML = buildSessionCounterHTML(sessNum, cfg.cyclesBeforeLong, _session.cyclesCompleted);
 }
 
-function updateDoneUI() {
+function fmtMinutes(m) {
+  if (!m || m < 1) return '0 min';
+  if (m < 60) return m + ' min';
+  const h = Math.floor(m / 60);
+  const r = m % 60;
+  return h + 'h' + (r > 0 ? ' ' + r + 'min' : '');
+}
+
+async function loadSessionStats(entityId) {
+  const today = new Date().toISOString().split('T')[0];
+  const weekAgo = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  let sessions = [];
+  try {
+    sessions = await dataManager.list('focusSessions');
+  } catch (e) {
+    console.warn('[FocusTimer] Falha a carregar stats:', e);
+  }
+
+  const forEntity = (sessions || []).filter(s => s.entityId === entityId);
+
+  const agg = (arr) => arr.reduce((acc, s) => {
+    acc.cycles += (s.completedCycles || 0);
+    acc.mins += (s.focusMinutes || 0);
+    return acc;
+  }, { cycles: 0, mins: 0 });
+
+  return {
+    today: agg(forEntity.filter(s => s.date === today)),
+    week:  agg(forEntity.filter(s => s.date >= weekAgo)),
+    total: agg(forEntity)
+  };
+}
+
+async function updateDoneUI() {
   if (!_refs || !_refs.done || !_session) return;
   const focusMin = Math.round(_session.focusMsTotal / 60000);
-  _refs.done.text.textContent = 'Focaste ' + focusMin + ' min em "' + (_session.entity.name || '—') + '"';
+  _refs.done.text.textContent = 'Focaste ' + fmtMinutes(focusMin) + ' em "' + (_session.entity.name || '—') + '"';
 
   const stats = _refs.done.stats;
   stats.innerHTML = '';
+
+  const entityId = _session.entity.id;
+  const agg = await loadSessionStats(entityId);
+
+  if (!_refs || !_refs.done) return;
+
   const rows = [
-    { icon: '\u2726', label: 'Ciclos completos', value: String(_session.cyclesCompleted) },
-    { icon: '\u{1F4C5}', label: 'Tempo de foco', value: focusMin + ' min' },
-    { icon: '\u23F1', label: 'Tempo em pausa', value: Math.round((_session.breakMsTotal || 0) / 60000) + ' min' }
+    { icon: '\u2726', label: 'Hoje', cycles: agg.today.cycles, mins: agg.today.mins },
+    { icon: '\u{1F4C5}', label: 'Esta semana', cycles: agg.week.cycles, mins: agg.week.mins },
+    { icon: '\u{1F3AF}', label: 'Total na tarefa', cycles: agg.total.cycles, mins: agg.total.mins }
   ];
+
   for (const r of rows) {
     const row = el('div', 'focus-done__stat-row');
     row.appendChild(el('span', 'focus-done__stat-icon', r.icon));
     row.appendChild(el('span', 'focus-done__stat-label', r.label));
-    row.appendChild(el('span', 'focus-done__stat-value', r.value));
+    const right = el('div', 'focus-done__stat-right');
+    right.appendChild(el('span', 'focus-done__stat-value', r.cycles + (r.cycles === 1 ? ' ciclo' : ' ciclos')));
+    right.appendChild(el('span', 'focus-done__stat-sub', '(' + fmtMinutes(r.mins) + ')'));
+    row.appendChild(right);
     stats.appendChild(row);
   }
 }
@@ -859,7 +903,7 @@ function buildExitConfirm() {
   const cyc = _session.cyclesCompleted;
   const focusMin = Math.round(_session.focusMsTotal / 60000);
   stats.appendChild(el('p', 'focus-confirm__stat', 'J\u00E1 completaste ' + cyc + (cyc === 1 ? ' ciclo' : ' ciclos')));
-  stats.appendChild(el('p', 'focus-confirm__stat', 'Tempo de foco: ' + focusMin + ' min'));
+  stats.appendChild(el('p', 'focus-confirm__stat', 'Tempo de foco: ' + fmtMinutes(focusMin)));
   card.appendChild(stats);
   const btnContinue = el('button', 'focus-confirm__btn focus-confirm__btn--primary', 'Continuar');
   btnContinue.type = 'button';

@@ -26,7 +26,7 @@ try {
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v307';
+const CACHE_NAME = 'lumiere-cache-v309';
 const OFFLINE_URLS = [
   './',
   './index.html',
