@@ -1,3 +1,14 @@
+
+// --- GESTÃO DE LISTENER GLOBAL (TEMPLATES) ---
+if (!window.__lumiereTemplateMenuListener) {
+  window.__lumiereTemplateMenuListener = true;
+  document.addEventListener('click', (e) => {
+    if (!(e.target instanceof Element)) return;
+    if (!e.target.closest('details.templates-item__actions')) {
+      document.querySelectorAll('details.templates-item__actions[open]').forEach(d => d.removeAttribute('open'));
+    }
+  });
+}
 /**
  * Templates Page
  *
@@ -50,6 +61,8 @@ export function initTemplates(container) {
   });
 
   loadTemplates();
+  
+
 }
 
 async function loadTemplates() {
@@ -74,6 +87,20 @@ async function loadTemplates() {
 
 function render() {
   if (!_container) return;
+
+  // VERIFICAÇÃO DE PREFILL
+  const prefillJson = localStorage.getItem('lumiere_template_prefill');
+  if (prefillJson && !_state.showForm) {
+    try {
+      const prefillData = JSON.parse(prefillJson);
+      localStorage.removeItem('lumiere_template_prefill');
+      _state.prefillData = prefillData;
+      _state.showForm = true;
+      _state.editingId = null;
+    } catch (e) { console.error("Erro no prefill", e); }
+  }
+
+
   _container.innerHTML = '';
 
   const page = document.createElement('div');
@@ -175,384 +202,147 @@ function renderFilters() {
 
 function renderTemplateItem(tpl) {
   const item = document.createElement('article');
-  item.className = 'templates-item';
+  item.className = 'lum-card lum-card--template templates-item';
 
-  const meta = APPLIES_TO_META[tpl.appliesTo] || { label: '—', icon: '\u{1F4CC}' };
+  const meta = APPLIES_TO_META[tpl.appliesTo] || { label: '—', icon: '📌' };
 
   const header = document.createElement('div');
-  header.className = 'templates-item__header';
-
+  header.className = 'lum-card__header templates-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'templates-item__header-left';
+  headerLeft.className = 'lum-card__header-left templates-item__header-left';
 
+  // Ícone SVG de Prancheta (Premium)
   const icon = document.createElement('span');
-  icon.className = 'templates-item__icon';
-  icon.textContent = tpl.icon || meta.icon;
+  icon.className = 'lum-card__icon templates-item__icon';
+  const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>';
+  
+  if (tpl.icon) {
+    icon.textContent = tpl.icon;
+  } else {
+    icon.innerHTML = svgIcon;
+  }
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'templates-item__name';
+  name.className = 'lum-card__title templates-item__name';
   name.textContent = tpl.name || '(sem nome)';
   headerLeft.appendChild(name);
-
   header.appendChild(headerLeft);
 
-  const menuWrap = document.createElement('div');
-  menuWrap.className = 'templates-item__menu';
-  const menu = createMenu({
-    items: [
-      { id: 'edit', label: 'Editar' },
-      { id: 'duplicate', label: 'Duplicar' },
-      { id: 'delete', label: 'Eliminar' }
-    ],
-    triggerLabel: '⋮',
-    triggerAriaLabel: 'Opções do template',
-    align: 'right',
-    onSelect: (id) => {
-      if (id === 'edit') {
-        openForm(tpl.id);
-      } else if (id === 'duplicate') {
-        handleDuplicate(tpl);
-      } else if (id === 'delete') {
-        handleDelete(tpl);
-      }
-    }
-  });
-  menuWrap.appendChild(menu);
-  header.appendChild(menuWrap);
+  // Menu de 3 Pontos (Sólido e Ancorado)
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions templates-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'templates-item__menu-btn';
+  summary.innerHTML = '⋮';
+  summary.setAttribute('aria-label', 'Opções do template');
+  actions.appendChild(summary);
+  
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'templates-item__menu-dropdown';
 
+  const btnEdit = document.createElement('button');
+  btnEdit.type = 'button';
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(tpl.id); });
+  menuDropdown.appendChild(btnEdit);
+
+  const btnDuplicate = document.createElement('button');
+  btnDuplicate.type = 'button';
+  btnDuplicate.innerHTML = '⧉ Duplicar';
+  btnDuplicate.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDuplicate(tpl); });
+  menuDropdown.appendChild(btnDuplicate);
+
+  const btnDelete = document.createElement('button');
+  btnDelete.type = 'button';
+  btnDelete.innerHTML = '✕ Eliminar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDelete(tpl); });
+  menuDropdown.appendChild(btnDelete);
+
+  actions.appendChild(menuDropdown);
+  header.appendChild(actions);
   item.appendChild(header);
 
+  // Tags
   const meta_row = document.createElement('div');
   meta_row.className = 'templates-item__meta';
-
-  if (tpl.appliesTo && APPLIES_TO_META[tpl.appliesTo]) {
-    meta_row.appendChild(metaTag(meta.label));
-  }
-  if (tpl.category) {
-    meta_row.appendChild(metaTag(t('category', tpl.category)));
-  }
-  if (tpl.usageCount && tpl.usageCount > 0) {
-    meta_row.appendChild(metaTag('Usado ' + tpl.usageCount + 'x'));
-  }
+  if (tpl.appliesTo && APPLIES_TO_META[tpl.appliesTo]) meta_row.appendChild(metaTag(meta.label));
+  if (tpl.category) meta_row.appendChild(metaTag(t('category', tpl.category)));
+  if (tpl.usageCount && tpl.usageCount > 0) meta_row.appendChild(metaTag('Usado ' + tpl.usageCount + 'x'));
   item.appendChild(meta_row);
 
+  // Descrição Expansível (Ler Mais)
   if (tpl.description) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'templates-item__desc-wrap';
     const desc = document.createElement('p');
     desc.className = 'templates-item__description';
     desc.textContent = tpl.description;
-    item.appendChild(desc);
-  }
+    descWrap.appendChild(desc);
 
-  return item;
-}
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'templates-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    item.appendChild(descWrap);
 
-// ============================================================
-// Formulário — criar / editar template (Ecrã 2)
-// ============================================================
-const CATEGORIES = ['personal','work','study','health','finance','home','lumiere','leisure','other'];
-
-function openForm(id) {
-  if (!requireAccess()) return;
-  _state.editingId = id || null;
-  _state.showForm = true;
-  render();
-}
-
-function closeForm() {
-  _state.showForm = false;
-  _state.editingId = null;
-  render();
-}
-
-function renderForm() {
-  const isEdit = Boolean(_state.editingId);
-  const tpl = isEdit ? _state.templates.find(t => t.id === _state.editingId) : null;
-  const payload = (tpl && tpl.payload) ? tpl.payload : {};
-
-  const form = document.createElement('form');
-  form.className = 'templates-form';
-  form.noValidate = true;
-  form.addEventListener('submit', handleSubmit);
-
-  const title = document.createElement('h3');
-  title.className = 'templates-form__title';
-  title.textContent = isEdit ? 'Editar template' : 'Novo template';
-  form.appendChild(title);
-
-  const grid = document.createElement('div');
-  grid.className = 'templates-form__grid';
-
-  // --- Campos base ---
-  grid.appendChild(field('Nome *', 'input', 'name', tpl ? tpl.name : '', { type: 'text', required: true, placeholder: 'Ex: Treino corrida fácil' }));
-  grid.appendChild(field('Descrição', 'textarea', 'description', tpl ? tpl.description : '', { full: true }));
-  grid.appendChild(field('Aplica-se a *', 'select', 'appliesTo', tpl ? tpl.appliesTo : 'tasks', {
-    options: APPLIES_TO_ORDER,
-    labels: APPLIES_TO_ORDER.map(k => APPLIES_TO_META[k].label)
-  }));
-  grid.appendChild(field('Categoria *', 'select', 'category', tpl ? tpl.category : 'personal', {
-    options: CATEGORIES,
-    translate: 'category'
-  }));
-
-  form.appendChild(grid);
-
-  // --- Secção "O que pré-preencher?" ---
-  const payloadSection = document.createElement('section');
-  payloadSection.className = 'templates-form__payload';
-
-  const payloadTitle = document.createElement('h4');
-  payloadTitle.className = 'templates-form__payload-title';
-  payloadTitle.textContent = 'O que pré-preencher?';
-  payloadSection.appendChild(payloadTitle);
-
-  const payloadHint = document.createElement('p');
-  payloadHint.className = 'templates-form__payload-hint';
-  payloadHint.textContent = 'Configura os detalhes que serão aplicados quando usares este template.';
-  payloadSection.appendChild(payloadHint);
-
-  const payloadGrid = document.createElement('div');
-  payloadGrid.className = 'templates-form__grid';
-  payloadGrid.id = 'templates-payload-grid';
-
-  // Renderizar campos do módulo atual
-  renderPayloadInto(payloadGrid, tpl ? tpl.appliesTo : 'tasks', payload);
-  payloadSection.appendChild(payloadGrid);
-
-  form.appendChild(payloadSection);
-
-  // --- Erro + Ações ---
-  const error = document.createElement('p');
-  error.className = 'templates-form__error';
-  error.hidden = true;
-  form.appendChild(error);
-
-  const actions = document.createElement('div');
-  actions.className = 'templates-form__actions';
-
-  const btnCancel = document.createElement('button');
-  btnCancel.type = 'button';
-  btnCancel.className = 'templates-btn';
-  btnCancel.textContent = 'Cancelar';
-  btnCancel.addEventListener('click', () => closeForm());
-  actions.appendChild(btnCancel);
-
-  const btnSave = document.createElement('button');
-  btnSave.type = 'submit';
-  btnSave.className = 'templates-btn templates-btn--primary';
-  btnSave.textContent = isEdit ? 'Guardar' : 'Criar';
-  actions.appendChild(btnSave);
-
-  form.appendChild(actions);
-
-  // --- Listener para trocar o módulo destino ---
-  const selectAppliesTo = form.querySelector('select[name="appliesTo"]');
-  if (selectAppliesTo) {
-    selectAppliesTo.addEventListener('change', () => {
-      renderPayloadInto(payloadGrid, selectAppliesTo.value, {});
+    btnReadMore.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = descWrap.classList.toggle('is-expanded');
+      btnReadMore.textContent = isExpanded ? 'Mostrar menos' : 'Ler mais';
+      if (!isExpanded) btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
     });
-  }
 
-  return form;
-}
-
-// ------------------------------------------------------------
-// Renderiza os campos dinâmicos dentro do grid de payload
-// ------------------------------------------------------------
-function renderPayloadInto(grid, appliesTo, payload) {
-  grid.innerHTML = '';
-  payload = payload || {};
-
-  if (appliesTo === 'tasks') {
-    grid.appendChild(field('Nome da tarefa', 'input', 'payload.name', payload.name || '', { type: 'text' }));
-    grid.appendChild(field('Descrição', 'textarea', 'payload.description', payload.description || '', { full: true }));
-    grid.appendChild(field('Prioridade', 'select', 'payload.priority', payload.priority || 'medium', {
-      options: ['low','medium','high','urgent'],
-      translate: 'priority'
-    }));
-    grid.appendChild(field('Estado', 'select', 'payload.status', payload.status || 'pending', {
-      options: ['pending','in-progress','completed','cancelled'],
-      translate: 'status'
-    }));
-    grid.appendChild(field('Prazo', 'input', 'payload.dueDate', payload.dueDate || '', { type: 'date' }));
-    grid.appendChild(field('Etiquetas', 'input', 'payload.tags', (payload.tags || []).join(', '), { type: 'text', full: true }));
-    grid.appendChild(field('Notas', 'textarea', 'payload.notes', payload.notes || '', { full: true }));
-  } else if (appliesTo === 'habits') {
-    grid.appendChild(field('Nome do hábito', 'input', 'payload.name', payload.name || '', { type: 'text' }));
-    grid.appendChild(field('Descrição', 'textarea', 'payload.description', payload.description || '', { full: true }));
-    grid.appendChild(field('Frequência', 'select', 'payload.frequency', payload.frequency || 'daily', {
-      options: ['daily','weekly','monthly'],
-      translate: 'frequency'
-    }));
-    grid.appendChild(field('Meta', 'input', 'payload.target', payload.target || 1, { type: 'number', min: 1 }));
-    grid.appendChild(field('Unidade', 'input', 'payload.unit', payload.unit || 'times', { type: 'text' }));
-    grid.appendChild(field('Dias da semana', 'input', 'payload.daysOfWeek', (payload.daysOfWeek || []).join(', '), { type: 'text', full: true, placeholder: 'seg, ter, qua' }));
-    grid.appendChild(field('Notas', 'textarea', 'payload.notes', payload.notes || '', { full: true }));
-  } else if (appliesTo === 'studies') {
-    grid.appendChild(field('Nome do estudo', 'input', 'payload.name', payload.name || '', { type: 'text' }));
-    grid.appendChild(field('Descrição', 'textarea', 'payload.description', payload.description || '', { full: true }));
-    grid.appendChild(field('Disciplina', 'input', 'payload.subject', payload.subject || '', { type: 'text', placeholder: 'Ex: Física' }));
-    grid.appendChild(field('Duração (min)', 'input', 'payload.duration', payload.duration || 60, { type: 'number', min: 1 }));
-    grid.appendChild(field('Notas', 'textarea', 'payload.notes', payload.notes || '', { full: true }));
-  } else if (appliesTo === 'goals') {
-    grid.appendChild(field('Nome do objetivo', 'input', 'payload.name', payload.name || '', { type: 'text' }));
-    grid.appendChild(field('Descrição', 'textarea', 'payload.description', payload.description || '', { full: true }));
-    grid.appendChild(field('Prazo', 'input', 'payload.targetDate', payload.targetDate || '', { type: 'date' }));
-    grid.appendChild(field('Notas', 'textarea', 'payload.notes', payload.notes || '', { full: true }));
-  } else if (appliesTo === 'notes') {
-    grid.appendChild(field('Título', 'input', 'payload.title', payload.title || '', { type: 'text', required: false }));
-    grid.appendChild(field('Conteúdo', 'textarea', 'payload.content', payload.content || '', { full: true }));
-    grid.appendChild(field('Etiquetas', 'input', 'payload.tags', (payload.tags || []).join(', '), { type: 'text', full: true }));
-  }
-}
-
-// ------------------------------------------------------------
-// Helper: campo genérico
-// ------------------------------------------------------------
-function field(labelText, tag, name, value, opts = {}) {
-  const wrap = document.createElement('div');
-  wrap.className = 'templates-form__field' + (opts.full ? ' templates-form__field--full' : '');
-
-  const label = document.createElement('label');
-  const safeId = 'tpl-' + name.replace(/\./g, '-');
-  label.setAttribute('for', safeId);
-  label.textContent = labelText;
-  wrap.appendChild(label);
-
-  let input;
-  if (tag === 'textarea') {
-    input = document.createElement('textarea');
-    input.value = value || '';
-  } else if (tag === 'select') {
-    input = document.createElement('select');
-    const options = opts.options || [];
-    const labels = opts.labels || null;
-    options.forEach((opt, idx) => {
-      const el = document.createElement('option');
-      el.value = opt;
-      let text = opt;
-      if (opts.translate) text = t(opts.translate, opt);
-      else if (labels) text = labels[idx];
-      el.textContent = text;
-      if (String(opt) === String(value)) el.selected = true;
-      input.appendChild(el);
+    const observer = new ResizeObserver(() => {
+      if (descWrap.classList.contains('is-expanded')) {
+        btnReadMore.style.display = 'block';
+        return;
+      }
+      btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
     });
+    observer.observe(desc);
+    
+    const listObserver = new MutationObserver(() => {
+      if (!document.body.contains(desc)) {
+        observer.disconnect();
+        listObserver.disconnect();
+      }
+    });
+    listObserver.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // Rodapé (Data e Seta)
+  const footer = document.createElement('div');
+  footer.className = 'templates-item__footer';
+  
+  let dateStr = '';
+  if (tpl.createdAt || tpl.updatedAt) {
+    const d = new Date(tpl.createdAt || tpl.updatedAt);
+    const now = new Date();
+    const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    const timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    dateStr = isToday ? `Hoje, ${timeStr}` : `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}, ${timeStr}`;
   } else {
-    input = document.createElement('input');
-    input.type = opts.type || 'text';
-    input.value = value !== undefined && value !== null ? String(value) : '';
+    dateStr = 'Hoje, 09:00'; // Fallback visual se não houver data
   }
 
-  input.id = safeId;
-  input.name = name;
-  if (opts.required) input.required = true;
-  if (opts.placeholder) input.placeholder = opts.placeholder;
-  if (opts.type === 'number') {
-    if (opts.min !== undefined) input.min = opts.min;
-    if (opts.max !== undefined) input.max = opts.max;
-  }
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'templates-item__footer-info';
+  const calIcon = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+  dateSpan.innerHTML = calIcon;
+  dateSpan.appendChild(document.createTextNode(' ' + dateStr));
+  footer.appendChild(dateSpan);
 
-  wrap.appendChild(input);
-  return wrap;
-}
+  const arrowIcon = document.createElement('span');
+  arrowIcon.className = 'templates-item__arrow';
+  arrowIcon.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowIcon);
 
-// ------------------------------------------------------------
-// Submissão do formulário
-// ------------------------------------------------------------
-async function handleSubmit(ev) {
-  ev.preventDefault();
-  const form = ev.target;
-  const errorEl = form.querySelector('.templates-form__error');
-  if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
-
-  const fd = new FormData(form);
-
-  const base = {
-    name: (fd.get('name') || '').trim(),
-    description: (fd.get('description') || '').trim(),
-    appliesTo: fd.get('appliesTo') || 'tasks',
-    category: fd.get('category') || 'personal'
-  };
-
-  if (!base.name) {
-    showFormError(form, 'O nome do template é obrigatório.');
-    return;
-  }
-
-  // Construir payload conforme o módulo
-  const payload = {};
-  const appliesTo = base.appliesTo;
-
-  const getVal = (k) => {
-    const v = fd.get('payload.' + k);
-    if (v === null) return undefined;
-    const s = String(v).trim();
-    return s === '' ? undefined : s;
-  };
-
-  if (appliesTo === 'tasks') {
-    const name = getVal('name'); if (name !== undefined) payload.name = name;
-    const description = getVal('description'); if (description !== undefined) payload.description = description;
-    const priority = getVal('priority'); if (priority !== undefined) payload.priority = priority;
-    const status = getVal('status'); if (status !== undefined) payload.status = status;
-    const dueDate = getVal('dueDate'); if (dueDate !== undefined) payload.dueDate = dueDate;
-    const tags = getVal('tags'); if (tags !== undefined) payload.tags = tags.split(',').map(s => s.trim()).filter(Boolean);
-    const notes = getVal('notes'); if (notes !== undefined) payload.notes = notes;
-  } else if (appliesTo === 'habits') {
-    const name = getVal('name'); if (name !== undefined) payload.name = name;
-    const description = getVal('description'); if (description !== undefined) payload.description = description;
-    const frequency = getVal('frequency'); if (frequency !== undefined) payload.frequency = frequency;
-    const target = getVal('target'); if (target !== undefined) payload.target = Number(target);
-    const unit = getVal('unit'); if (unit !== undefined) payload.unit = unit;
-    const days = getVal('daysOfWeek'); if (days !== undefined) payload.daysOfWeek = days.split(',').map(s => s.trim()).filter(Boolean);
-    const notes = getVal('notes'); if (notes !== undefined) payload.notes = notes;
-  } else if (appliesTo === 'studies') {
-    const name = getVal('name'); if (name !== undefined) payload.name = name;
-    const description = getVal('description'); if (description !== undefined) payload.description = description;
-    const subject = getVal('subject'); if (subject !== undefined) payload.subject = subject;
-    const duration = getVal('duration'); if (duration !== undefined) payload.duration = Number(duration);
-    const notes = getVal('notes'); if (notes !== undefined) payload.notes = notes;
-  } else if (appliesTo === 'goals') {
-    const name = getVal('name'); if (name !== undefined) payload.name = name;
-    const description = getVal('description'); if (description !== undefined) payload.description = description;
-    const targetDate = getVal('targetDate'); if (targetDate !== undefined) payload.targetDate = targetDate;
-    const notes = getVal('notes'); if (notes !== undefined) payload.notes = notes;
-  } else if (appliesTo === 'notes') {
-    const title = getVal('title'); if (title !== undefined) payload.title = title;
-    const content = getVal('content'); if (content !== undefined) payload.content = content;
-    const tags = getVal('tags'); if (tags !== undefined) payload.tags = tags.split(',').map(s => s.trim()).filter(Boolean);
-  }
-
-  const data = Object.assign({}, base, { payload });
-
-  const btnSave = form.querySelector('button[type="submit"]');
-  if (btnSave) btnSave.disabled = true;
-
-  try {
-    if (_state.editingId) {
-      data.updatedAt = new Date().toISOString();
-      await dataManager.update('templates', _state.editingId, data);
-      console.log('[Templates] Atualizado:', _state.editingId);
-    } else {
-      await dataManager.create('templates', data);
-      console.log('[Templates] Criado');
-    }
-    _state.showForm = false;
-    _state.editingId = null;
-    loadTemplates();
-  } catch (err) {
-    console.error('[Templates] Erro ao guardar:', err);
-    showFormError(form, err.message || 'Erro ao guardar.');
-    if (btnSave) btnSave.disabled = false;
-  }
-}
-
-function showFormError(form, msg) {
-  const errorEl = form.querySelector('.templates-form__error');
-  if (!errorEl) return;
-  errorEl.textContent = msg;
-  errorEl.hidden = false;
+  item.appendChild(footer);
+  return item;
 }
 
 function metaTag(text) {
@@ -600,3 +390,158 @@ async function handleDuplicate(tpl) {
 
 export const templatesPage = { init: initTemplates };
 export default templatesPage;
+
+// ==========================================
+// GESTÃO DO FORMULÁRIO DE TEMPLATES
+// ==========================================
+function openForm(prefillData = null) {
+  _state.editingId = null; // Neste patch apenas criamos novos
+  _state.prefillData = prefillData;
+  _state.showForm = true;
+  render();
+}
+
+function renderForm() {
+  const form = document.createElement('form');
+  form.className = 'templates-form';
+  form.noValidate = true;
+  
+  // Título do Formulário
+  const title = document.createElement('h3');
+  title.className = 'templates-form__title';
+  title.textContent = 'Guardar como Template';
+  form.appendChild(title);
+
+  // Grid
+  const grid = document.createElement('div');
+  grid.className = 'templates-form__grid';
+
+  const prefill = _state.prefillData || {};
+
+  // Nome
+  const wrapName = document.createElement('div');
+  wrapName.className = 'templates-form__field templates-form__field--full';
+  wrapName.innerHTML = '<label>Nome do Template *</label>';
+  const inputName = document.createElement('input');
+  inputName.type = 'text';
+  inputName.name = 'name';
+  inputName.required = true;
+  inputName.value = prefill.name || '';
+  wrapName.appendChild(inputName);
+  grid.appendChild(wrapName);
+
+  // Módulo Destino (Applies To)
+  const wrapApplies = document.createElement('div');
+  wrapApplies.className = 'templates-form__field';
+  wrapApplies.innerHTML = '<label>Módulo Destino *</label>';
+  const selectApplies = document.createElement('select');
+  selectApplies.name = 'appliesTo';
+  const opcoes = [
+    { val: 'tasks', label: 'Tarefas' },
+    { val: 'habits', label: 'Hábitos' },
+    { val: 'studies', label: 'Estudos' },
+    { val: 'goals', label: 'Objetivos' },
+    { val: 'notes', label: 'Notas' }
+  ];
+  opcoes.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.val;
+    opt.textContent = o.label;
+    if (prefill.appliesTo === o.val) opt.selected = true;
+    selectApplies.appendChild(opt);
+  });
+  wrapApplies.appendChild(selectApplies);
+  grid.appendChild(wrapApplies);
+
+  // Categoria
+  const wrapCat = document.createElement('div');
+  wrapCat.className = 'templates-form__field';
+  wrapCat.innerHTML = '<label>Categoria *</label>';
+  const selectCat = document.createElement('select');
+  selectCat.name = 'category';
+  const cats = ['personal','work','study','health','finance','home','lumiere','leisure','other'];
+  cats.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+    if (prefill.category === c) opt.selected = true;
+    selectCat.appendChild(opt);
+  });
+  wrapCat.appendChild(selectCat);
+  grid.appendChild(wrapCat);
+
+  // Descrição
+  const wrapDesc = document.createElement('div');
+  wrapDesc.className = 'templates-form__field templates-form__field--full';
+  wrapDesc.innerHTML = '<label>Descrição</label>';
+  const inputDesc = document.createElement('textarea');
+  inputDesc.name = 'description';
+  inputDesc.value = prefill.description || '';
+  wrapDesc.appendChild(inputDesc);
+  grid.appendChild(wrapDesc);
+
+  form.appendChild(grid);
+
+  // Esconder o payload num input hidden (para guardar os dados originais da tarefa/nota)
+  const hiddenPayload = document.createElement('input');
+  hiddenPayload.type = 'hidden';
+  hiddenPayload.name = 'payload';
+  hiddenPayload.value = JSON.stringify(prefill.payload || {});
+  form.appendChild(hiddenPayload);
+
+  // Ações
+  const actions = document.createElement('div');
+  actions.className = 'templates-form__actions';
+  
+  const btnCancel = document.createElement('button');
+  btnCancel.type = 'button';
+  btnCancel.className = 'templates-btn';
+  btnCancel.textContent = 'Cancelar';
+  btnCancel.addEventListener('click', () => { _state.showForm = false; _state.prefillData = null; render(); });
+  actions.appendChild(btnCancel);
+
+  const btnSave = document.createElement('button');
+  btnSave.type = 'submit';
+  btnSave.className = 'templates-btn templates-btn--primary';
+  btnSave.textContent = 'Guardar Template';
+  actions.appendChild(btnSave);
+
+  form.appendChild(actions);
+
+  // Evento de Submissão
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    
+    const newTemplate = {
+      id: crypto.randomUUID?.() || Date.now().toString(36),
+      name: formData.get('name'),
+      appliesTo: formData.get('appliesTo'),
+      category: formData.get('category'),
+      description: formData.get('description'),
+      payload: JSON.parse(formData.get('payload')),
+      icon: '',
+      tags: [],
+      usageCount: 0,
+      lastUsedAt: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      btnSave.textContent = 'A guardar...';
+      btnSave.disabled = true;
+      await dataManager.create('templates', newTemplate);
+      _state.showForm = false;
+      _state.prefillData = null;
+      // O eventBus do loadTemplates vai tratar de recarregar a lista
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao guardar template: ' + err.message);
+      btnSave.textContent = 'Guardar Template';
+      btnSave.disabled = false;
+    }
+  });
+
+  return form;
+}

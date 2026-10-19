@@ -120,7 +120,18 @@ export const calculationsManager = {
       totalNotes: collections.notes ? collections.notes.length : 0,
       totalEvents: collections.calendarEvents ? collections.calendarEvents.length : 0
     };
+  },
+  /**
+   * Calcula o progresso de um objetivo com base nas tarefas concluídas.
+   */
+  calculateGoalProgress(goalId, tasks) {
+    if (!tasks || !Array.isArray(tasks)) return 0;
+    const linkedTasks = tasks.filter(t => t.goalId === goalId);
+    if (linkedTasks.length === 0) return 0;
+    const completed = linkedTasks.filter(t => t.status === 'completed').length;
+    return Math.round((completed / linkedTasks.length) * 100);
   }
+
 };
 
 export default calculationsManager;

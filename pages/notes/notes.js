@@ -1,7 +1,19 @@
+
+// --- GESTÃO DE LISTENER GLOBAL (NOTAS) ---
+if (!window.__lumiereNoteMenuListener) {
+  window.__lumiereNoteMenuListener = true;
+  document.addEventListener('click', (e) => {
+    if (!(e.target instanceof Element)) return;
+    if (!e.target.closest('details.note-item__actions')) {
+      document.querySelectorAll('details.note-item__actions[open]').forEach(d => d.removeAttribute('open'));
+    }
+  });
+}
 /**
  * Notes Page
  */
 import { dataManager } from '../../core/dataManager.js';
+import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
@@ -63,6 +75,20 @@ let _state = {
   error: null
 };
 let _unsubscribe = null;
+
+
+function handleSaveNoteAsTemplate(note) {
+  const templateData = {
+    name: note.title,
+    description: note.content || '',
+    category: note.category || 'personal',
+    appliesTo: 'notes',
+    icon: '📝',
+    payload: { title: note.title, content: note.content, category: note.category, tags: note.tags || [] }
+  };
+  localStorage.setItem('lumiere_template_prefill', JSON.stringify(templateData));
+  stateManager.navigateTo('templates');
+}
 
 export function initNotes(container) {
   if (!container) {
@@ -309,59 +335,75 @@ function fieldCheckbox(labelText, name, checked) {
 
 function renderNoteItem(note) {
   const item = document.createElement('article');
-  item.className = 'note-item';
+  item.className = 'lum-card lum-card--note note-item';
   if (note.pinned) item.classList.add('note-item--pinned');
   if (note.archived) item.classList.add('note-item--archived');
 
   const header = document.createElement('div');
-  header.className = 'note-item__header';
-
+  header.className = 'lum-card__header note-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'note-item__header-left';
+  headerLeft.className = 'lum-card__header-left note-item__header-left';
 
+  // Ícone SVG de Folha de Papel (Premium)
   const icon = document.createElement('span');
-  icon.className = 'note-item__icon';
-  icon.textContent = note.icon || emojiForNote(note.title, note.category);
+  icon.className = 'lum-card__icon note-item__icon';
+  const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+  
+  if (note.icon) {
+    icon.textContent = note.icon;
+  } else {
+    icon.innerHTML = svgIcon;
+  }
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'note-item__name';
+  name.className = 'lum-card__title note-item__name';
   name.textContent = note.title || '(sem título)';
   headerLeft.appendChild(name);
-
   header.appendChild(headerLeft);
 
-  const actions = document.createElement('div');
-  actions.className = 'note-item__actions';
+  // Menu de 3 Pontos
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions note-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'note-item__menu-btn';
+  summary.innerHTML = '⋮';
+  summary.setAttribute('aria-label', 'Mais ações');
+  actions.appendChild(summary);
+  
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'note-item__menu-dropdown';
 
   const btnPin = document.createElement('button');
   btnPin.type = 'button';
-  btnPin.textContent = note.pinned ? '★' : '☆';
-  btnPin.title = note.pinned ? 'Desfixar' : 'Fixar no topo';
-  btnPin.setAttribute('aria-label', btnPin.title);
-  btnPin.addEventListener('click', () => handleTogglePin(note));
-  actions.appendChild(btnPin);
+  btnPin.innerHTML = note.pinned ? '★ Desfixar' : '☆ Fixar no topo';
+  btnPin.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleTogglePin(note); });
+  menuDropdown.appendChild(btnPin);
 
   const btnEdit = document.createElement('button');
   btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(note.id));
-  actions.appendChild(btnEdit);
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(note.id); });
+  menuDropdown.appendChild(btnEdit);
+
+  const btnTemplate = document.createElement('button');
+  btnTemplate.type = 'button';
+  btnTemplate.innerHTML = '📋 Guardar como Template';
+  btnTemplate.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleSaveNoteAsTemplate(note); });
+  menuDropdown.appendChild(btnTemplate);
 
   const btnDelete = document.createElement('button');
   btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDelete(note));
-  actions.appendChild(btnDelete);
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDelete(note); });
+  menuDropdown.appendChild(btnDelete);
 
+  actions.appendChild(menuDropdown);
   header.appendChild(actions);
   item.appendChild(header);
 
+  // Tags
   const meta = document.createElement('div');
   meta.className = 'note-item__meta';
   if (note.category) meta.appendChild(metaTag(t('category', note.category)));
@@ -372,12 +414,77 @@ function renderNoteItem(note) {
   }
   item.appendChild(meta);
 
+  // Conteúdo Expansível (Ler Mais)
   if (note.content) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'note-item__desc-wrap';
     const content = document.createElement('p');
     content.className = 'note-item__content';
     content.textContent = note.content;
-    item.appendChild(content);
+    descWrap.appendChild(content);
+
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'note-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    item.appendChild(descWrap);
+
+    btnReadMore.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = descWrap.classList.toggle('is-expanded');
+      btnReadMore.textContent = isExpanded ? 'Mostrar menos' : 'Ler mais';
+      if (!isExpanded) btnReadMore.style.display = (content.scrollHeight > content.clientHeight + 2) ? 'block' : 'none';
+    });
+
+    const observer = new ResizeObserver(() => {
+      if (descWrap.classList.contains('is-expanded')) {
+        btnReadMore.style.display = 'block';
+        return;
+      }
+      btnReadMore.style.display = (content.scrollHeight > content.clientHeight + 2) ? 'block' : 'none';
+    });
+    observer.observe(content);
+    
+    const listObserver = new MutationObserver(() => {
+      if (!document.body.contains(content)) {
+        observer.disconnect();
+        listObserver.disconnect();
+      }
+    });
+    listObserver.observe(document.body, { childList: true, subtree: true });
   }
+
+  // Rodapé (Data e Seta)
+  const footer = document.createElement('div');
+  footer.className = 'note-item__footer';
+  
+  let dateStr = '';
+  if (note.updatedAt) {
+    const d = new Date(note.updatedAt);
+    const now = new Date();
+    const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    const timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    dateStr = isToday ? `Hoje, ${timeStr}` : `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}, ${timeStr}`;
+  }
+
+  if (dateStr) {
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'note-item__footer-info';
+    const calIcon = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+    dateSpan.innerHTML = calIcon;
+    dateSpan.appendChild(document.createTextNode(' ' + dateStr));
+    footer.appendChild(dateSpan);
+  }
+
+  // Seta do Mockup
+  const arrowIcon = document.createElement('span');
+  arrowIcon.className = 'note-item__arrow';
+  arrowIcon.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowIcon);
+
+  item.appendChild(footer);
 
   return item;
 }

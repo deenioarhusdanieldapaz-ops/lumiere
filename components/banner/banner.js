@@ -31,6 +31,8 @@ function copyToClipboard(text, btn) {
 function openRenewModal() {
   if (_modalEl) return;
 
+  let selectedPlan = 'annual';
+
   const backdrop = el('div', 'renew-modal-backdrop');
   const modal = el('div', 'renew-modal');
 
@@ -38,46 +40,107 @@ function openRenewModal() {
   closeBtn.addEventListener('click', closeRenewModal);
   modal.appendChild(closeBtn);
 
-  modal.appendChild(el('h2', 'renew-modal__title', 'RENOVAR LUMIÈRE'));
-  modal.appendChild(el('p', 'renew-modal__subtitle', 'Escolhe um número, faz o pagamento e envia o comprovativo no WhatsApp.'));
+  modal.appendChild(el('div', 'renew-modal__brand', 'LUMIÈRE'));
+  modal.appendChild(el('h2', 'renew-modal__title', 'Renovação da Subscrição'));
+  modal.appendChild(el('p', 'renew-modal__subtitle', 'Continue a transformar os seus dias em grandes conquistas. Escolha o plano que melhor se adapta a si.'));
 
-  const options = el('div', 'renew-modal__options');
+  const plansContainer = el('div', 'renew-plans');
 
-  // E-Mola
-  const emola = el('div', 'renew-option');
-  const emolaInfo = el('div', 'renew-option__info');
-  emolaInfo.appendChild(el('span', 'renew-option__label', 'E-Mola'));
-  emolaInfo.appendChild(el('span', 'renew-option__value', '877858254'));
-  emolaInfo.appendChild(el('span', 'renew-option__name', 'Daniel Alfredo Daniel'));
-  emola.appendChild(emolaInfo);
-  const emolaBtn = el('button', 'renew-option__btn', 'Copiar');
-  emolaBtn.addEventListener('click', () => copyToClipboard('877858254', emolaBtn));
-  emola.appendChild(emolaBtn);
-  options.appendChild(emola);
+  const planAnnual = el('div', 'renew-plan is-active');
+  planAnnual.dataset.plan = 'annual';
+  planAnnual.appendChild(el('div', 'renew-plan__badge', 'Mais vantajoso'));
+  planAnnual.appendChild(el('div', 'renew-plan__check'));
+  planAnnual.appendChild(el('span', 'renew-plan__icon', '\u{1F451}'));
+  planAnnual.appendChild(el('div', 'renew-plan__title', 'Plano Anual'));
+  planAnnual.appendChild(el('div', 'renew-plan__desc', '12 meses de acesso completo'));
+  planAnnual.appendChild(el('div', 'renew-plan__price', '1.090 MT'));
+  planAnnual.appendChild(el('div', 'renew-plan__save', 'Poupe 218 MT por ano'));
+  plansContainer.appendChild(planAnnual);
 
-  // M-Pesa
-  const mpesa = el('div', 'renew-option');
-  const mpesaInfo = el('div', 'renew-option__info');
-  mpesaInfo.appendChild(el('span', 'renew-option__label', 'M-Pesa'));
-  mpesaInfo.appendChild(el('span', 'renew-option__value', '843482513'));
-  mpesaInfo.appendChild(el('span', 'renew-option__name', 'Daniel Alfredo Daniel'));
-  mpesa.appendChild(mpesaInfo);
-  const mpesaBtn = el('button', 'renew-option__btn', 'Copiar');
-  mpesaBtn.addEventListener('click', () => copyToClipboard('843482513', mpesaBtn));
-  mpesa.appendChild(mpesaBtn);
-  options.appendChild(mpesa);
+  const planMonthly = el('div', 'renew-plan');
+  planMonthly.dataset.plan = 'monthly';
+  planMonthly.appendChild(el('div', 'renew-plan__check'));
+  planMonthly.appendChild(el('span', 'renew-plan__icon', '\u{1F4C5}'));
+  planMonthly.appendChild(el('div', 'renew-plan__title', 'Plano Mensal'));
+  planMonthly.appendChild(el('div', 'renew-plan__desc', '30 dias de acesso completo'));
+  planMonthly.appendChild(el('div', 'renew-plan__price', '109 MT'));
+  planMonthly.appendChild(el('div', 'renew-plan__save', 'Mais flexibilidade'));
+  plansContainer.appendChild(planMonthly);
 
-  modal.appendChild(options);
+  modal.appendChild(plansContainer);
 
-  const waBtn = el('button', 'renew-modal__whatsapp', 'Enviar comprovativo via WhatsApp');
+  const selectPlan = (planEl, planKey) => {
+    selectedPlan = planKey;
+    planAnnual.classList.remove('is-active');
+    planMonthly.classList.remove('is-active');
+    planEl.classList.add('is-active');
+  };
+
+  planAnnual.addEventListener('click', () => selectPlan(planAnnual, 'annual'));
+  planMonthly.addEventListener('click', () => selectPlan(planMonthly, 'monthly'));
+
+  const divider = el('div', 'renew-divider');
+  divider.appendChild(el('span', null, '\u2726'));
+  modal.appendChild(divider);
+
+  const features = el('div', 'renew-features');
+  
+  const feat1 = el('div', 'renew-feature');
+  feat1.appendChild(el('div', 'renew-feature__icon', '\u221E'));
+  feat1.appendChild(el('div', 'renew-feature__title', 'Acesso aos 9 módulos'));
+  feat1.appendChild(el('div', 'renew-feature__desc', 'Todos os seus módulos favoritos disponíveis.'));
+  features.appendChild(feat1);
+
+  const feat2 = el('div', 'renew-feature');
+  feat2.appendChild(el('div', 'renew-feature__icon', '\u{1F6E1}'));
+  feat2.appendChild(el('div', 'renew-feature__title', 'Os seus dados protegidos'));
+  feat2.appendChild(el('div', 'renew-feature__desc', 'Segurança e privacidade em primeiro lugar.'));
+  features.appendChild(feat2);
+
+  const feat3 = el('div', 'renew-feature');
+  feat3.appendChild(el('div', 'renew-feature__icon', '\u26A1'));
+  feat3.appendChild(el('div', 'renew-feature__title', 'Atualizações'));
+  feat3.appendChild(el('div', 'renew-feature__desc', 'Sempre uma versão melhor para si.'));
+  features.appendChild(feat3);
+
+  modal.appendChild(features);
+
+  // Info de Pagamento
+  const payInfo = el('div', 'renew-pay-info');
+  payInfo.innerHTML = `
+    <div class="renew-pay-info__header">
+      <span>Dados para Pagamento</span>
+      <span>\u{1F512} Pagamento manual</span>
+    </div>
+    <div class="renew-pay-info__row">
+      <div class="renew-pay-info__left"><span class="renew-pay-info__icon">\u{1F4F1}</span> E-Mola</div>
+      <div class="renew-pay-info__value">877 858 254</div>
+      <div class="renew-pay-info__name">Nome:<br>Daniel Alfredo Daniel</div>
+    </div>
+    <div class="renew-pay-info__row">
+      <div class="renew-pay-info__left"><span class="renew-pay-info__icon">\u{1F4F1}</span> M-Pesa</div>
+      <div class="renew-pay-info__value">843 482 513</div>
+      <div class="renew-pay-info__name">Nome:<br>Daniel Alfredo Daniel</div>
+    </div>
+  `;
+  modal.appendChild(payInfo);
+
+  // Botão WhatsApp
+  const waBtn = el('button', 'renew-btn-wa');
+  waBtn.innerHTML = '\u{1F4AC} Enviar comprovativo via WhatsApp';
   waBtn.addEventListener('click', () => {
     const user = getCurrentUser();
     const email = user && user.email ? user.email : 'N/A';
-    const msg = 'Olá, quero renovar a minha subscrição Lumière. O meu email é: ' + email;
+    const planName = selectedPlan === 'annual' ? 'Anual (1.090 MT)' : 'Mensal (109 MT)';
+    const msg = 'Olá, quero renovar a minha subscrição Lumière.\nPlano escolhido: ' + planName + '\nO meu email é: ' + email;
     const url = 'https://wa.me/258834748955?text=' + encodeURIComponent(msg);
     window.open(url, '_blank');
   });
   modal.appendChild(waBtn);
+
+  const footer = el('div', 'renew-footer');
+  footer.innerHTML = '<span class="renew-footer-icon">\u{1F512}</span> O pagamento é verificado manualmente.<br>Envia o teu comprovativo e nós ativamos a tua subscrição o mais rápido possível.';
+  modal.appendChild(footer);
 
   backdrop.appendChild(modal);
   backdrop.addEventListener('click', (e) => {

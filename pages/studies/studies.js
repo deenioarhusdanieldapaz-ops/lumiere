@@ -5,6 +5,7 @@
  * Cada estudo carrega as suas sessões e mostra-as dentro do cartão.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
@@ -78,6 +79,26 @@ let _state = {
 };
 
 let _unsubscribe = null;
+
+
+function handleSaveStudyAsTemplate(study) {
+  const templateData = {
+    name: study.name,
+    description: study.description || '',
+    category: study.category || 'personal',
+    appliesTo: 'studies',
+    icon: study.icon || '📚',
+    payload: {
+      name: study.name,
+      description: study.description,
+      category: study.category,
+      subject: study.subject,
+      notes: study.notes || ''
+    }
+  };
+  localStorage.setItem('lumiere_template_prefill', JSON.stringify(templateData));
+  stateManager.navigateTo('templates');
+}
 
 export function initStudies(container) {
   if (!container) {
@@ -196,65 +217,78 @@ function renderList() {
 
 function renderStudyItem(study) {
   const item = document.createElement('article');
-  item.className = 'study-item';
+  item.className = 'lum-card lum-card--study study-item';
   if (study.status === 'completed') item.classList.add('study-item--completed');
   if (study.status === 'paused') item.classList.add('study-item--paused');
 
   const header = document.createElement('div');
-  header.className = 'study-item__header';
-
+  header.className = 'lum-card__header study-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'study-item__header-left';
+  headerLeft.className = 'lum-card__header-left study-item__header-left';
 
+  // Ícone SVG de Livro (Premium)
   const icon = document.createElement('span');
-  icon.className = 'study-item__icon';
+  icon.className = 'lum-card__icon study-item__icon';
+  const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>';
+  
   if (study.status === 'completed') {
     icon.classList.add('is-completed');
-    icon.textContent = '\u2705';
+    icon.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="#2d7a4f" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  } else if (study.icon) {
+    icon.textContent = study.icon;
   } else {
-    icon.textContent = study.icon || emojiForStudy(study.name, study.subject, study.category);
+    icon.innerHTML = svgIcon;
   }
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'study-item__name';
+  name.className = 'lum-card__title study-item__name';
   name.textContent = study.name || '(sem nome)';
   headerLeft.appendChild(name);
-
   header.appendChild(headerLeft);
 
-  const actions = document.createElement('div');
-  actions.className = 'study-item__actions';
+  // Menu
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions study-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'study-item__menu-btn';
+  summary.innerHTML = '⋮';
+  summary.setAttribute('aria-label', 'Mais ações');
+  actions.appendChild(summary);
+  
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'study-item__menu-dropdown';
 
   const btnToggle = document.createElement('button');
   btnToggle.type = 'button';
-  btnToggle.textContent = study.status === 'completed' ? '↺' : '✓';
-  btnToggle.title = study.status === 'completed' ? 'Reabrir' : 'Marcar como concluído';
-  btnToggle.setAttribute('aria-label', btnToggle.title);
-  btnToggle.addEventListener('click', () => handleToggle(study));
-  actions.appendChild(btnToggle);
+  btnToggle.innerHTML = study.status === 'completed' ? '↺ Reabrir' : '✓ Concluir';
+  btnToggle.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleToggle(study); });
+  menuDropdown.appendChild(btnToggle);
 
   const btnEdit = document.createElement('button');
   btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(study.id));
-  actions.appendChild(btnEdit);
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(study.id); });
+  menuDropdown.appendChild(btnEdit);
+
+  const btnTemplate = document.createElement('button');
+  btnTemplate.type = 'button';
+  btnTemplate.innerHTML = '📋 Guardar como Template';
+  btnTemplate.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleSaveStudyAsTemplate(study); });
+  menuDropdown.appendChild(btnTemplate);
 
   const btnDelete = document.createElement('button');
   btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDelete(study));
-  actions.appendChild(btnDelete);
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDelete(study); });
+  menuDropdown.appendChild(btnDelete);
 
+  actions.appendChild(menuDropdown);
   header.appendChild(actions);
-
   item.appendChild(header);
 
+  // Tags
   const meta = document.createElement('div');
   meta.className = 'study-item__meta';
   if (study.subject) meta.appendChild(metaTag(study.subject));
@@ -263,16 +297,68 @@ function renderStudyItem(study) {
   if (study.priority) meta.appendChild(metaTag(t('priority', study.priority)));
   item.appendChild(meta);
 
+  // Descrição Expansível
   if (study.description) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'study-item__desc-wrap';
     const desc = document.createElement('p');
     desc.className = 'study-item__description';
     desc.textContent = study.description;
-    item.appendChild(desc);
+    descWrap.appendChild(desc);
+
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'study-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    item.appendChild(descWrap);
+
+    btnReadMore.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = descWrap.classList.toggle('is-expanded');
+      btnReadMore.textContent = isExpanded ? 'Mostrar menos' : 'Ler mais';
+      if (!isExpanded) btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+
+    const observer = new ResizeObserver(() => {
+      if (descWrap.classList.contains('is-expanded')) {
+        btnReadMore.style.display = 'block';
+        return;
+      }
+      btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+    observer.observe(desc);
   }
 
-  // Sessões (por agora só mostra; será interativo no 8.4e)
+  // Sessões (Mantidas intactas)
   const sessions = _state.sessionsByStudy[study.id] || [];
   item.appendChild(renderSessionsList(sessions, study));
+
+  // Rodapé (Data e Seta)
+  const footer = document.createElement('div');
+  footer.className = 'study-item__footer';
+  let dateStr = 'Hoje'; // Placeholder visual
+  
+  if (study.createdAt) {
+    const d = new Date(study.createdAt);
+    const timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    dateStr = `Hoje, ${timeStr}`;
+  }
+
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'study-item__footer-info';
+  const calIcon = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+  dateSpan.innerHTML = calIcon;
+  dateSpan.appendChild(document.createTextNode(' ' + dateStr));
+  footer.appendChild(dateSpan);
+
+  const arrowIcon = document.createElement('span');
+  arrowIcon.className = 'study-item__arrow';
+  arrowIcon.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowIcon);
+
+  item.appendChild(footer);
 
   return item;
 }

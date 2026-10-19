@@ -26,7 +26,7 @@ try {
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v325';
+const CACHE_NAME = 'lumiere-cache-v368';
 const OFFLINE_URLS = [
   './',
   './index.html',
@@ -146,6 +146,8 @@ const OFFLINE_URLS = [
   './CSS/account-menu.css',
   './CSS/components/banner.css',
   './CSS/components/restore-modal.css',
+  './CSS/components/filter-bar.css',
+  './components/filter-bar/filter-bar.js',
   './components/restore-modal/restore-modal.js',
   './components/restore-modal/icone-nuvem.webp',
   './vendor/dexie.mjs',

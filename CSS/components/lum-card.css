@@ -1,0 +1,77 @@
+/* ========================================
+   MINI CARD UNIVERSAL - LUMIÈRE
+   ======================================== */
+.lum-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 14px;
+  padding: 16px;
+  transition: border-color 0.15s ease;
+}
+
+.lum-card:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.lum-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.lum-card__header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+  min-width: 0; /* O SEGREDO para o texto não sobrepor os botões */
+}
+
+.lum-card__icon {
+  flex-shrink: 0;
+}
+
+.lum-card__title-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.lum-card__title {
+  margin: 0;
+  font-size: 1rem;
+  color: #f5f0eb;
+  font-weight: 500;
+  overflow-wrap: anywhere; /* Quebra palavras/links gigantes */
+  white-space: normal;     /* Permite quebra de linha natural */
+  line-height: 1.3;
+}
+
+.lum-card__actions {
+  flex-shrink: 0; /* Impede que o menu de 3 pontos seja esmagado */
+}
+
+.lum-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lum-card__tag {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(240, 230, 210, 0.8);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}

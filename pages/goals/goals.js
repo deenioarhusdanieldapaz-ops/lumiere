@@ -4,6 +4,8 @@
  * Estrutura inicial: init + load + render list/empty.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { stateManager } from '../../core/stateManager.js';
+import { calculationsManager } from '../../core/calculationsManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
@@ -68,6 +70,28 @@ let _state = {
 
 let _unsubscribe = null;
 
+
+function handleSaveGoalAsTemplate(goal) {
+  const templateData = {
+    name: goal.name,
+    description: goal.description || '',
+    category: goal.category || 'personal',
+    appliesTo: 'goals',
+    icon: goal.icon || '🎯',
+    payload: {
+      name: goal.name,
+      description: goal.description,
+      category: goal.category,
+      targetDate: goal.targetDate,
+      notes: goal.notes || ''
+    }
+  };
+  localStorage.setItem('lumiere_template_prefill', JSON.stringify(templateData));
+  
+  // Navegação automática usando o stateManager nativo
+  stateManager.navigateTo('templates');
+}
+
 export function initGoals(container) {
   if (!container) {
     console.warn('[Goals] container inválido.');
@@ -77,7 +101,7 @@ export function initGoals(container) {
 
   if (_unsubscribe) _unsubscribe();
   _unsubscribe = eventBus.on('data:changed', (payload) => {
-    if (payload && payload.collection === 'goals') {
+    if (payload && (payload.collection === 'goals' || payload.collection === 'tasks')) {
       loadGoals();
     }
   });
@@ -93,10 +117,16 @@ async function loadGoals() {
   try {
     const goals = await dataManager.list('goals');
     _state.goals = Array.isArray(goals) ? goals : [];
+    
+    // AQUI ESTÁ A CORREÇÃO: Carregar as tarefas para o cálculo do progresso
+    const tasks = await dataManager.list('tasks');
+    _state.tasks = Array.isArray(tasks) ? tasks : [];
+    
   } catch (err) {
     console.error('[Goals] Erro ao carregar:', err);
     _state.error = err.message || 'Erro ao carregar objetivos.';
     _state.goals = [];
+    _state.tasks = [];
   } finally {
     _state.loading = false;
     render();
@@ -163,93 +193,128 @@ function renderList() {
 
 function renderGoalItem(goal) {
   const item = document.createElement('article');
-  item.className = 'goal-item';
+  item.className = 'lum-card lum-card--goal goal-item';
   if (goal.status === 'completed') item.classList.add('goal-item--completed');
   if (goal.status === 'abandoned') item.classList.add('goal-item--abandoned');
 
   const header = document.createElement('div');
-  header.className = 'goal-item__header';
-
+  header.className = 'lum-card__header goal-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'goal-item__header-left';
+  headerLeft.className = 'lum-card__header-left goal-item__header-left';
 
+  // Ícone SVG de Alvo
   const icon = document.createElement('span');
-  icon.className = 'goal-item__icon';
-  icon.textContent = goal.icon || emojiForGoal(goal.name, goal.category);
+  icon.className = 'lum-card__icon goal-item__icon';
+  const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>';
+  
+  if (goal.icon) icon.textContent = goal.icon;
+  else icon.innerHTML = svgIcon;
+  
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'goal-item__name';
+  name.className = 'lum-card__title goal-item__name';
   name.textContent = goal.name || '(sem nome)';
   headerLeft.appendChild(name);
-
   header.appendChild(headerLeft);
 
-  const actions = document.createElement('div');
-  actions.className = 'goal-item__actions';
+  // Menu
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions goal-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'goal-item__menu-btn';
+  summary.innerHTML = '⋮';
+  summary.setAttribute('aria-label', 'Mais ações');
+  actions.appendChild(summary);
+  
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'goal-item__menu-dropdown';
 
-  // Marcar como principal
   const btnPrimary = document.createElement('button');
   btnPrimary.type = 'button';
-  btnPrimary.textContent = goal.isPrimary ? '\u2605' : '\u2606';
-  btnPrimary.title = goal.isPrimary ? 'Objetivo principal' : 'Marcar como principal';
-  btnPrimary.setAttribute('aria-label', btnPrimary.title);
-  btnPrimary.classList.add('goal-item__btn-primary');
-  if (goal.isPrimary) btnPrimary.classList.add('is-active');
-  btnPrimary.addEventListener('click', () => handleSetPrimary(goal));
-  actions.appendChild(btnPrimary);
+  btnPrimary.innerHTML = goal.isPrimary ? '★ Remover Principal' : '☆ Marcar Principal';
+  btnPrimary.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleSetPrimary(goal); });
+  menuDropdown.appendChild(btnPrimary);
 
-  // Alternar concluído
   const btnToggle = document.createElement('button');
   btnToggle.type = 'button';
-  btnToggle.textContent = goal.status === 'completed' ? '↺' : '✓';
-  btnToggle.title = goal.status === 'completed' ? 'Reabrir' : 'Marcar como concluído';
-  btnToggle.setAttribute('aria-label', btnToggle.title);
-  btnToggle.addEventListener('click', () => handleToggle(goal));
-  actions.appendChild(btnToggle);
+  btnToggle.innerHTML = goal.status === 'completed' ? '↺ Reabrir' : '✓ Concluir';
+  btnToggle.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleToggle(goal); });
+  menuDropdown.appendChild(btnToggle);
 
-  // Editar
   const btnEdit = document.createElement('button');
   btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(goal.id));
-  actions.appendChild(btnEdit);
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(goal.id); });
+  menuDropdown.appendChild(btnEdit);
 
-  // Apagar
+  const btnTemplate = document.createElement('button');
+  btnTemplate.type = 'button';
+  btnTemplate.innerHTML = '📋 Guardar como Template';
+  btnTemplate.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleSaveGoalAsTemplate(goal); });
+  menuDropdown.appendChild(btnTemplate);
+
   const btnDelete = document.createElement('button');
   btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDelete(goal));
-  actions.appendChild(btnDelete);
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDelete(goal); });
+  menuDropdown.appendChild(btnDelete);
 
+  actions.appendChild(menuDropdown);
   header.appendChild(actions);
-
   item.appendChild(header);
 
+  // Tags
   const meta = document.createElement('div');
   meta.className = 'goal-item__meta';
   meta.appendChild(metaTag(goal.category ? t('category', goal.category) : '—'));
   meta.appendChild(metaTag(t('goalStatus', goal.status)));
   if (goal.priority) meta.appendChild(metaTag(t('priority', goal.priority)));
-  if (goal.targetDate) meta.appendChild(metaTag(goal.targetDate));
   item.appendChild(meta);
 
+  // Descrição Expansível
   if (goal.description) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'goal-item__desc-wrap';
     const desc = document.createElement('p');
     desc.className = 'goal-item__description';
     desc.textContent = goal.description;
-    item.appendChild(desc);
+    descWrap.appendChild(desc);
+
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'goal-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    item.appendChild(descWrap);
+
+    btnReadMore.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = descWrap.classList.toggle('is-expanded');
+      btnReadMore.textContent = isExpanded ? 'Mostrar menos' : 'Ler mais';
+      if (!isExpanded) btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+
+    const observer = new ResizeObserver(() => {
+      if (descWrap.classList.contains('is-expanded')) {
+        btnReadMore.style.display = 'block';
+        return;
+      }
+      btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+    observer.observe(desc);
   }
 
-  // Barra de progresso (usa createProgress da Fase 5)
+  // Barra de Progresso (Automática)
   const progressWrapper = document.createElement('div');
   progressWrapper.className = 'goal-item__progress';
-  const progress = typeof goal.progress === 'number' ? goal.progress : 0;
+  
+  // Tenta obter as tarefas do estado global ou passa um array vazio (será recalculado)
+  const tasks = _state.tasks || []; 
+  const progress = calculationsManager.calculateGoalProgress(goal.id, tasks);
+  
   const bar = createProgress({
     value: progress,
     label: 'Progresso',
@@ -259,6 +324,33 @@ function renderGoalItem(goal) {
   });
   progressWrapper.appendChild(bar);
   item.appendChild(progressWrapper);
+
+  // Rodapé
+  const footer = document.createElement('div');
+  footer.className = 'goal-item__footer';
+  
+  let dateStr = '';
+  if (goal.targetDate) {
+    const parts = goal.targetDate.split('-');
+    if (parts.length === 3) dateStr = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    else dateStr = goal.targetDate;
+  }
+
+  if (dateStr) {
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'goal-item__footer-info';
+    const calIcon = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+    dateSpan.innerHTML = calIcon;
+    dateSpan.appendChild(document.createTextNode(' Alvo: ' + dateStr));
+    footer.appendChild(dateSpan);
+  }
+
+  const arrowIcon = document.createElement('span');
+  arrowIcon.className = 'goal-item__arrow';
+  arrowIcon.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowIcon);
+
+  item.appendChild(footer);
 
   return item;
 }
@@ -335,7 +427,6 @@ function renderForm() {
     translate: 'priority'
   }));
   grid.appendChild(field('Prazo', 'input', 'targetDate', goal ? goal.targetDate : '', { type: 'date' }));
-  grid.appendChild(field('Progresso (0-100)', 'input', 'progress', goal ? goal.progress : 0, { type: 'number' }));
   grid.appendChild(field('Etiquetas (separadas por vírgula)', 'input', 'tagsRaw', goal && Array.isArray(goal.tags) ? goal.tags.join(', ') : '', { full: true, type: 'text' }));
 
   form.appendChild(grid);

@@ -4,6 +4,7 @@
  * Estrutura inicial: init + load + render list/empty.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
@@ -58,6 +59,27 @@ let _state = {
 };
 
 let _unsubscribe = null;
+
+
+function handleSaveHabitAsTemplate(habit) {
+  const templateData = {
+    name: habit.name,
+    description: habit.description || '',
+    category: habit.category || 'personal',
+    appliesTo: 'habits',
+    icon: habit.icon || '🔥',
+    payload: {
+      name: habit.name,
+      description: habit.description,
+      category: habit.category,
+      frequency: habit.frequency,
+      target: habit.target,
+      unit: habit.unit
+    }
+  };
+  localStorage.setItem('lumiere_template_prefill', JSON.stringify(templateData));
+  stateManager.navigateTo('templates');
+}
 
 export function initHabits(container) {
   if (!container) {
@@ -280,71 +302,87 @@ function buildStreakSection(habit) {
 
 function renderHabitItem(habit) {
   const item = document.createElement('article');
-  item.className = 'habit-item';
+  item.className = 'lum-card lum-card--habit habit-item';
   if (habit.status === 'paused') item.classList.add('habit-item--paused');
   if (habit._doneToday) item.classList.add('habit-item--done');
   if (habit._isToday) item.classList.add('habit-item--today');
 
   const header = document.createElement('div');
-  header.className = 'habit-item__header';
-
+  header.className = 'lum-card__header habit-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'habit-item__header-left';
+  headerLeft.className = 'lum-card__header-left habit-item__header-left';
 
+  // Ícone SVG de Chama (Premium)
   const icon = document.createElement('span');
-  icon.className = 'habit-item__icon';
-  icon.textContent = habit.icon || emojiForHabit(habit.name, habit.category);
+  icon.className = 'lum-card__icon habit-item__icon';
+  const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>';
+  
+  if (habit.icon) {
+    icon.textContent = habit.icon;
+  } else {
+    icon.innerHTML = svgIcon;
+  }
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'habit-item__name';
+  name.className = 'lum-card__title habit-item__name';
   name.textContent = habit.name || '(sem nome)';
   headerLeft.appendChild(name);
-
-  if (habit._isToday && !habit._doneToday) {
-    const badge = document.createElement('span');
-    badge.className = 'habit-item__badge-today';
-    badge.textContent = 'HOJE';
-    headerLeft.appendChild(badge);
-  }
-
   header.appendChild(headerLeft);
 
-  const actions = document.createElement('div');
-  actions.className = 'habit-item__actions';
+  // Menu de 3 Pontos
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions habit-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'habit-item__menu-btn';
+  summary.innerHTML = '⋮';
+  summary.setAttribute('aria-label', 'Mais ações');
+  actions.appendChild(summary);
+  
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'habit-item__menu-dropdown';
 
   const btnCheck = document.createElement('button');
   btnCheck.type = 'button';
-  btnCheck.textContent = habit._doneToday ? '✓' : '○';
-  btnCheck.title = habit._doneToday ? 'Registado hoje' : 'Registar hoje';
-  btnCheck.setAttribute('aria-label', btnCheck.title);
+  btnCheck.innerHTML = habit._doneToday ? '✓ Registado' : '○ Registar Hoje';
   if (habit._doneToday) btnCheck.disabled = true;
-  btnCheck.addEventListener('click', () => handleCheckIn(habit));
-  actions.appendChild(btnCheck);
+  btnCheck.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleCheckIn(habit); });
+  menuDropdown.appendChild(btnCheck);
 
   const btnEdit = document.createElement('button');
   btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(habit.id));
-  actions.appendChild(btnEdit);
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(habit.id); });
+  menuDropdown.appendChild(btnEdit);
+
+  const btnTemplate = document.createElement('button');
+  btnTemplate.type = 'button';
+  btnTemplate.innerHTML = '📋 Guardar como Template';
+  btnTemplate.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleSaveHabitAsTemplate(habit); });
+  menuDropdown.appendChild(btnTemplate);
 
   const btnDelete = document.createElement('button');
   btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDelete(habit));
-  actions.appendChild(btnDelete);
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDelete(habit); });
+  menuDropdown.appendChild(btnDelete);
 
+  actions.appendChild(menuDropdown);
   header.appendChild(actions);
-
   item.appendChild(header);
 
+  // Tags
   const meta = document.createElement('div');
   meta.className = 'habit-item__meta';
+  if (habit._isToday && !habit._doneToday) {
+    const badge = document.createElement('span');
+    badge.className = 'habit-item__tag';
+    badge.style.background = 'rgba(212, 175, 55, 0.2)';
+    badge.style.color = '#d4af37';
+    badge.textContent = 'HOJE';
+    meta.appendChild(badge);
+  }
   meta.appendChild(metaTag(habit.category ? t('category', habit.category) : '—'));
   meta.appendChild(metaTag(t('frequency', habit.frequency)));
   if (habit.target || habit.unit) {
@@ -353,13 +391,41 @@ function renderHabitItem(habit) {
   }
   item.appendChild(meta);
 
+  // Descrição Expansível
   if (habit.description) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'habit-item__desc-wrap';
     const desc = document.createElement('p');
     desc.className = 'habit-item__description';
     desc.textContent = habit.description;
-    item.appendChild(desc);
+    descWrap.appendChild(desc);
+
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'habit-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    item.appendChild(descWrap);
+
+    btnReadMore.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = descWrap.classList.toggle('is-expanded');
+      btnReadMore.textContent = isExpanded ? 'Mostrar menos' : 'Ler mais';
+      if (!isExpanded) btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+
+    const observer = new ResizeObserver(() => {
+      if (descWrap.classList.contains('is-expanded')) {
+        btnReadMore.style.display = 'block';
+        return;
+      }
+      btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+    observer.observe(desc);
   }
 
+  // Streak (Mantida intacta!)
   item.appendChild(buildStreakSection(habit));
 
   return item;

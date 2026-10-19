@@ -1,3 +1,14 @@
+
+// --- GESTÃO DE LISTENER GLOBAL ---
+if (!window.__lumiereTaskMenuListener) {
+  window.__lumiereTaskMenuListener = true;
+  document.addEventListener('click', (e) => {
+    if (!(e.target instanceof Element)) return;
+    if (!e.target.closest('details.task-item__actions')) {
+      document.querySelectorAll('details.task-item__actions[open]').forEach(d => d.removeAttribute('open'));
+    }
+  });
+}
 /**
  * Tasks Page
  *
@@ -7,9 +18,11 @@
  * Camadas: UI → Core (DataManager) → Storage → EventBus
  */
 import { dataManager } from '../../core/dataManager.js';
+import { stateManager } from '../../core/stateManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 import { requireAccess } from '../../core/auth.js';
+import { renderFilterBar } from '../../components/filter-bar/filter-bar.js';
 
 // ============================================================
 // Icones automaticos — 50 keywords (nome) + 9 categorias
@@ -109,6 +122,20 @@ let _voiceUnsub = null;
  * Inicializa a página.
  * @param {HTMLElement} container
  */
+
+function handleSaveAsTemplate(task) {
+  const templateData = {
+    name: task.name,
+    description: task.description || '',
+    category: task.category || 'personal',
+    appliesTo: 'tasks',
+    icon: task.icon || '📌',
+    payload: { name: task.name, description: task.description, category: task.category, priority: task.priority, status: task.status }
+  };
+  localStorage.setItem('lumiere_template_prefill', JSON.stringify(templateData));
+  stateManager.navigateTo('templates');
+}
+
 export function initTasks(container) {
   if (!container) {
     console.warn('[Tasks] container inválido.');
@@ -172,6 +199,17 @@ function render() {
   page.className = 'tasks-page';
 
   page.appendChild(renderHeader());
+
+  // Fase 2.6a - Barra de Filtros
+  const filterContainer = document.createElement('div');
+  filterContainer.id = 'tasks-filters';
+  renderFilterBar(filterContainer, [
+    { key: 'all', label: 'Todas' },
+    { key: 'pending', label: 'Pendentes' },
+    { key: 'completed', label: 'Concluídas' },
+    { key: 'high', label: 'Alta Prioridade' }
+  ], 'all');
+  page.appendChild(filterContainer);
 
   if (_state.showForm) {
     page.appendChild(renderForm());
@@ -285,78 +323,129 @@ function renderList() {
  * Um item individual.
  */
 function renderTaskItem(task) {
+  const isValidDate = (dStr) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dStr)) return false;
+    const [y, m, d] = dStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+  };
+
+  const now = new Date();
+  const localToday = [now.getFullYear(), String(now.getMonth()+1).padStart(2,'0'), String(now.getDate()).padStart(2,'0')].join('-');
+  const hasValidDate = isValidDate(task.dueDate);
+  const isToday = hasValidDate && task.dueDate === localToday;
+  const isOverdue = hasValidDate && task.dueDate < localToday && task.status !== 'completed' && task.status !== 'cancelled';
+
   const item = document.createElement('article');
-  item.className = 'task-item';
+  item.className = 'lum-card lum-card--task task-item';
   if (task.status === 'completed') item.classList.add('task-item--completed');
+  if (isOverdue) item.classList.add('task-item--overdue');
 
   const header = document.createElement('div');
-  header.className = 'task-item__header';
-
-  const today = new Date().toISOString().split('T')[0];
-  const isToday = task.dueDate && task.dueDate <= today && task.status !== 'completed' && task.status !== 'cancelled';
-  if (isToday) item.classList.add('task-item--today');
-
+  header.className = 'lum-card__header task-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'task-item__header-left';
+  headerLeft.className = 'lum-card__header-left task-item__header-left';
 
   const icon = document.createElement('span');
-  icon.className = 'task-item__icon';
+  icon.className = 'lum-card__icon task-item__icon';
+  const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>';
+
   if (task.status === 'completed') {
     icon.classList.add('is-completed');
-    icon.textContent = '\u2705';
+    icon.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="#2d7a4f" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  } else if (task.icon) {
+    icon.textContent = task.icon;
   } else {
-    icon.textContent = task.icon || emojiForTask(task.name, task.category);
+    icon.innerHTML = svgIcon;
   }
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'task-item__name';
+  name.className = 'lum-card__title task-item__name';
   name.textContent = task.name || '(sem nome)';
   headerLeft.appendChild(name);
-
-  if (isToday) {
-    const badge = document.createElement('span');
-    badge.className = 'task-item__badge-today';
-    badge.textContent = 'HOJE';
-    headerLeft.appendChild(badge);
-  }
-
   header.appendChild(headerLeft);
 
-  const actions = document.createElement('div');
-  actions.className = 'task-item__actions';
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions task-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'task-item__menu-btn';
+  summary.innerHTML = '⋮';
+  summary.setAttribute('aria-label', 'Mais ações');
+  actions.appendChild(summary);
+  
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'task-item__menu-dropdown';
 
-  // Alternar concluída/pendente
   const btnToggle = document.createElement('button');
   btnToggle.type = 'button';
-  btnToggle.textContent = task.status === 'completed' ? '↺' : '✓';
-  btnToggle.title = task.status === 'completed' ? 'Reabrir' : 'Concluir';
-  btnToggle.setAttribute('aria-label', btnToggle.title);
-  btnToggle.addEventListener('click', () => handleToggle(task));
-  actions.appendChild(btnToggle);
+  btnToggle.innerHTML = task.status === 'completed' ? '↺ Reabrir' : '✓ Concluir';
+  btnToggle.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleToggle(task); });
+  menuDropdown.appendChild(btnToggle);
 
-  // Editar
   const btnEdit = document.createElement('button');
   btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(task.id));
-  actions.appendChild(btnEdit);
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(task.id); });
+  menuDropdown.appendChild(btnEdit);
 
-  // Apagar
+  const btnTemplate = document.createElement('button');
+  btnTemplate.type = 'button';
+  btnTemplate.innerHTML = '📋 Guardar como Template';
+  btnTemplate.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleSaveAsTemplate(task); });
+  menuDropdown.appendChild(btnTemplate);
+
   const btnDelete = document.createElement('button');
   btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDelete(task));
-  actions.appendChild(btnDelete);
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDelete(task); });
+  menuDropdown.appendChild(btnDelete);
 
+  actions.appendChild(menuDropdown);
   header.appendChild(actions);
-
   item.appendChild(header);
+
+  if (task.description) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'task-item__desc-wrap';
+    const desc = document.createElement('p');
+    desc.className = 'task-item__description';
+    desc.textContent = task.description;
+    descWrap.appendChild(desc);
+
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'task-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    item.appendChild(descWrap);
+
+    btnReadMore.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = descWrap.classList.toggle('is-expanded');
+      btnReadMore.textContent = isExpanded ? 'Mostrar menos' : 'Ler mais';
+      if (!isExpanded) btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+
+    const observer = new ResizeObserver(() => {
+      if (descWrap.classList.contains('is-expanded')) {
+        btnReadMore.style.display = 'block';
+        return;
+      }
+      btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+    observer.observe(desc);
+    
+    const listObserver = new MutationObserver(() => {
+      if (!document.body.contains(desc)) {
+        observer.disconnect();
+        listObserver.disconnect();
+      }
+    });
+    listObserver.observe(document.body, { childList: true, subtree: true });
+  }
 
   const meta = document.createElement('div');
   meta.className = 'task-item__meta';
@@ -365,13 +454,46 @@ function renderTaskItem(task) {
   if (task.priority) meta.appendChild(metaTag(t('priority', task.priority)));
   item.appendChild(meta);
 
-  if (task.description) {
-    const desc = document.createElement('p');
-    desc.className = 'task-item__description';
-    desc.textContent = task.description;
-    item.appendChild(desc);
+  const footer = document.createElement('div');
+  footer.className = 'task-item__footer';
+  let hasFooterData = false;
+
+  if (task.dueDate || task.startTime) {
+    hasFooterData = true;
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'task-item__footer-info';
+    if (isOverdue) dateSpan.classList.add('is-overdue');
+    
+    let dateStr = '';
+    if (isOverdue) dateStr = 'Atrasado';
+    else if (isToday) dateStr = 'Hoje';
+    else if (hasValidDate) {
+      const parts = task.dueDate.split('-');
+      dateStr = parts[2] + '/' + parts[1];
+    }
+    
+    if (task.startTime) {
+      dateStr += (dateStr ? ', ' + task.startTime : task.startTime);
+    }
+    
+    const calIcon = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+    
+    dateSpan.innerHTML = calIcon;
+    dateSpan.appendChild(document.createTextNode(' ' + dateStr));
+    footer.appendChild(dateSpan);
   }
 
+  if (task.attachments && task.attachments.length > 0) {
+    hasFooterData = true;
+    const attachSpan = document.createElement('span');
+    attachSpan.className = 'task-item__footer-info';
+    const clipIcon = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>';
+    attachSpan.innerHTML = clipIcon;
+    attachSpan.appendChild(document.createTextNode(' ' + task.attachments.length + ' anexos'));
+    footer.appendChild(attachSpan);
+  }
+
+  if (hasFooterData) item.appendChild(footer);
   return item;
 }
 

@@ -55,3 +55,7 @@ index.html.no-eruda
 
 # Laboratório de investigação ASR (não é parte da app)
 asr-lab/
+
+# Ignorar todos os backups e zips
+*.bak*
+*.zip
