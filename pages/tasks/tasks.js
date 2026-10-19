@@ -23,6 +23,7 @@ import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
 import { requireAccess } from '../../core/auth.js';
 import { renderFilterBar } from '../../components/filter-bar/filter-bar.js';
+import { applyFilters } from '../../core/filterEngine.js';
 
 // ============================================================
 // Icones automaticos — 50 keywords (nome) + 9 categorias
@@ -106,6 +107,7 @@ function emojiForTask(name, category) {
 
 let _container = null;
 let _state = {
+  activeFilter: 'all',
   tasks: [],
   goals: [],
   editingId: null,
@@ -117,6 +119,7 @@ let _state = {
 
 let _unsubscribe = null;
 let _voiceUnsub = null;
+let _filterUnsub = null;
 
 /**
  * Inicializa a página.
@@ -148,6 +151,15 @@ export function initTasks(container) {
   _unsubscribe = eventBus.on('data:changed', (payload) => {
     if (payload && payload.collection === 'tasks') {
       loadTasks();
+    }
+  });
+
+  // Filtros (Fase 2.6b)
+  if (_filterUnsub) _filterUnsub();
+  _filterUnsub = eventBus.on('filter:changed', (payload) => {
+    if (payload && (payload.page === 'tasks-filters' || payload.page === 'tasks')) {
+      _state.activeFilter = payload.filterKey || 'all';
+      render();
     }
   });
 
@@ -208,7 +220,7 @@ function render() {
     { key: 'pending', label: 'Pendentes' },
     { key: 'completed', label: 'Concluídas' },
     { key: 'high', label: 'Alta Prioridade' }
-  ], 'all');
+  ], _state.activeFilter);
   page.appendChild(filterContainer);
 
   if (_state.showForm) {
@@ -274,7 +286,9 @@ function renderList() {
     concluidas: []
   };
 
-  for (const task of _state.tasks) {
+  const filteredTasks = applyFilters(_state.tasks, _state.activeFilter);
+
+  for (const task of filteredTasks) {
     if (task.status === 'completed' || task.status === 'cancelled') {
       grupos.concluidas.push(task);
       continue;
