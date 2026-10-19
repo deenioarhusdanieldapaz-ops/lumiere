@@ -209,62 +209,51 @@ function renderState(message, isError = false) {
 
 function renderEventItem(ev) {
   const item = document.createElement('article');
-  item.className = 'calendar-item';
+  item.className = 'lum-card lum-card--calendar calendar-item';
   if (ev.allDay) item.classList.add('calendar-item--allday');
 
   const header = document.createElement('div');
-  header.className = 'calendar-item__header';
-
+  header.className = 'lum-card__header calendar-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'calendar-item__header-left';
+  headerLeft.className = 'lum-card__header-left calendar-item__header-left';
 
   const icon = document.createElement('span');
-  icon.className = 'calendar-item__icon';
-  icon.textContent = ev.icon || emojiForEvent(ev.title, ev.category);
+  icon.className = 'lum-card__icon calendar-item__icon';
+  if (ev.icon) icon.textContent = ev.icon;
+  else icon.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'calendar-item__name';
+  name.className = 'lum-card__title calendar-item__name';
   name.textContent = ev.title || '(sem título)';
   headerLeft.appendChild(name);
-
-  // Hora (se não for allDay)
-  if (!ev.allDay && ev.start) {
-    const time = document.createElement('span');
-    time.className = 'calendar-item__time';
-    const s = ev.start.split('T')[1] || '';
-    const e = (ev.end || '').split('T')[1] || '';
-    time.textContent = s && e ? (s.slice(0,5) + '–' + e.slice(0,5)) : s.slice(0,5);
-    headerLeft.appendChild(time);
-  } else if (ev.allDay) {
-    const time = document.createElement('span');
-    time.className = 'calendar-item__time';
-    time.textContent = 'Dia inteiro';
-    headerLeft.appendChild(time);
-  }
-
   header.appendChild(headerLeft);
 
-  const actions = document.createElement('div');
-  actions.className = 'calendar-item__actions';
+  // Menu de 3 pontos
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions calendar-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'calendar-item__menu-btn';
+  summary.innerHTML = '⋮';
+  actions.appendChild(summary);
+  
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'calendar-item__menu-dropdown';
 
   const btnEdit = document.createElement('button');
   btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(ev.id));
-  actions.appendChild(btnEdit);
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(ev.id); });
+  menuDropdown.appendChild(btnEdit);
 
   const btnDelete = document.createElement('button');
   btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDelete(ev));
-  actions.appendChild(btnDelete);
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDelete(ev); });
+  menuDropdown.appendChild(btnDelete);
 
+  actions.appendChild(menuDropdown);
   header.appendChild(actions);
   item.appendChild(header);
 
@@ -275,12 +264,66 @@ function renderEventItem(ev) {
   if (ev.recurrence && ev.recurrence !== 'none') meta.appendChild(metaTag(ev.recurrence));
   item.appendChild(meta);
 
+  // Descrição Expansível
   if (ev.description) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'calendar-item__desc-wrap';
     const desc = document.createElement('p');
     desc.className = 'calendar-item__description';
     desc.textContent = ev.description;
-    item.appendChild(desc);
+    descWrap.appendChild(desc);
+
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'calendar-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    item.appendChild(descWrap);
+
+    btnReadMore.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = descWrap.classList.toggle('is-expanded');
+      btnReadMore.textContent = isExpanded ? 'Mostrar menos' : 'Ler mais';
+      if (!isExpanded) btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+
+    const observer = new ResizeObserver(() => {
+      if (descWrap.classList.contains('is-expanded')) {
+        btnReadMore.style.display = 'block';
+        return;
+      }
+      btnReadMore.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+    });
+    observer.observe(desc);
   }
+
+  // Rodapé com Hora/Data
+  const footer = document.createElement('div');
+  footer.className = 'calendar-item__footer';
+  
+  let timeStr = '';
+  if (ev.allDay) timeStr = 'Dia inteiro';
+  else if (ev.start) {
+    const s = ev.start.split('T')[1] || '';
+    const e = (ev.end || '').split('T')[1] || '';
+    timeStr = s && e ? (s.slice(0,5) + '–' + e.slice(0,5)) : s.slice(0,5);
+  }
+  if (!timeStr) timeStr = 'Hoje';
+
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'calendar-item__footer-info';
+  const clockIcon = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
+  dateSpan.innerHTML = clockIcon;
+  dateSpan.appendChild(document.createTextNode(' ' + timeStr));
+  footer.appendChild(dateSpan);
+
+  const arrowIcon = document.createElement('span');
+  arrowIcon.className = 'calendar-item__arrow';
+  arrowIcon.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowIcon);
+
+  item.appendChild(footer);
 
   return item;
 }

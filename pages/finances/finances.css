@@ -333,9 +333,139 @@
 
 
 /* Fix limpeza: em mobile, header-left ocupa a linha toda */
-@media (max-width: 640px) {
-  .finances-item__header-left {
-    flex-basis: 100%;
-  }
-}
+
 /* finance-limpeza-mobile */
+
+/* === DESIGN PREMIUM (LUM-CARD) PARA FINANÇAS === */
+.finances-item {
+  background-image: linear-gradient(rgba(5, 5, 5, 0.1), rgba(5, 5, 5, 0.5)), url('../../assets/bg/finances-card-bg.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-position: center !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  padding: 20px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  border-radius: 14px !important;
+  /* Remover as bordas inline antigas */
+  border-top-width: 1px !important;
+  border-right-width: 1px !important;
+  border-bottom-width: 1px !important;
+  border-left-width: 1px !important;
+}
+
+/* Manter as cores de entrada/saída das transações */
+.finances-item--income { border-left: 3px solid var(--color-success, #2ecc71) !important; }
+.finances-item--expense { border-left: 3px solid var(--color-error, #e74c3c) !important; }
+.finances-item--transfer { border-left: 3px solid var(--color-gold, #d4af37) !important; }
+
+.finances-item__icon {
+  color: #d4af37 !important;
+  width: 44px !important; height: 44px !important;
+  border-radius: 50% !important;
+  background: rgba(212, 175, 55, 0.12) !important;
+  border: 1.5px solid rgba(212, 175, 55, 0.6) !important;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25) !important;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.finances-item__name { 
+  font-family: var(--font-sans, sans-serif) !important;
+  font-size: 1.05rem !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  overflow-wrap: anywhere !important;
+  margin: 0 !important;
+}
+
+/* Layout do header */
+.finances-item__header { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; width: 100% !important; flex-wrap: wrap !important; }
+.finances-item__header-left { display: flex !important; align-items: flex-start !important; gap: 10px !important; flex: 1 !important; min-width: 0 !important; }
+
+.finances-item__meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.finances-item__tag { 
+  background: rgba(212, 175, 55, 0.08) !important; 
+  border: 1px solid rgba(212, 175, 55, 0.3) !important; 
+  color: #f5d76e !important; 
+  border-radius: 12px !important; 
+  padding: 5px 12px !important; 
+  font-size: 11px !important; 
+  font-weight: 600 !important; 
+  letter-spacing: 0.5px !important; 
+}
+
+/* Menu Oculto Sólido */
+details.finances-item__actions { position: relative !important; display: inline-block !important; }
+.finances-item__menu-dropdown {
+  position: absolute !important; top: calc(100% + 5px) !important; right: 0 !important; left: auto !important;
+  background-color: #141414 !important; background-image: none !important; opacity: 1 !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important; border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.9) !important;
+  display: none; flex-direction: column; min-width: 170px; z-index: 99999 !important; padding: 6px;
+}
+details.finances-item__actions[open] .finances-item__menu-dropdown { display: flex !important; }
+.finances-item__menu-dropdown button {
+  background: transparent !important; border: none !important; color: #f5f0eb !important;
+  text-align: left !important; padding: 12px 16px !important; border-radius: 8px !important;
+  font-size: 14px !important; display: flex !important; align-items: center !important;
+  gap: 10px !important; width: 100% !important; cursor: pointer !important;
+}
+.finances-item__menu-dropdown button:hover { background: rgba(212, 175, 55, 0.15) !important; color: #d4af37 !important; }
+.finances-item__menu-dropdown button:last-child { color: #e74c3c !important; border-top: 1px solid rgba(255, 255, 255, 0.05) !important; }
+.finances-item__menu-btn { list-style: none; background: transparent; border: none; color: #d4af37; font-size: 20px; padding: 4px 8px; cursor: pointer; border-radius: 50%; }
+.finances-item__menu-btn::-webkit-details-marker { display: none; }
+
+/* Nova estrutura para Transações */
+.finances-item__details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.finances-item__amount-block {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.finances-item__amount-block.is-income { color: var(--color-success, #2ecc71); }
+.finances-item__amount-block.is-expense { color: var(--color-error, #e74c3c); }
+.finances-item__amount-block.is-neutral { color: var(--color-gold, #d4af37); }
+
+/* O header das finanças não precisa de flex-wrap agora, pois só tem o titulo e o menu */
+.finances-item__header {
+  flex-wrap: nowrap !important;
+}
+
+.finances-item { background-color: transparent !important; }
+
+/* Estilos para a descrição expansível */
+.finances-item__desc-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 4px; }
+.finances-item__description { 
+  margin: 0; font-size: 13px; color: rgba(240, 230, 210, 0.6); 
+  line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap;
+}
+.finances-item__desc-wrap.is-expanded .finances-item__description { display: block; -webkit-line-clamp: unset; }
+.finances-item__read-more { 
+  background: transparent; border: none; color: #d4af37; font-size: 12px; 
+  padding: 0; cursor: pointer; text-decoration: underline; font-weight: 600; 
+}
+
+/* Estilos do Rodapé */
+.finances-item__footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 4px; padding-top: 10px; border-top: 1px solid rgba(212, 175, 55, 0.1);
+  width: 100%;
+}
+.finances-item__footer-info {
+  display: inline-flex; align-items: center; font-size: 12px;
+  color: rgba(240, 230, 210, 0.6); letter-spacing: 0.3px;
+}
+.finances-item__arrow { color: #d4af37; display: flex; align-items: center; }

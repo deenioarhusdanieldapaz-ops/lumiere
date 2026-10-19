@@ -109,6 +109,31 @@ let _state = {
 
 let _unsubscribe = null;
 
+
+function setupReadMore(btn, wrap, desc) {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isExpanded = wrap.classList.toggle('is-expanded');
+    btn.textContent = isExpanded ? 'Mostrar menos' : 'Ler mais';
+    if (!isExpanded) btn.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+  });
+  const observer = new ResizeObserver(() => {
+    if (wrap.classList.contains('is-expanded')) {
+      btn.style.display = 'block';
+      return;
+    }
+    btn.style.display = (desc.scrollHeight > desc.clientHeight + 2) ? 'block' : 'none';
+  });
+  observer.observe(desc);
+  const listObserver = new MutationObserver(() => {
+    if (!document.body.contains(desc)) {
+      observer.disconnect();
+      listObserver.disconnect();
+    }
+  });
+  listObserver.observe(document.body, { childList: true, subtree: true });
+}
+
 export function initFinances(container) {
   if (!container) {
     console.warn('[Finances] container inválido.');
@@ -267,53 +292,71 @@ function renderItem(item, tabId) {
   if (tabId === 'transactions') return renderTransactionItem(item);
   if (tabId === 'budgets') return renderBudgetItem(item);
   const el = document.createElement('article');
-  el.className = 'finances-item';
+  el.className = 'lum-card lum-card--finance finances-item';
   el.textContent = '(placeholder)';
   return el;
 }
 
 function renderBudgetItem(b) {
   const el = document.createElement('article');
-  el.className = 'finances-item';
-  const cor = b.color || '#d4af37';
-  el.style.borderTop = '0.5px solid ' + cor;
-  el.style.borderRight = '0.5px solid ' + cor;
-  el.style.borderBottom = '0.5px solid ' + cor;
-  el.style.borderLeft = '4px solid ' + cor;
+  el.className = 'lum-card lum-card--finance finances-item';
 
   const header = document.createElement('div');
-  header.className = 'finances-item__header';
-
+  header.className = 'lum-card__header finances-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'finances-item__header-left';
+  headerLeft.className = 'lum-card__header-left finances-item__header-left';
 
   const icon = document.createElement('span');
-  icon.className = 'finances-item__icon';
-  icon.textContent = b.icon || emojiForBudget(b.name, b.category);
+  icon.className = 'lum-card__icon finances-item__icon';
+  if (b.icon) icon.textContent = b.icon;
+  else icon.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>';
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'finances-item__name';
+  name.className = 'lum-card__title finances-item__name';
   name.textContent = b.name || '(sem nome)';
   headerLeft.appendChild(name);
-
   header.appendChild(headerLeft);
 
-  const amount = document.createElement('span');
-  amount.className = 'finances-item__amount finances-item__amount--neutral';
-  amount.textContent = formatMoney(b.spent || 0, 'MZN') + ' / ' + formatMoney(b.amount || 0, 'MZN');
-  header.appendChild(amount);
-
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions finances-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'finances-item__menu-btn';
+  summary.innerHTML = '⋮';
+  actions.appendChild(summary);
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'finances-item__menu-dropdown';
+  const btnEdit = document.createElement('button');
+  btnEdit.type = 'button';
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(b.id); });
+  menuDropdown.appendChild(btnEdit);
+  const btnDelete = document.createElement('button');
+  btnDelete.type = 'button';
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDeleteBudget(b); });
+  menuDropdown.appendChild(btnDelete);
+  actions.appendChild(menuDropdown);
+  header.appendChild(actions);
   el.appendChild(header);
+
+  const details = document.createElement('div');
+  details.className = 'finances-item__details';
+
+  const amount = document.createElement('span');
+  amount.className = 'finances-item__amount-block is-neutral';
+  amount.textContent = formatMoney(b.spent || 0, 'MZN') + ' / ' + formatMoney(b.amount || 0, 'MZN');
+  details.appendChild(amount);
 
   const meta = document.createElement('div');
   meta.className = 'finances-item__meta';
   if (b.category) meta.appendChild(metaTag(t('category', b.category)));
   meta.appendChild(metaTag(periodLabel(b.period)));
-  el.appendChild(meta);
+  details.appendChild(meta);
+  el.appendChild(details);
 
-  // Barra de progresso
+  // Progresso
   const progressWrap = document.createElement('div');
   progressWrap.className = 'finances-item__progress';
   const amountVal = Number(b.amount) || 0;
@@ -325,42 +368,44 @@ function renderBudgetItem(b) {
     variant = 'default';
   }
   const bar = createProgress({
-    value: pct,
-    label: 'Utilizado',
-    variant: variant,
-    showPercent: variant === 'default',
-    size: 'md'
+    value: pct, label: 'Utilizado', variant: variant, showPercent: variant === 'default', size: 'md'
   });
   progressWrap.appendChild(bar);
   el.appendChild(progressWrap);
 
+  // Descrição Expansível
   if (b.notes) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'finances-item__desc-wrap';
     const desc = document.createElement('p');
     desc.className = 'finances-item__description';
     desc.textContent = b.notes;
-    el.appendChild(desc);
+    descWrap.appendChild(desc);
+    
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'finances-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    el.appendChild(descWrap);
+    
+    setupReadMore(btnReadMore, descWrap, desc);
   }
 
-  const actions = document.createElement('div');
-  actions.className = 'finances-item__actions';
+  // Rodapé
+  const footer = document.createElement('div');
+  footer.className = 'finances-item__footer';
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'finances-item__footer-info';
+  dateSpan.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ' + (periodLabel(b.period) || 'Mensal');
+  footer.appendChild(dateSpan);
+  const arrowSpan = document.createElement('span');
+  arrowSpan.className = 'finances-item__arrow';
+  arrowSpan.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowSpan);
+  el.appendChild(footer);
 
-  const btnEdit = document.createElement('button');
-  btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(b.id));
-  actions.appendChild(btnEdit);
-
-  const btnDelete = document.createElement('button');
-  btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDeleteBudget(b));
-  actions.appendChild(btnDelete);
-
-  el.appendChild(actions);
   return el;
 }
 
@@ -371,147 +416,204 @@ function periodLabel(period) {
 
 function renderTransactionItem(trx) {
   const el = document.createElement('article');
-  el.className = 'finances-item';
+  el.className = 'lum-card lum-card--finance finances-item';
   if (trx.type === 'income') el.classList.add('finances-item--income');
   if (trx.type === 'expense') el.classList.add('finances-item--expense');
   if (trx.type === 'transfer') el.classList.add('finances-item--transfer');
 
   const header = document.createElement('div');
-  header.className = 'finances-item__header';
-
-  // Descrição ou Payee como título
+  header.className = 'lum-card__header finances-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'finances-item__header-left';
+  headerLeft.className = 'lum-card__header-left finances-item__header-left';
 
   const icon = document.createElement('span');
-  icon.className = 'finances-item__icon';
-  icon.textContent = trx.icon || emojiForTransaction(trx.description || trx.payee, trx.category);
+  icon.className = 'lum-card__icon finances-item__icon';
+  if (trx.icon) icon.textContent = trx.icon;
+  else icon.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>';
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'finances-item__name';
+  name.className = 'lum-card__title finances-item__name';
   name.textContent = trx.description || trx.payee || '(sem descrição)';
   headerLeft.appendChild(name);
-
   header.appendChild(headerLeft);
 
-  // Valor com sinal
-  const amount = document.createElement('span');
-  amount.className = 'finances-item__amount';
-  if (trx.type === 'income') amount.classList.add('finances-item__amount--income');
-  else if (trx.type === 'expense') amount.classList.add('finances-item__amount--expense');
-  else amount.classList.add('finances-item__amount--neutral');
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions finances-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'finances-item__menu-btn';
+  summary.innerHTML = '⋮';
+  actions.appendChild(summary);
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'finances-item__menu-dropdown';
+  const btnEdit = document.createElement('button');
+  btnEdit.type = 'button';
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(trx.id); });
+  menuDropdown.appendChild(btnEdit);
+  const btnDelete = document.createElement('button');
+  btnDelete.type = 'button';
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDeleteTransaction(trx); });
+  menuDropdown.appendChild(btnDelete);
+  actions.appendChild(menuDropdown);
+  header.appendChild(actions);
+  el.appendChild(header);
+
+  const details = document.createElement('div');
+  details.className = 'finances-item__details';
 
   const acc = _state.data.accounts.find(a => a.id === trx.accountId);
   const currency = acc ? acc.currency : 'MZN';
   const sign = trx.type === 'expense' ? '− ' : (trx.type === 'income' ? '+ ' : '⇄ ');
+  
+  const amount = document.createElement('span');
+  amount.className = 'finances-item__amount-block';
+  if (trx.type === 'income') amount.classList.add('is-income');
+  else if (trx.type === 'expense') amount.classList.add('is-expense');
+  else amount.classList.add('is-neutral');
   amount.textContent = sign + formatMoney(trx.amount || 0, currency);
-  header.appendChild(amount);
-
-  el.appendChild(header);
+  details.appendChild(amount);
 
   const meta = document.createElement('div');
   meta.className = 'finances-item__meta';
   if (acc) meta.appendChild(metaTag(acc.name || '(conta)'));
-  meta.appendChild(metaTag(trx.date || '—'));
   if (trx.category) meta.appendChild(metaTag(t('category', trx.category)));
   if (Array.isArray(trx.tags)) {
     for (const tg of trx.tags) meta.appendChild(metaTag(tg));
   }
-  el.appendChild(meta);
+  details.appendChild(meta);
+  el.appendChild(details);
 
-  const actions = document.createElement('div');
-  actions.className = 'finances-item__actions';
+  // Descrição Expansível (usando trx.payee ou notes, se houver)
+  if (trx.notes) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'finances-item__desc-wrap';
+    const desc = document.createElement('p');
+    desc.className = 'finances-item__description';
+    desc.textContent = trx.notes;
+    descWrap.appendChild(desc);
+    
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'finances-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    el.appendChild(descWrap);
+    
+    setupReadMore(btnReadMore, descWrap, desc);
+  }
 
-  const btnEdit = document.createElement('button');
-  btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(trx.id));
-  actions.appendChild(btnEdit);
+  // Rodapé
+  const footer = document.createElement('div');
+  footer.className = 'finances-item__footer';
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'finances-item__footer-info';
+  dateSpan.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ' + (trx.date || 'Hoje');
+  footer.appendChild(dateSpan);
+  const arrowSpan = document.createElement('span');
+  arrowSpan.className = 'finances-item__arrow';
+  arrowSpan.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowSpan);
+  el.appendChild(footer);
 
-  const btnDelete = document.createElement('button');
-  btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDeleteTransaction(trx));
-  actions.appendChild(btnDelete);
-
-  el.appendChild(actions);
   return el;
 }
 
 function renderAccountItem(acc) {
   const el = document.createElement('article');
-  el.className = 'finances-item';
-  const cor = acc.color || '#d4af37';
-  el.style.borderTop = '0.5px solid ' + cor;
-  el.style.borderRight = '0.5px solid ' + cor;
-  el.style.borderBottom = '0.5px solid ' + cor;
-  el.style.borderLeft = '4px solid ' + cor;
+  el.className = 'lum-card lum-card--finance finances-item';
 
   const header = document.createElement('div');
-  header.className = 'finances-item__header';
-
+  header.className = 'lum-card__header finances-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'finances-item__header-left';
+  headerLeft.className = 'lum-card__header-left finances-item__header-left';
 
   const icon = document.createElement('span');
-  icon.className = 'finances-item__icon';
-  icon.textContent = acc.icon || emojiForAccount(acc.name, acc.type);
+  icon.className = 'lum-card__icon finances-item__icon';
+  if (acc.icon) icon.textContent = acc.icon;
+  else icon.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>';
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'finances-item__name';
+  name.className = 'lum-card__title finances-item__name';
   name.textContent = acc.name || '(sem nome)';
   headerLeft.appendChild(name);
-
   header.appendChild(headerLeft);
 
-  const amount = document.createElement('span');
-  amount.className = 'finances-item__amount finances-item__amount--neutral';
-  amount.textContent = formatMoney(acc.balance || 0, acc.currency);
-  header.appendChild(amount);
-
+  const actions = document.createElement('details');
+  actions.className = 'lum-card__actions finances-item__actions';
+  const summary = document.createElement('summary');
+  summary.className = 'finances-item__menu-btn';
+  summary.innerHTML = '⋮';
+  actions.appendChild(summary);
+  const menuDropdown = document.createElement('div');
+  menuDropdown.className = 'finances-item__menu-dropdown';
+  const btnEdit = document.createElement('button');
+  btnEdit.type = 'button';
+  btnEdit.innerHTML = '✎ Editar';
+  btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(acc.id); });
+  menuDropdown.appendChild(btnEdit);
+  const btnDelete = document.createElement('button');
+  btnDelete.type = 'button';
+  btnDelete.innerHTML = '✕ Apagar';
+  btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDeleteAccount(acc); });
+  menuDropdown.appendChild(btnDelete);
+  actions.appendChild(menuDropdown);
+  header.appendChild(actions);
   el.appendChild(header);
+
+  const details = document.createElement('div');
+  details.className = 'finances-item__details';
+
+  const amount = document.createElement('span');
+  amount.className = 'finances-item__amount-block is-neutral';
+  amount.textContent = formatMoney(acc.balance || 0, acc.currency);
+  details.appendChild(amount);
 
   const meta = document.createElement('div');
   meta.className = 'finances-item__meta';
   meta.appendChild(metaTag(typeLabel(acc.type)));
   if (acc.institution) meta.appendChild(metaTag(acc.institution));
-  el.appendChild(meta);
+  details.appendChild(meta);
+  el.appendChild(details);
 
+  // Descrição Expansível
   if (acc.description) {
+    const descWrap = document.createElement('div');
+    descWrap.className = 'finances-item__desc-wrap';
     const desc = document.createElement('p');
     desc.className = 'finances-item__description';
     desc.textContent = acc.description;
-    el.appendChild(desc);
+    descWrap.appendChild(desc);
+    
+    const btnReadMore = document.createElement('button');
+    btnReadMore.type = 'button';
+    btnReadMore.className = 'finances-item__read-more';
+    btnReadMore.textContent = 'Ler mais';
+    btnReadMore.style.display = 'none';
+    descWrap.appendChild(btnReadMore);
+    el.appendChild(descWrap);
+    
+    setupReadMore(btnReadMore, descWrap, desc);
   }
 
-  const actions = document.createElement('div');
-  actions.className = 'finances-item__actions';
+  // Rodapé
+  const footer = document.createElement('div');
+  footer.className = 'finances-item__footer';
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'finances-item__footer-info';
+  dateSpan.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ' + (acc.createdAt ? new Date(acc.createdAt).toLocaleDateString('pt-PT') : 'Hoje');
+  footer.appendChild(dateSpan);
+  const arrowSpan = document.createElement('span');
+  arrowSpan.className = 'finances-item__arrow';
+  arrowSpan.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowSpan);
+  el.appendChild(footer);
 
-  const btnEdit = document.createElement('button');
-  btnEdit.type = 'button';
-  btnEdit.textContent = '✎';
-  btnEdit.title = 'Editar';
-  btnEdit.setAttribute('aria-label', 'Editar');
-  btnEdit.addEventListener('click', () => openForm(acc.id));
-  actions.appendChild(btnEdit);
-
-  const btnDelete = document.createElement('button');
-  btnDelete.type = 'button';
-  btnDelete.textContent = '✕';
-  btnDelete.title = 'Apagar';
-  btnDelete.setAttribute('aria-label', 'Apagar');
-  btnDelete.addEventListener('click', () => handleDeleteAccount(acc));
-  actions.appendChild(btnDelete);
-
-  el.appendChild(actions);
   return el;
 }
 

@@ -5,6 +5,7 @@
  * Sistema de tabs: cada tab mostra a lista da sua coleção.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
@@ -178,6 +179,9 @@ let _state = {
 
 let _unsubscribe = null;
 
+
+
+
 export function initLumiere(container) {
   if (!container) {
     console.warn('[Lumière] container inválido.');
@@ -337,37 +341,41 @@ function renderPanel() {
 
 function renderItem(item, tabId) {
   const el = document.createElement('article');
-  el.className = 'lumiere-item';
+  el.className = 'lum-card lum-card--lumiere lumiere-item';
 
   const header = document.createElement('div');
-  header.className = 'lumiere-item__header';
-
+  header.className = 'lum-card__header lumiere-item__header';
   const headerLeft = document.createElement('div');
-  headerLeft.className = 'lumiere-item__header-left';
+  headerLeft.className = 'lum-card__header-left lumiere-item__header-left';
 
-  // Icone — 4 tabs suportados
+  // Ícone (SVG ou Emoji se customizado)
   const icon = document.createElement('span');
-  icon.className = 'lumiere-item__icon';
-  let iconEmoji = '\u{1F4E6}';
-  if (tabId === 'products') {
-    iconEmoji = item.icon || emojiForProduct(item.name, item.category);
-  } else if (tabId === 'customers') {
-    iconEmoji = item.icon || emojiForCustomer(item.name);
-  } else if (tabId === 'businesses') {
-    iconEmoji = item.icon || emojiForBusiness(item.name, item.category);
-  } else if (tabId === 'sales') {
+  icon.className = 'lum-card__icon lumiere-item__icon';
+  const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>';
+  
+  let emojiFallback = null;
+  if (tabId === 'products') emojiFallback = emojiForProduct(item.name, item.category);
+  else if (tabId === 'customers') emojiFallback = emojiForCustomer(item.name);
+  else if (tabId === 'businesses') emojiFallback = emojiForBusiness(item.name, item.category);
+  else if (tabId === 'sales') {
     const prod = _state.data.products.find(p => p.id === item.productId);
-    iconEmoji = item.icon || (prod ? emojiForProduct(prod.name, prod.category) : '\u{1F4B5}');
+    emojiFallback = prod ? emojiForProduct(prod.name, prod.category) : '💵';
   }
-  icon.textContent = iconEmoji;
+
+  if (item.icon) {
+    icon.textContent = item.icon;
+  } else if (emojiFallback) {
+    icon.textContent = emojiFallback;
+  } else {
+    icon.innerHTML = svgIcon;
+  }
   icon.setAttribute('aria-hidden', 'true');
   headerLeft.appendChild(icon);
 
   const name = document.createElement('h3');
-  name.className = 'lumiere-item__name';
+  name.className = 'lum-card__title lumiere-item__name';
 
   if (tabId === 'sales') {
-    // Para vendas, mostrar o nome do produto (via productId) ou fallback
     const prod = _state.data.products.find(p => p.id === item.productId);
     const prodName = prod ? (prod.name || 'produto') : 'produto';
     const qty = item.quantity || 1;
@@ -376,37 +384,41 @@ function renderItem(item, tabId) {
     name.textContent = item.name || '(sem nome)';
   }
   headerLeft.appendChild(name);
-
   header.appendChild(headerLeft);
 
   if (['businesses','customers','products','sales'].includes(tabId)) {
-    const actions = document.createElement('div');
-    actions.className = 'lumiere-item__actions';
+    const actions = document.createElement('details');
+    actions.className = 'lum-card__actions lumiere-item__actions';
+    const summary = document.createElement('summary');
+    summary.className = 'lumiere-item__menu-btn';
+    summary.innerHTML = '⋮';
+    summary.setAttribute('aria-label', 'Mais ações');
+    actions.appendChild(summary);
+    
+    const menuDropdown = document.createElement('div');
+    menuDropdown.className = 'lumiere-item__menu-dropdown';
 
     const btnEdit = document.createElement('button');
     btnEdit.type = 'button';
-    btnEdit.textContent = '✎';
-    btnEdit.title = 'Editar';
-    btnEdit.setAttribute('aria-label', 'Editar');
-    btnEdit.addEventListener('click', () => openForm(item.id));
-    actions.appendChild(btnEdit);
+    btnEdit.innerHTML = '✎ Editar';
+    btnEdit.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); openForm(item.id); });
+    menuDropdown.appendChild(btnEdit);
 
     const btnDelete = document.createElement('button');
     btnDelete.type = 'button';
-    btnDelete.textContent = '✕';
-    btnDelete.title = 'Apagar';
-    btnDelete.setAttribute('aria-label', 'Apagar');
-    btnDelete.addEventListener('click', () => handleDelete(item));
-    actions.appendChild(btnDelete);
+    btnDelete.innerHTML = '✕ Apagar';
+    btnDelete.addEventListener('click', (e) => { e.preventDefault(); actions.removeAttribute('open'); handleDelete(item); });
+    menuDropdown.appendChild(btnDelete);
 
+    actions.appendChild(menuDropdown);
     header.appendChild(actions);
   }
 
   el.appendChild(header);
 
+  // Tags (Mantidas intactas)
   const meta = document.createElement('div');
   meta.className = 'lumiere-item__meta';
-
   if (tabId === 'businesses' && item.status) meta.appendChild(metaTag(t('businessStatus', item.status)));
   if (tabId === 'products' && item.price !== undefined) meta.appendChild(metaTag(formatMoney(item.price, item.currency)));
   if (tabId === 'products' && item.stock !== undefined) meta.appendChild(metaTag('Stock: ' + item.stock));
@@ -416,15 +428,32 @@ function renderItem(item, tabId) {
     const statusLabels = { pending: 'Pendente', paid: 'Pago', cancelled: 'Cancelado' };
     meta.appendChild(metaTag(statusLabels[item.status] || item.status));
   }
-
   if (meta.children.length > 0) el.appendChild(meta);
 
-  if (item.description) {
-    const desc = document.createElement('p');
-    desc.className = 'lumiere-item__description';
-    desc.textContent = item.description;
-    el.appendChild(desc);
+  // Rodapé
+  const footer = document.createElement('div');
+  footer.className = 'lumiere-item__footer';
+  
+  let dateStr = 'Hoje';
+  if (item.createdAt) {
+    const d = new Date(item.createdAt);
+    const timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    dateStr = `Hoje, ${timeStr}`;
   }
+
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'lumiere-item__footer-info';
+  const calIcon = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+  dateSpan.innerHTML = calIcon;
+  dateSpan.appendChild(document.createTextNode(' ' + dateStr));
+  footer.appendChild(dateSpan);
+
+  const arrowIcon = document.createElement('span');
+  arrowIcon.className = 'lumiere-item__arrow';
+  arrowIcon.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+  footer.appendChild(arrowIcon);
+
+  el.appendChild(footer);
 
   return el;
 }
