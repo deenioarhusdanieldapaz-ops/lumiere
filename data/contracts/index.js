@@ -24,3 +24,4 @@ export { templateContract } from './templateContract.js?v=20260927a';
 export { dailyReviewContract } from './dailyReviewContract.js?v=20261006a';
 
 export { focusSessionContract } from './focusSessionContract.js?v=20261008a';
+export { weeklyReviewContract } from './weeklyReviewContract.js';
