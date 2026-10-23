@@ -9,6 +9,7 @@ import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
+import { getOnboardingRecommendation } from '../../core/intelligence/onboardingRecommendations.js';
 
 // ============================================================
 // Icones automaticos — 50 Products + 25 Customers
@@ -206,11 +207,15 @@ async function loadAll() {
   render();
 
   try {
-    const [businesses, products, customers, sales] = await Promise.all([
+    const [businesses, products, customers, sales, tasks, habits, goals, financeTransactions] = await Promise.all([
       dataManager.list('lumiereBusinesses'),
       dataManager.list('lumiereProducts'),
       dataManager.list('lumiereCustomers'),
-      dataManager.list('lumiereSales')
+      dataManager.list('lumiereSales'),
+      dataManager.list('tasks').catch(() => []),
+      dataManager.list('habits').catch(() => []),
+      dataManager.list('goals').catch(() => []),
+      dataManager.list('financeTransactions').catch(() => [])
     ]);
     _state.data = {
       businesses: Array.isArray(businesses) ? businesses : [],
@@ -218,6 +223,9 @@ async function loadAll() {
       customers:  Array.isArray(customers)  ? customers  : [],
       sales:      Array.isArray(sales)      ? sales      : []
     };
+    _state.recommendation = getOnboardingRecommendation({
+      tasks, habits, goals, financeTransactions
+    });
   } catch (err) {
     console.error('[Lumière] Erro ao carregar:', err);
     _state.error = err.message || 'Erro ao carregar dados.';
@@ -234,7 +242,27 @@ function render() {
   const page = document.createElement('div');
   page.className = 'lumiere-page';
 
+  
   page.appendChild(renderHeader());
+
+  // Cartão de Recomendação
+  if (_state.recommendation) {
+    const recCard = document.createElement('div');
+    recCard.className = 'lum-card';
+    recCard.style.cssText = 'margin-bottom: 16px; padding: 16px; border: 1px solid #D4AF37; border-radius: 12px; background: rgba(23, 21, 18, 0.6); display: flex; flex-direction: column; gap: 8px;';
+    
+    const recTitle = document.createElement('h3');
+    recTitle.style.cssText = 'font-family: "Playfair Display", serif; font-size: 1.1rem; color: #E8C968; margin: 0;';
+    recTitle.textContent = _state.recommendation.title;
+    
+    const recText = document.createElement('p');
+    recText.style.cssText = 'font-size: 0.85rem; color: #F5F0EB; margin: 0; line-height: 1.4;';
+    recText.textContent = _state.recommendation.text;
+    
+    recCard.append(recTitle, recText);
+    page.appendChild(recCard);
+  }
+
   page.appendChild(renderTabs());
 
   if (_state.showForm && ['businesses','customers','products','sales'].includes(_state.activeTab)) {

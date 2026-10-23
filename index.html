@@ -102,52 +102,8 @@
     <p class="splash__hint">A carregar</p>
   </div>
 
-  <!-- VIEW 1: Onboarding -->
-  <div id="app">
-    <div class="onboarding" id="onboarding">
-      <h1>LUMIÈRE</h1>
-      <div class="subtitle">Life Manager</div>
-
-      <div id="step-1" class="step active">
-        <p style="text-align:center;color:var(--color-text-secondary);margin-bottom:1.5rem;">Bem-vindo ao seu gestor pessoal.</p>
-        <button id="btn-start">COMEÇAR</button>
-      </div>
-
-      <div id="step-2" class="step">
-        <label for="userName">Como devemos chamá-lo?</label>
-        <input type="text" id="userName" placeholder="Seu nome" autocomplete="name">
-        <div id="nameError" class="error">Por favor, insira seu nome.</div>
-        <button id="btn-name">CONTINUAR</button>
-      </div>
-
-      <div id="step-3" class="step">
-        <label for="theme">Tema</label>
-        <select id="theme">
-          <option value="noir">Noir (escuro)</option>
-          <option value="lumiere">Lumière (claro)</option>
-          <option value="auto">Automático</option>
-        </select>
-        <label for="goldIntensity">Intensidade dourada</label>
-        <select id="goldIntensity">
-          <option value="subtle">Sutil</option>
-          <option value="balanced" selected>Equilibrada</option>
-          <option value="strong">Forte</option>
-        </select>
-        <label for="interfaceSize">Tamanho da interface</label>
-        <select id="interfaceSize">
-          <option value="compact">Compacto</option>
-          <option value="balanced" selected>Equilibrado</option>
-          <option value="comfortable">Confortável</option>
-        </select>
-        <button id="btn-personalize">PRÓXIMO</button>
-      </div>
-
-      <div id="step-4" class="step">
-        <div id="summary"></div>
-        <button id="btn-finish">COMEÇAR A USAR</button>
-      </div>
-    </div>
-  </div>
+  <!-- VIEW 1: Onboarding (gerado dinamicamente) -->
+  <div id="app"></div>
 
   <!-- VIEW 2: App Shell -->
   <div class="app-shell" id="app-shell" hidden>
@@ -338,75 +294,10 @@
       <link rel="stylesheet" href="CSS/components/banner.css">
     <link rel="stylesheet" href="CSS/components/restore-modal.css">
     <link rel="stylesheet" href="CSS/components/filter-bar.css">
+    <link rel="stylesheet" href="CSS/onboarding.css">
     <script type="module" src="js/app.js?v=333"></script>
 
-  <script>
-    (function() {
-      var savedName = localStorage.getItem('lumiereUserName');
-      if (savedName) {
-        document.getElementById('app').hidden = true;
-        document.getElementById('app-shell').hidden = false;
-        console.log('[Onboarding] Utilizador encontrado:', savedName);
-        return;
-      }
-
-      var steps = {
-        1: document.getElementById('step-1'),
-        2: document.getElementById('step-2'),
-        3: document.getElementById('step-3'),
-        4: document.getElementById('step-4')
-      };
-      var userData = { name: '', theme: 'noir', gold: 'balanced', size: 'balanced' };
-
-      function showStep(n) {
-        Object.values(steps).forEach(function(el) { el.classList.remove('active'); });
-        steps[n].classList.add('active');
-      }
-
-      document.getElementById('btn-start').addEventListener('click', function() { showStep(2); });
-
-      document.getElementById('btn-name').addEventListener('click', function() {
-        var name = document.getElementById('userName').value.trim();
-        if (!name) {
-          document.getElementById('nameError').style.display = 'block';
-          return;
-        }
-        document.getElementById('nameError').style.display = 'none';
-        userData.name = name;
-        showStep(3);
-      });
-
-      document.getElementById('btn-personalize').addEventListener('click', function() {
-        userData.theme = document.getElementById('theme').value;
-        userData.gold = document.getElementById('goldIntensity').value;
-        userData.size = document.getElementById('interfaceSize').value;
-        var summary = document.getElementById('summary');
-        summary.innerHTML =
-          '<div class="summary-item"><span>Nome</span><span>' + userData.name + '</span></div>' +
-          '<div class="summary-item"><span>Tema</span><span>' + userData.theme + '</span></div>' +
-          '<div class="summary-item"><span>Dourado</span><span>' + userData.gold + '</span></div>' +
-          '<div class="summary-item"><span>Tamanho</span><span>' + userData.size + '</span></div>';
-        showStep(4);
-      });
-
-      document.getElementById('btn-finish').addEventListener('click', function() {
-        localStorage.setItem('lumiereUserName', userData.name);
-        localStorage.setItem('lumierePreferences', JSON.stringify({
-          theme: userData.theme,
-          goldIntensity: userData.gold,
-          interfaceSize: userData.size
-        }));
-        document.getElementById('app').hidden = true;
-        document.getElementById('app-shell').hidden = false;
-        document.dispatchEvent(new CustomEvent('onboarding:complete'));
-        console.log('[Onboarding] Concluido. Bem-vindo,', userData.name);
-      });
-
-      document.getElementById('userName').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') document.getElementById('btn-name').click();
-      });
-    })();
-  </script>
+  <script src="js/onboarding.js"></script>
   <!-- DBG removido na Fase 12. Para reativar: <script src="js/debug-panel.js"></script> -->
   <script>
     if ("serviceWorker" in navigator) {

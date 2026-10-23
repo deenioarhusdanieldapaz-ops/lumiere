@@ -15,6 +15,7 @@ import { ICONS } from '../../../js/icons.js';
 import { eventBus } from '../../../core/eventBus.js';
 import { dataManager } from '../../../core/dataManager.js';
 import { lumiereIndex } from '../../../core/intelligence/lumiereIndex.js';
+import { getOnboardingRecommendation } from '../../../core/intelligence/onboardingRecommendations.js';
 import { createProgressRing } from '../../../components/progress-ring/progressRing.js';
 
 /* ============================================================
@@ -782,6 +783,35 @@ function getDayPeriod() {
 
   // Card — VISÃO DAS ÁREAS (grid 2×3)
   section.appendChild(buildAreasGrid(collections));
+
+  // --- CARTÃO DE RECOMENDAÇÃO DO ONBOARDING (NO FIM) ---
+  const rec = getOnboardingRecommendation(collections);
+  if (rec) {
+    const recCard = document.createElement('div');
+    // Usar exatamente a mesma classe do cartão "HOJE"
+    recCard.className = 'overview__today-card';
+    recCard.style.marginTop = '16px';
+    
+    const header = document.createElement('div');
+    header.className = 'overview__today-header';
+    
+    const title = document.createElement('span');
+    title.className = 'overview__today-header-title';
+    title.textContent = rec.title;
+    
+    header.appendChild(title);
+    
+    const textWrap = document.createElement('div');
+    textWrap.className = 'overview__today-empty'; // Usa o estilo de texto vazio ou meta
+    textWrap.style.padding = '16px';
+    textWrap.style.fontSize = '0.9rem';
+    textWrap.style.lineHeight = '1.4';
+    textWrap.style.color = '#F5F0EB';
+    textWrap.textContent = rec.text;
+    
+    recCard.append(header, textWrap);
+    section.appendChild(recCard);
+  }
 
   container.appendChild(section);
 

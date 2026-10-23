@@ -1,16 +1,1044 @@
-/* Reset mínimo para o onboarding */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: system-ui, sans-serif; background: #0a0a0a; color: #f5f0eb; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1rem; }
-#app { width: 100%; max-width: 480px; }
-.onboarding { background: #1a1715; border-radius: 24px; padding: 2rem 1.5rem; border: 1px solid #b8956a; box-shadow: 0 8px 32px rgba(184, 149, 106, 0.15); }
-.onboarding h1 { font-size: 2.2rem; font-weight: 300; letter-spacing: 2px; text-align: center; color: #d4af37; margin-bottom: 0.5rem; }
-.onboarding .subtitle { text-align: center; color: #b8956a; font-size: 0.9rem; margin-bottom: 2rem; }
-.step { display: none; }
-.step.active { display: block; }
-.step label { display: block; font-size: 0.85rem; color: #b8956a; margin-bottom: 0.4rem; }
-.step input, .step select { width: 100%; padding: 0.75rem; background: #2a2521; border: 1px solid #4a3f38; border-radius: 12px; color: #f5f0eb; font-size: 1rem; margin-bottom: 1.2rem; }
-.step button { width: 100%; padding: 0.9rem; background: #d4af37; color: #0a0a0a; border: none; border-radius: 40px; font-weight: 700; font-size: 1rem; letter-spacing: 0.5px; cursor: pointer; transition: background 0.2s; }
-.step button:hover { background: #e6c34a; }
-.step .error { color: #e74c3c; font-size: 0.8rem; margin-top: -0.8rem; margin-bottom: 1rem; display: none; }
-.summary-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #2a2521; }
-.summary-item span:first-child { color: #b8956a; }
+.onb-container {
+  position: fixed;
+  inset: 0;
+  background-color: #0A0A0A;
+  background-image: url('../assets/bg/onboarding-bg-01.webp');
+  background-size: cover;
+  background-position: center center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: max(20px, env(safe-area-inset-top)) 24px max(20px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  z-index: 999999;
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+
+.onb-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(10,10,10,0.0) 0%, rgba(10,10,10,0.29) 50%, rgba(10,10,10,0.61) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.onb-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  text-align: center;
+  gap: 24px;
+}
+
+/* 1. Marca (Logo + Texto) */
+.onb-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4vh;
+}
+
+.onb-logo-symbol {
+  width: 65px !important;
+  height: 65px !important;
+  min-width: 65px !important;
+  max-width: 65px !important;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+.onb-brand-text h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  color: #D4AF37;
+  letter-spacing: 6px;
+  margin: 0;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.onb-brand-tagline {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.6rem;
+  color: #F5F0EB;
+  letter-spacing: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.onb-brand-tagline::before,
+.onb-brand-tagline::after {
+  content: '';
+  height: 1px;
+  width: 30px;
+  background: rgba(245, 240, 235, 0.3);
+}
+
+/* 2. Textos (Título e Subtítulo) */
+.onb-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+
+
+
+
+.onb-subtitle {
+  color: #B9B2A8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 16px 0 0 0;
+}
+
+/* 3. Pontos e Botão */
+.onb-progress {
+  display: flex;
+  gap: 8px;
+  margin-bottom: -8px;
+}
+
+.onb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #333333;
+  transition: background 0.3s;
+}
+
+.onb-dot.active {
+  background: #D4AF37;
+}
+
+.onb-btn {
+  width: 100%;
+  min-height: 56px;
+  background: linear-gradient(180deg, rgba(23, 21, 18, 0.8) 0%, #0A0A0A 100%);
+  border: 1px solid #D4AF37;
+  color: #F5F0EB;
+  border-radius: 40px;
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.onb-btn:active {
+  transform: scale(0.98);
+}
+
+.onb-arrow {
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin-left: 8px;
+  color: #D4AF37;
+}
+
+.onb-hidden {
+  display: none !important;
+}
+
+.onb-brand-text h2 {
+    font-family: 'Cinzel', serif !important;
+    font-size: 1.6rem !important;
+    color: #D4AF37 !important;
+    text-transform: none !important;
+    letter-spacing: 4px !important;
+    margin: 0 !important;
+}
+.onb-brand-tagline {
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 0.65rem !important;
+    color: #F5F0EB !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase !important;
+}
+
+/* Empurrar o conteúdo para baixo e dar espaço */
+.onb-brand {
+    margin-top: 2vh !important;
+    margin-bottom: 4vh !important;
+}
+.onb-title-wrapper {
+    margin-top: 2vh !important;
+    margin-bottom: 5vh !important;
+}
+
+
+/* =========================================
+   ZONA DA MARCA (PREMIUM UPDATE)
+   ========================================= */
+.onb-brand {
+    margin-top: 4vh !important;
+    margin-bottom: 6vh !important; 
+}
+
+.onb-logo-symbol {
+    width: 160px !important;
+    height: 160px !important;
+    min-width: 160px !important;
+    max-width: 160px !important;
+    margin-bottom: 24px !important; 
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.25)) !important; 
+}
+
+.onb-brand-text h2 {
+    font-family: 'Cinzel', serif !important;
+    font-size: 2.5rem !important; 
+    color: #D4AF37 !important; 
+    letter-spacing: 12px !important; 
+    text-transform: uppercase !important;
+    margin: 0 0 12px 0 !important;
+    line-height: 1 !important;
+    text-indent: 12px !important; 
+}
+
+.onb-brand-tagline {
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 0.98rem !important; 
+    color: #F5F0EB !important; 
+    letter-spacing: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    text-indent: 8px !important;
+}
+
+/* Linhas laterais com gradiente dourado */
+.onb-brand-tagline::before,
+.onb-brand-tagline::after {
+    content: '' !important;
+    height: 1px !important;
+    width: 60px !important; 
+}
+
+.onb-brand-tagline::before {
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.8)) !important;
+}
+
+.onb-brand-tagline::after {
+    background: linear-gradient(270deg, transparent, rgba(212, 175, 55, 0.8)) !important;
+}
+
+
+/* =========================================
+   REDUÇÃO DA MARCA (-26%)
+   ========================================= */
+.onb-brand-text h2 {
+    font-size: 1.85rem !important; 
+    letter-spacing: 9px !important; 
+    text-indent: 9px !important; 
+    margin: 0 0 9px 0 !important;
+}
+
+.onb-brand-tagline {
+    font-size: 0.72rem !important; 
+    letter-spacing: 6px !important;
+    gap: 15px !important; 
+    text-indent: 6px !important;
+}
+
+.onb-brand-tagline::before,
+.onb-brand-tagline::after {
+    width: 45px !important; 
+}
+
+
+/* =========================================
+   REDUÇÃO EXTRA DE 5% (ZONA VERMELHA)
+   ========================================= */
+.onb-brand-text h2 {
+    font-size: 1.75rem !important;       /* 1.85rem - 5% */
+    letter-spacing: 8.5px !important;    /* 9px - 5% */
+    text-indent: 8.5px !important; 
+    margin: 0 0 8px 0 !important;
+}
+
+.onb-brand-tagline {
+    font-size: 0.68rem !important;       /* 0.72rem - 5% */
+    letter-spacing: 5.5px !important;    /* 6px - 5% */
+    gap: 14px !important;                /* 15px - 5% */
+    text-indent: 5.5px !important;
+}
+
+.onb-brand-tagline::before,
+.onb-brand-tagline::after {
+    width: 43px !important;              /* 45px - 5% */
+}
+
+
+/* =========================================
+   ORGANIZAÇÃO DA ZONA AZUL (TEXTO PRINCIPAL)
+   ========================================= */
+
+/* 1. Empurrar o bloco para baixo e dar respiro */
+.onb-title-wrapper {
+    margin-top: 8vh !important; 
+    margin-bottom: 6vh !important; 
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+/* 2. Forçar a caixa mista e a fonte no título */
+
+
+/* 3. O "BEM-VINDO À LUMIÈRE" fica dourado e espaçado */
+
+
+/* 4. O Subtítulo não toca nas bordas e tem a cor certa */
+.onb-subtitle {
+    font-family: 'Manrope', sans-serif !important;
+    color: #B9B2A8 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    max-width: 90% !important; /* Impede de tocar nas bordas */
+    margin: 0 auto !important;
+    text-transform: none !important;
+}
+
+
+/* =========================================
+   PUXAR CONTEÚDO PARA CIMA E CORRIGIR TÍTULO
+   ========================================= */
+
+/* 1. Remover o espaço vazio gigante */
+.onb-brand {
+    margin-bottom: 20px !important; /* Reduzido de 6vh para 20px */
+}
+
+.onb-title-wrapper {
+    margin-top: 0 !important;     /* Puxa o BEM-VINDO para cima */
+    margin-bottom: 0 !important; 
+}
+
+/* 2. Empurrar os pontinhos e o botão para o fundo do ecrã */
+.onb-progress {
+    margin-top: auto !important;  /* Ocupa o espaço vazio restante aqui */
+}
+
+/* 3. Corrigir a Fonte do Título (Playfair Display suporta minúsculas) */
+
+
+/* 4. Garantir que o "BEM-VINDO" está em maiúsculas */
+
+
+/* 5. Ajustar a largura do subtítulo para caber bem */
+.onb-subtitle {
+    max-width: 85% !important;
+    margin: 0 auto !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+}
+
+
+/* =========================================
+   AJUSTE FINAL DE TAMANHO (-15%)
+   ========================================= */
+
+
+
+
+.onb-subtitle {
+    font-size: 0.8rem !important; /* Reduzido 15% */
+    max-width: 85% !important;
+    line-height: 1.45 !important;
+}
+
+
+/* =========================================
+   ESTILOS ESPECÍFICOS DO ECRÃ 2
+   ========================================= */
+
+/* 1. Barra de Topo */
+.onb-topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    margin-top: 10px;
+}
+
+.onb-back-btn {
+    background: transparent;
+    border: none;
+    color: #F5F0EB;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.onb-topbar-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #B9B2A8;
+    font-size: 0.8rem;
+}
+
+.onb-bar-container {
+    width: 60px;
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.onb-bar-fill {
+    height: 100%;
+    background: #D4AF37;
+    border-radius: 2px;
+}
+
+/* 2. Título e Subtítulo Específicos */
+
+
+.onb-title-wrapper 
+
+.onb-title-wrapper .onb-subtitle {
+    font-size: 0.95rem !important;
+    color: #F5F0EB !important; /* Mais claro que no ecrã 1 */
+    max-width: 95% !important;
+}
+
+/* 3. Input de Texto */
+.onb-input-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: rgba(23, 21, 18, 0.6);
+    border: 1px solid #D4AF37;
+    border-radius: 16px;
+    padding: 0 16px;
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.onb-input-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.onb-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #F5F0EB;
+    font-family: 'Manrope', sans-serif;
+    font-size: 1rem;
+    outline: none;
+}
+
+.onb-input::placeholder {
+    color: #B9B2A8;
+}
+
+/* 4. Aviso de Privacidade */
+.onb-privacy {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 90%;
+    margin: 0 auto 24px auto;
+    text-align: left;
+    color: #B9B2A8;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.onb-privacy svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.onb-error-msg {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    display: none;
+}
+
+/* 5. Botão Preenchido (Destaque) */
+.onb-btn-solid {
+    background: linear-gradient(180deg, #E8C968 0%, #C59B27 100%) !important;
+    color: #0A0A0A !important; /* Texto escuro */
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3) !important;
+}
+
+.onb-arrow-dark {
+    color: #0A0A0A;
+    font-size: 1.2rem;
+    margin-left: 8px;
+    font-weight: bold;
+}
+
+/* Forçar o título do Ecrã 1 a caber em 2 linhas */
+
+
+
+/* =========================================
+   TÍTULO ECRÃ 1 - VERSÃO DEFINITIVA
+   ========================================= */
+.onb-title {
+    font-family: 'Playfair Display', 'Georgia', serif !important;
+    font-size: 1.6rem !important;
+    line-height: 1.2 !important;
+    text-transform: none !important;
+    color: #F5F0EB !important;
+    margin-bottom: 16px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.onb-title span {
+    font-family: 'Manrope', sans-serif !important;
+    text-transform: uppercase !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 4px !important;
+    color: #D4AF37 !important;
+    margin-bottom: 20px !important;
+    display: block !important;
+}
+/* Forçar as duas linhas a não quebrar */
+.onb-title-line {
+    display: block !important;
+    white-space: nowrap !important;
+}
+
+
+/* =========================================
+   COMPACTAÇÃO DO ECRÃ 2 (TUDO NO ECRÃ)
+   ========================================= */
+.onb-view-2 .onb-content {
+    gap: 12px !important; /* Reduz o espaço entre os blocos */
+    justify-content: space-between !important;
+}
+
+.onb-view-2 .onb-brand {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    transform: scale(0.65); /* Encolhe o logo (160px * 0.65 = 104px) */
+    transform-origin: center top;
+}
+
+.onb-view-2 .onb-title-wrapper {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.onb-view-2 .onb-title-wrapper .onb-title {
+    font-size: 1.8rem !important; /* Título ligeiramente menor */
+    margin-bottom: 8px !important;
+}
+
+.onb-view-2 .onb-title-wrapper .onb-subtitle {
+    font-size: 0.85rem !important;
+}
+
+.onb-view-2 .onb-input-wrapper {
+    margin-bottom: 0 !important;
+    height: 52px !important; /* Input ligeiramente mais baixo */
+}
+
+.onb-view-2 .onb-privacy {
+    margin-bottom: 0 !important;
+    font-size: 0.75rem !important;
+}
+
+.onb-view-2 .onb-progress {
+    margin-bottom: 0 !important;
+}
+
+.onb-view-2 .onb-btn {
+    margin-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+}
+
+
+/* =========================================
+   AJUSTES FINOS ECRÃ 2 (V450)
+   ========================================= */
+
+/* 1. Aumentar a Marca em 14% (0.65 * 1.14 = 0.74) */
+.onb-view-2 .onb-brand {
+    transform: scale(0.74) !important;
+    margin-bottom: -10px !important; /* Compensa o espaço extra do scale */
+}
+
+/* 2. Puxar o bloco de texto para cima (a partir do VAMOS COMEÇAR) */
+.onb-view-2 .onb-title-wrapper {
+    margin-top: -30px !important; 
+}
+
+/* 3. Deixar o "VAMOS COMEÇAR" num dourado mais claro */
+.onb-view-2 .onb-title-wrapper span {
+    color: #E8C968 !important;
+}
+
+/* Cor do botão Voltar (igual ao VAMOS COMEÇAR) */
+.onb-back-btn {
+    color: #E8C968 !important;
+    font-weight: 500 !important;
+}
+
+
+/* =========================================
+   AJUSTE DE GROSSURA E TAMANHO (V452)
+   ========================================= */
+
+/* 1. Aumentar a Marca (Zona Vermelha) em 7% (0.74 -> 0.792) */
+.onb-view-2 .onb-brand {
+    transform: scale(0.792) !important;
+}
+
+/* 2. Aumentar a grossura do "LUMIÈRE" (Zona Azul) em ~32% */
+.onb-view-2 .onb-brand-text h2 {
+    font-weight: 700 !important; /* Salta de Normal (400) para Bold (700) */
+    -webkit-text-stroke: 0.6px #D4AF37 !important; /* Engrossa os contornos da fonte */
+    text-shadow: 0 0 2px rgba(212, 175, 55, 0.4) !important; /* Dá volume */
+    letter-spacing: 7px !important; /* Mantém o espaçamento premium */
+}
+
+
+/* =========================================
+   ESTILOS DO ECRÃ 3 (OBJETIVOS)
+   ========================================= */
+.onb-view-3 .onb-content {
+    gap: 12px !important;
+}
+
+.onb-view-3 .onb-brand {
+    transform: scale(0.55) !important; /* Logo mais pequeno para caber a grelha */
+    margin-top: -20px !important;
+    margin-bottom: -20px !important;
+}
+
+.onb-view-3 .onb-title-wrapper .onb-title {
+    font-size: 1.7rem !important;
+    margin-bottom: 8px !important;
+    line-height: 1.1 !important;
+}
+
+.onb-view-3 .onb-title-wrapper .onb-subtitle {
+    font-size: 0.8rem !important;
+    max-width: 90% !important;
+}
+
+/* Grelha de Opções */
+.onb-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.onb-card {
+    display: flex;
+    align-items: center;
+    background: rgba(23, 21, 18, 0.6);
+    border: 1px solid #40351D;
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.onb-card.selected {
+    border-color: #E8C968;
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.onb-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.onb-card-text {
+    flex: 1;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.75rem;
+    color: #F5F0EB;
+    line-height: 1.2;
+}
+
+.onb-card-radio {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #40351D;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.onb-card.selected .onb-card-radio {
+    border-color: #E8C968;
+    background: #E8C968;
+    box-shadow: inset 0 0 0 3px #0A0A0A;
+}
+
+/* Botão Outro Objetivo */
+.onb-btn-outro {
+    width: 100%;
+    min-height: 50px;
+    background: transparent;
+    border: 1px solid #40351D;
+    border-radius: 40px;
+    color: #F5F0EB;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.onb-btn-outro span {
+    color: #E8C968;
+    font-size: 1.2rem;
+}
+
+
+/* =========================================
+   ESTILOS DO ECRÃ 3 (COMPACTO - TUDO NO ECRÃ)
+   ========================================= */
+.onb-view-3 .onb-content {
+    gap: 8px !important; /* Reduz o espaço entre os blocos principais */
+    justify-content: space-between !important;
+    padding-top: 5px !important;
+}
+
+.onb-view-3 .onb-topbar {
+    margin-bottom: 0px !important;
+}
+
+.onb-view-3 .onb-brand {
+    transform: scale(0.45) !important; /* Logo bem mais pequeno */
+    margin-top: -25px !important;
+    margin-bottom: -25px !important;
+}
+
+.onb-view-3 .onb-title-wrapper {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    gap: 4px !important;
+}
+
+.onb-view-3 .onb-title-wrapper span {
+    font-size: 0.65rem !important;
+    margin-bottom: 4px !important;
+}
+
+.onb-view-3 .onb-title-wrapper .onb-title {
+    font-size: 1.5rem !important; /* Título mais compacto */
+    margin-bottom: 4px !important;
+    line-height: 1.1 !important;
+}
+
+.onb-view-3 .onb-title-wrapper .onb-subtitle {
+    font-size: 0.75rem !important; /* Subtítulo mais pequeno */
+    line-height: 1.2 !important;
+    max-width: 95% !important;
+}
+
+/* Grelha de Opções */
+.onb-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px !important; /* Espaço entre cartões reduzido */
+    width: 100%;
+    margin-bottom: 4px !important;
+}
+
+.onb-card {
+    display: flex;
+    align-items: center;
+    background: rgba(23, 21, 18, 0.6);
+    border: 1px solid #40351D;
+    border-radius: 10px;
+    padding: 8px 10px !important; /* Cartões mais baixos */
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+    min-height: 48px !important; /* Altura fixa mais baixa */
+}
+
+.onb-card-icon svg {
+    width: 18px !important; /* Ícones mais pequenos */
+    height: 18px !important;
+}
+
+.onb-card-text {
+    flex: 1;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.7rem !important;
+    color: #F5F0EB;
+    line-height: 1.1 !important;
+    margin-left: 6px;
+}
+
+.onb-card-radio {
+    width: 14px !important;
+    height: 14px !important;
+    right: 8px !important;
+}
+
+/* Botão Outro Objetivo */
+.onb-btn-outro {
+    width: 100%;
+    min-height: 40px !important; /* Botão mais baixo */
+    border-radius: 30px !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 4px !important;
+}
+
+/* Botão Continuar e Pontos */
+.onb-view-3 .onb-progress {
+    margin-bottom: 4px !important;
+}
+
+.onb-view-3 .onb-btn {
+    min-height: 48px !important;
+    margin-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+}
+
+/* Como não há barra de topo, dá um pequeno respiro ao logótipo no topo */
+.onb-view-3 .onb-brand {
+    margin-top: 20px !important;
+    transform: scale(0.55) !important; /* Mantém o logo num tamanho bom */
+}
+
+/* Puxar a marca para cima (Seta Vermelha) */
+.onb-view-3 .onb-brand {
+    margin-top: -20px !important; /* Sobe a marca */
+    transform: scale(0.5) !important; /* Ligeiramente mais pequeno para compensar */
+    margin-bottom: -15px !important; 
+}
+
+/* Aproximar o título da marca (já sem o VAMOS PRIMEIRO) */
+.onb-view-3 .onb-title-wrapper {
+    margin-top: 0px !important;
+}
+
+
+/* =========================================
+   AJUSTE DE PROPORÇÃO (V459)
+   ========================================= */
+
+/* Zona Azul: Aumentar Marca em 13% */
+.onb-view-3 .onb-brand {
+    transform: scale(0.565) !important; 
+}
+
+/* Zona Vermelha: Aumentar Cartões e Grelha em 16% */
+.onb-view-3 .onb-grid {
+    gap: 7px !important; 
+}
+
+.onb-view-3 .onb-card {
+    min-height: 56px !important; 
+    padding: 9px 12px !important;
+}
+
+.onb-view-3 .onb-card-text {
+    font-size: 0.81rem !important;
+}
+
+.onb-view-3 .onb-card-icon svg {
+    width: 21px !important;
+    height: 21px !important;
+}
+
+.onb-view-3 .onb-btn-outro {
+    min-height: 46px !important;
+    font-size: 0.92rem !important;
+}
+
+/* Ajuste de espaço para a TopBar no Ecrã 3 */
+.onb-view-3 .onb-topbar {
+    margin-bottom: 10px !important;
+    margin-top: 5px !important;
+}
+
+.onb-view-3 .onb-brand {
+    margin-top: 0px !important; /* Remove o -20px que tinhamos posto */
+    transform: scale(0.5) !important; /* Volta ao tamanho compacto */
+    margin-bottom: -10px !important;
+}
+
+/* Garantir que o título não cola na topbar */
+.onb-view-3 .onb-title-wrapper {
+    margin-top: 5px !important;
+}
+
+/* Estilo do Input "Outro Objetivo" */
+.onb-view-3 .onb-input-other {
+    grid-column: span 2; /* Ocupa as duas colunas da grelha */
+    margin-top: 4px !important;
+    margin-bottom: 0 !important;
+    height: 46px !important;
+    background: rgba(23, 21, 18, 0.8) !important;
+}
+
+.onb-view-3 .onb-input-other .onb-input {
+    font-size: 0.85rem !important;
+}
+
+
+/* =========================================
+   ESTILOS DO ECRÃ 4 (ASPIRAÇÃO)
+   ========================================= */
+.onb-view-4 .onb-content {
+    gap: 8px !important;
+    justify-content: space-between !important;
+}
+
+.onb-view-4 .onb-topbar {
+    margin-bottom: 0px !important;
+}
+
+.onb-view-4 .onb-brand {
+    transform: scale(0.45) !important;
+    margin-top: -25px !important;
+    margin-bottom: -25px !important;
+}
+
+.onb-view-4 .onb-title-wrapper {
+    margin-top: 0px !important;
+    margin-bottom: 5px !important;
+}
+
+.onb-view-4 .onb-title-wrapper .onb-title {
+    font-size: 1.6rem !important;
+    margin-bottom: 6px !important;
+    line-height: 1.1 !important;
+}
+
+.onb-view-4 .onb-title-wrapper .onb-subtitle {
+    font-size: 0.75rem !important;
+    line-height: 1.3 !important;
+}
+
+/* Cartões com 2 Linhas */
+.onb-card-2lines {
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 8px 10px !important;
+    min-height: 58px !important; /* Mais altos para caber 2 linhas */
+}
+
+.onb-card-text-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: left;
+}
+
+.onb-card-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.75rem !important;
+    color: #F5F0EB;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.onb-card-subtitle {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.65rem !important;
+    color: #B9B2A8;
+    line-height: 1.1;
+    margin-top: 2px;
+}
+
+/* Botão Pular */
+.onb-skip-btn {
+    background: transparent;
+    border: none;
+    color: #B9B2A8;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+/* Corrigir sobreposição dos pontinhos no Ecrã 4 */
+.onb-view-4 .onb-progress {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+.onb-view-4 .onb-btn {
+    margin-bottom: max(15px, env(safe-area-inset-bottom)) !important;
+}
+
+.onb-view-4 .onb-skip-btn {
+    margin-bottom: 8px !important;
+}
+
+/* Ajuste fino na altura dos cartões para dar mais respiro */
+.onb-card-2lines {
+    min-height: 56px !important;
+}
+
+/* Equilíbrio do Ecrã 2 sem o logótipo */
+.onb-view-2 .onb-title-wrapper {
+    margin-top: 15vh !important; /* Empurra o título para o centro do ecrã */
+}
+.onb-view-2 .onb-topbar {
+    margin-bottom: 0 !important;
+}
+
+/* Visual de Check para múltipla escolha no Ecrã 4 */
+.onb-view-4 .onb-card.selected .onb-card-radio {
+    background: #E8C968 !important;
+    border-color: #E8C968 !important;
+    box-shadow: none !important; /* Remove o buraco no meio */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.onb-view-4 .onb-card.selected .onb-card-radio::after {
+    content: '✓';
+    color: #0A0A0A;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+}
