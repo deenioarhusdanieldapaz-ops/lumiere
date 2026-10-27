@@ -21,7 +21,6 @@ import { initLumiere } from '../pages/lumiere/lumiere.js';
 import { initNotes } from '../pages/notes/notes.js';
 import { initTemplates } from '../pages/templates/templates.js';
 import { initCalendar } from '../pages/calendar/calendar.js';
-import { initWeeklyReview } from '../pages/weekly-review/weeklyReview.js';
 import { initFinances } from '../pages/finances/finances.js';
 import { initSettings } from '../pages/settings/settings.js';
 import { initProfile } from '../pages/profile/profile.js';
@@ -254,8 +253,7 @@ async function bootstrap() {
         if (container) initNotes(container);
       } else if (payload.page === 'templates') {
         if (container) initTemplates(container);
-      } else if (payload.page === 'weekly-review') {
-        if (container) initWeeklyReview(container);
+      /* Rota da Revisão Semanal desativada (Feature Pausada) */
       } else if (payload.page === 'calendar') {
         if (container) initCalendar(container);
       } else if (payload.page === 'finances') {

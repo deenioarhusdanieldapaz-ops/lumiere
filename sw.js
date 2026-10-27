@@ -26,7 +26,7 @@ try {
 // ============================================================
 // Cache / Offline
 // ============================================================
-const CACHE_NAME = 'lumiere-cache-v485';
+const CACHE_NAME = 'lumiere-cache-v491';
 const OFFLINE_URLS = [
   './',
   './index.html',
@@ -161,7 +161,8 @@ const OFFLINE_URLS = [
   './components/voice/voice-overlay.css',
   './components/voice/orb-base.png',
   './public/icons/android-chrome-192x192.png',
-  './public/icons/android-chrome-512x512.png'
+  './public/icons/android-chrome-512x512.png',
+  './assets/bg/settings-bg.webp',
 ];
 
 self.addEventListener('install', (event) => {

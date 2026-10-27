@@ -78,13 +78,46 @@ function render() {
   const page = document.createElement('div');
   page.className = 'settings-page';
 
-  const header = document.createElement('header');
-  header.className = 'settings-header';
-  const title = document.createElement('h2');
-  title.className = 'settings-header__title';
-  title.textContent = 'Definições';
-  header.appendChild(title);
-  page.appendChild(header);
+  // --- CABEÇALHO PERSONALIZADO ---
+  const customHeader = document.createElement('div');
+  customHeader.className = 'settings-custom-header';
+
+  const topRow = document.createElement('div');
+  topRow.className = 'settings-header-top';
+
+  const backBtn = document.createElement('button');
+  backBtn.className = 'settings-back-btn';
+  backBtn.innerHTML = '&lt;';
+  backBtn.onclick = () => {
+    // Voltar para o Dashboard (overview)
+    if (window.__lumiere && window.__lumiere.stateManager) {
+      window.__lumiere.stateManager.navigateTo('overview');
+    }
+  };
+
+  const brand = document.createElement('div');
+  brand.className = 'settings-brand';
+  brand.innerHTML = '<img src="public/brand/master/app-icon-v3.svg" class="settings-brand-symbol"><h2 class="settings-brand-name">LUMIÈRE</h2><span class="settings-brand-tagline">Life Manager</span>';
+
+  const quote = document.createElement('div');
+  quote.className = 'settings-quote';
+  quote.innerHTML = 'Disciplina hoje,<br>liberdade amanhã.';
+
+  topRow.append(backBtn, brand, quote);
+
+  const pageTitle = document.createElement('h1');
+  pageTitle.className = 'settings-page-title';
+  pageTitle.textContent = 'DEFINIÇÕES';
+
+  const pageSubtitle = document.createElement('p');
+  pageSubtitle.className = 'settings-page-subtitle';
+  pageSubtitle.textContent = 'Personaliza a tua experiência';
+
+  customHeader.append(topRow, pageTitle, pageSubtitle);
+  page.appendChild(customHeader);
+  
+  const title = pageTitle; // Mantém a referência para o gesto secreto funcionar
+
 
   // Gesto secreto: 5 toques rápidos no título alternam modo dev
   (function attachSecretGesture() {
@@ -112,13 +145,196 @@ function render() {
   } else if (_state.error) {
     page.appendChild(renderState(_state.error, true));
   } else {
-    page.appendChild(renderPreferences());
-    page.appendChild(renderPomodoro());
-    page.appendChild(renderBackup());
-    page.appendChild(renderActions());
+    // Cartão de Perfil
+    const profileCard = document.createElement('div');
+    profileCard.className = 'settings-profile-card';
+    profileCard.innerHTML = `
+      <div class="settings-profile-avatar" style="position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+  <span style="position:absolute; bottom:-2px; right:-2px; background:#D4AF37; color:#000; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-size:10px; border:1px solid #0A0A0A;">👑</span>
+</div>
+      <div class="settings-profile-info">
+        <p class="settings-profile-name">Arrhinuis</p>
+        <p class="settings-profile-sub">Daniel Alfredo</p>
+        <p class="settings-profile-loc">📍 Marromeu, Moçambique</p>
+      </div>
+      <div class="settings-profile-arrow">›</div>
+    `;
+    page.appendChild(profileCard);
+
+    function createSettingsRow(title, sub, icon, renderFn) {
+      const row = document.createElement('div');
+      row.className = 'settings-menu-row';
+      row.innerHTML = `
+        <div class="settings-menu-icon">${icon}</div>
+        <div class="settings-menu-text">
+          <p class="settings-menu-title">${title}</p>
+          <p class="settings-menu-sub">${sub}</p>
+        </div>
+        <div class="settings-menu-arrow">›</div>
+      `;
+      row.onclick = () => {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9998;display:flex;flex-direction:column;justify-content:flex-end;';
+        const sheet = document.createElement('div');
+        sheet.style.cssText = 'background:#0A0A0A;border-top:1px solid #D4AF37;border-radius:20px 20px 0 0;padding:20px;max-height:80vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.3s;';
+        const header = document.createElement('div');
+        header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;';
+        const h2 = document.createElement('h2');
+        h2.style.cssText = 'color:#D4AF37;font-family:"Cinzel",serif;font-size:1.2rem;margin:0;';
+        h2.textContent = title;
+        const closeBtn = document.createElement('button');
+        closeBtn.style.cssText = 'background:transparent;border:none;color:#F5F0EB;font-size:1.5rem;cursor:pointer;';
+        closeBtn.innerHTML = '✕';
+        closeBtn.onclick = () => {
+          sheet.style.transform = 'translateY(100%)';
+          setTimeout(() => overlay.remove(), 300);
+        };
+        header.append(h2, closeBtn);
+        sheet.appendChild(header);
+        
+        const content = renderFn();
+        if(content) {
+          content.style.padding = '0';
+          sheet.appendChild(content);
+        }
+
+        overlay.appendChild(sheet);
+        requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeBtn.click(); });
+        document.body.appendChild(overlay);
+      };
+      return row;
+    }
+
+    // GERAL
+    const secGeral = document.createElement('div');
+    secGeral.className = 'settings-section-title';
+    secGeral.textContent = 'GERAL';
+    page.appendChild(secGeral);
+    
+    const listGeral = document.createElement('div');
+    listGeral.className = 'settings-menu-list';
+    
+    listGeral.appendChild(createSettingsRow('Aparência', 'Tema, intensidade dourada e tamanho da interface', '🎨', renderAppearanceModal));
+    listGeral.appendChild(createSettingsRow('Idioma', 'Escolhe o teu idioma preferido', '🌐', renderLanguageModal));
+    listGeral.appendChild(createSettingsRow('Notificações', 'Alertas, lembretes e sons', '🔔', renderNotificationsModal));
+
+    page.appendChild(listGeral);
+
+    // FOCO E PRODUTIVIDADE
+    const secFoco = document.createElement('div');
+    secFoco.className = 'settings-section-title';
+    secFoco.textContent = 'FOCO E PRODUTIVIDADE';
+    page.appendChild(secFoco);
+
+    const listFoco = document.createElement('div');
+    listFoco.className = 'settings-menu-list';
+    listFoco.appendChild(createSettingsRow('Pomodoro', 'Duração das sessões e pausas', '⏱️', renderPomodoro));
+    page.appendChild(listFoco);
+
+    // DADOS E SEGURANÇA
+    const secDados = document.createElement('div');
+    secDados.className = 'settings-section-title';
+    secDados.textContent = 'DADOS E SEGURANÇA';
+    page.appendChild(secDados);
+
+    const listDados = document.createElement('div');
+    listDados.className = 'settings-menu-list';
+    listDados.appendChild(createSettingsRow('Backup', 'Cópias de segurança', '☁️', renderBackup));
+    page.appendChild(listDados);
+
+    // AVANÇADO
+    const secAvancado = document.createElement('div');
+    secAvancado.className = 'settings-section-title';
+    secAvancado.textContent = 'AVANÇADO';
+    page.appendChild(secAvancado);
+
+    const listAvancado = document.createElement('div');
+    listAvancado.className = 'settings-menu-list';
+    
+    const rowPerigo = createSettingsRow('Apagar todos os dados', 'Esta ação é irreversível', '🗑️', renderActions);
+    rowPerigo.classList.add('settings-row-danger');
+    listAvancado.appendChild(rowPerigo);
+    page.appendChild(listAvancado);
   }
 
   _container.appendChild(page);
+}
+
+
+function renderAppearanceModal() {
+  const wrap = document.createElement('div');
+  const p = _state.prefs;
+  wrap.appendChild(makeSelect('Tema', 'theme', p.theme, [
+    { value: 'noir', label: 'Noir (escuro)' },
+    { value: 'lumiere', label: 'Lumière (claro)' },
+    { value: 'auto', label: 'Automático' }
+  ]));
+  wrap.appendChild(makeSelect('Intensidade dourada', 'goldIntensity', p.goldIntensity, [
+    { value: 'subtle', label: 'Sutil' },
+    { value: 'balanced', label: 'Equilibrada' },
+    { value: 'strong', label: 'Forte' }
+  ]));
+  wrap.appendChild(makeSelect('Tamanho da interface', 'interfaceSize', p.interfaceSize, [
+    { value: 'compact', label: 'Compacto' },
+    { value: 'balanced', label: 'Equilibrado' },
+    { value: 'comfortable', label: 'Confortável' }
+  ]));
+  return wrap;
+}
+
+function renderLanguageModal() {
+  const wrap = document.createElement('div');
+  const p = _state.prefs;
+  wrap.appendChild(makeSelect('Idioma', 'language', p.language, [
+    { value: 'pt', label: 'Português' },
+    { value: 'en', label: 'English (brevemente)' }
+  ]));
+  return wrap;
+}
+
+function renderNotificationsModal() {
+  const wrap = document.createElement('div');
+  const p = _state.prefs;
+  
+  // Notificações
+  const notifRow = document.createElement('div');
+  notifRow.className = 'settings-field settings-field--row';
+  notifRow.style.marginBottom = '16px';
+  const notifLabel = document.createElement('label');
+  notifLabel.textContent = 'Notificações';
+  const notifCb = document.createElement('input');
+  notifCb.type = 'checkbox';
+  notifCb.checked = Boolean(p.notificationsEnabled);
+  notifCb.addEventListener('change', () => {
+      p.notificationsEnabled = notifCb.checked;
+      localStorage.setItem('lumierePreferences', JSON.stringify(p));
+  });
+  notifRow.append(notifLabel, notifCb);
+  wrap.appendChild(notifRow);
+
+  // Comandos de Voz
+  const voiceRow = document.createElement('div');
+  voiceRow.className = 'settings-field settings-field--row';
+  const voiceLabel = document.createElement('label');
+  voiceLabel.textContent = 'Comandos de voz (experimental)';
+  const voiceCb = document.createElement('input');
+  voiceCb.type = 'checkbox';
+  voiceCb.checked = getVoiceEnabled();
+  voiceCb.addEventListener('change', () => {
+    setVoiceEnabled(voiceCb.checked);
+  });
+  voiceRow.append(voiceLabel, voiceCb);
+  wrap.appendChild(voiceRow);
+  
+  const hint = document.createElement('p');
+  hint.className = 'settings-hint';
+  hint.style.marginTop = '10px';
+  hint.textContent = 'Mostra o botão de microfone no ecrã principal.';
+  wrap.appendChild(hint);
+  
+  return wrap;
 }
 
 function renderPreferences() {
