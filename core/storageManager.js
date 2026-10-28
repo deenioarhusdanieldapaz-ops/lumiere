@@ -7,7 +7,7 @@ import Dexie from 'dexie';
 
 // Definir esquema do banco
 const DB_NAME = 'LumiereDB';
-const DB_VERSION = 4;
+export const DB_VERSION = 4;
 
 class LumiereDatabase extends Dexie {
   constructor() {
@@ -49,6 +49,16 @@ function getDB() {
     dbInstance = new LumiereDatabase();
   }
   return dbInstance;
+}
+
+/**
+ * Executa uma função dentro de uma transação atómica em todas as tabelas.
+ * @param {Function} callback - Função assíncrona a executar.
+ * @returns {Promise<any>} Resultado do callback.
+ */
+export async function runTransaction(callback) {
+  const db = getDB();
+  return db.transaction('rw', db.tables, callback);
 }
 
 /**

@@ -98,17 +98,28 @@ export function showRestoreModal(backup) {
     btnRestore.disabled = true;
     btnRestore.textContent = 'A RESTAURAR...';
     btnIgnore.disabled = true;
-    
+
     try {
-      await restoreData(backup.payload);
-      closeRestoreModal();
-      try { eventBus.emit('toast:show', { type: 'success', text: 'Dados restaurados com sucesso!' }); } catch (_) {}
-      setTimeout(() => window.location.reload(), 1000);
+      const result = await restoreData(backup.payload);
+
+      if (result?.success === true) {
+        closeRestoreModal();
+        try { eventBus.emit('toast:show', { type: 'success', text: 'Dados restaurados com sucesso!' }); } catch (_) {}
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        // Falha tratada (success === false ou inesperado)
+        btnRestore.textContent = 'ERRO. TENTAR NOVAMENTE';
+        btnRestore.disabled = false;
+        btnIgnore.disabled = false;
+        try { eventBus.emit('toast:show', { type: 'error', text: 'O restauro não foi concluído. O ficheiro pode ser inválido ou incompatível.' }); } catch (_) {}
+      }
     } catch (err) {
-      console.error('[Restore] Erro:', err);
+      // Exceção inesperada: sem logs de objetos brutos
+      console.warn('[Restore UI] Ocorreu uma falha inesperada durante o processo de restauro.');
       btnRestore.textContent = 'ERRO. TENTAR NOVAMENTE';
       btnRestore.disabled = false;
       btnIgnore.disabled = false;
+      try { eventBus.emit('toast:show', { type: 'error', text: 'Ocorreu um erro inesperado. Tenta novamente.' }); } catch (_) {}
     }
   });
 }
