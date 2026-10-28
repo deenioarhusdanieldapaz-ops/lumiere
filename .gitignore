@@ -1,6 +1,5 @@
 # Dependências
 node_modules/
-package-lock.json
 
 # Arquivos de sistema
 .DS_Store
