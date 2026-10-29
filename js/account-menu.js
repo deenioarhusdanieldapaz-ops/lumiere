@@ -8,9 +8,9 @@
  * Reage a auth:changed para atualizar o avatar.
  */
 
-import { openLoginModal } from '/pages/auth/auth.js';
-import { signOut, getCurrentUser, onAuthChange } from '/core/auth.js';
-import { eventBus } from '/core/eventBus.js';
+import { openLoginModal } from '../pages/auth/auth.js';
+import { signOut, getCurrentUser, onAuthChange } from '../core/auth.js';
+import { eventBus } from '../core/eventBus.js';
 
 const CSS_HREF = '/CSS/account-menu.css';
 

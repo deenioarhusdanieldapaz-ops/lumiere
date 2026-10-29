@@ -10,8 +10,8 @@
  *   isLoginModalOpen()
  */
 
-import { signIn, signUp, sendPasswordReset } from '/core/auth.js';
-import { eventBus } from '/core/eventBus.js';
+import { signIn, signUp, sendPasswordReset } from '../../core/auth.js';
+import { eventBus } from '../../core/eventBus.js';
 
 const CSS_HREF = '/pages/auth/auth.css';
 const HINTS_KEY = 'lumiere.loginHintsSeen';
