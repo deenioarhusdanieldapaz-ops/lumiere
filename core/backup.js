@@ -34,8 +34,9 @@ export async function exportAllData() {
       data[collection] = records || [];
       totalRecords += data[collection].length;
     } catch (err) {
-      console.warn('[Backup] Erro ao ler coleção', collection, err);
-      data[collection] = [];
+      console.error('[Backup] Erro crítico ao ler coleção', collection, err?.message);
+      throw new Error('Falha ao exportar a coleção ' + collection + '. Backup abortado.');
+
     }
   }
 
@@ -173,7 +174,7 @@ export async function restoreData(backupPayload) {
 // --- FUNÇÕES DE NUVEM (Import Dinâmico) ---
 
 export async function uploadDailyBackup(uid) {
-  if (!uid) return console.warn('[Backup] Sem UID, não é possível enviar backup.');
+  if (!uid) return { ok: false, error: 'Utilizador não autenticado.' };
 
   try {
     const { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
@@ -184,7 +185,7 @@ export async function uploadDailyBackup(uid) {
     const snap = await getDoc(backupRef);
     if (snap.exists()) {
       console.log('[Backup] Já existe um backup para hoje (' + today + '). A saltar.');
-      return;
+      return { ok: true, skipped: true, message: 'Backup já realizado hoje.' };
     }
 
     console.log('[Backup] A criar backup diário na cloud...');
@@ -193,15 +194,18 @@ export async function uploadDailyBackup(uid) {
     const payloadSize = new Blob([JSON.stringify(payload)]).size;
     if (payloadSize > 1000000) {
       console.error('[Backup] O backup é demasiado grande para o Firestore (>1MB). Tamanho:', payloadSize);
-      return;
+      return { ok: false, error: 'Backup demasiado grande (>1MB).' };
     }
 
     await setDoc(backupRef, payload);
-    console.log('[Backup] Enviado com sucesso para backups/' + uid + '/history/' + today);
+    const maskedUid = uid ? uid.slice(0, 4) + '***' : '***';
+    console.log('[Backup] Enviado com sucesso para backups/' + maskedUid + '/history/' + today);
 
     await cleanOldBackups(uid);
+    return { ok: true, date: today };
   } catch (err) {
-    console.error('[Backup] Erro ao enviar backup para a cloud:', err);
+    console.error('[Backup][Firebase]', err?.code ?? err?.name ?? 'sem-codigo', '—', err?.message ?? 'sem-mensagem');
+    return { ok: false, error: err?.message ?? 'Erro desconhecido no upload.' };
   }
 }
 
@@ -225,7 +229,7 @@ async function cleanOldBackups(uid) {
     }
     if (deleted > 0) console.log('[Backup] Backups antigos apagados:', deleted);
   } catch (err) {
-    console.warn('[Backup] Erro ao limpar backups antigos:', err);
+    console.warn('[Backup][Firebase]', err?.code ?? err?.name ?? 'sem-codigo', '—', err?.message ?? 'sem-mensagem');
   }
 }
 
@@ -246,7 +250,7 @@ export async function getLatestCloudBackup(uid) {
     console.log('[Backup] Backup mais recente encontrado:', latest.id);
     return { date: latest.id, payload: latest.data() };
   } catch (err) {
-    console.error('[Backup] Erro ao procurar backup na cloud:', err);
+    console.error('[Backup][Firebase]', err?.code ?? err?.name ?? 'sem-codigo', '—', err?.message ?? 'sem-mensagem');
     return null;
   }
 }
@@ -273,8 +277,8 @@ export async function forceUploadBackup(uid) {
     console.log('[Backup] Backup manual concluído.');
     return { ok: true, date: today };
   } catch (err) {
-    console.error('[Backup] Erro no backup manual:', err);
-    return { ok: false, error: err.message };
+    console.error('[Backup][Firebase]', err?.code ?? err?.name ?? 'sem-codigo', '—', err?.message ?? 'sem-mensagem');
+    return { ok: false, error: err?.message ?? 'Erro desconhecido.' };
   }
 }
 
