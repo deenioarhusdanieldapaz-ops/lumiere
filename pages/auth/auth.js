@@ -163,21 +163,19 @@ function buildModal() {
 
 /* ---------- Helpers de submissão ---------- */
 
-function mapFirebaseError(code) {
-  const map = {
-    'auth/invalid-email': 'Email inválido.',
-    'auth/user-not-found': 'Email ou palavra-passe incorretos.',
-    'auth/wrong-password': 'Email ou palavra-passe incorretos.',
-    'auth/invalid-credential': 'Email ou palavra-passe incorretos.',
-    'auth/invalid-login-credentials': 'Email ou palavra-passe incorretos.',
-    'auth/email-already-in-use': 'Este email já está registado. Tenta entrar.',
-    'auth/weak-password': 'A palavra-passe deve ter pelo menos 6 caracteres.',
-    'auth/too-many-requests': 'Demasiadas tentativas. Tenta mais tarde.',
-    'auth/network-request-failed': 'Sem ligação à internet.',
-    'auth/operation-not-allowed': 'Login por email não está ativo.',
-    'auth/missing-email': 'Escreve o teu email.'
-  };
-  return map[code] || 'Ocorreu um erro. Tenta novamente.';
+function mapFirebaseError(errorString) {
+  if (!errorString) return 'Ocorreu um erro. Tenta novamente.';
+  const err = String(errorString).toLowerCase();
+
+  if (err.includes('invalid-email') || err.includes('missing-email')) return 'Email inválido.';
+  if (err.includes('user-not-found') || err.includes('wrong-password') || err.includes('invalid-credential') || err.includes('invalid-login-credentials')) return 'Email ou palavra-passe incorretos.';
+  if (err.includes('email-already-in-use')) return 'Este email já está registado. Tenta entrar.';
+  if (err.includes('weak-password')) return 'A palavra-passe deve ter pelo menos 6 caracteres.';
+  if (err.includes('too-many-requests')) return 'Demasiadas tentativas. Tenta mais tarde.';
+  if (err.includes('network-request-failed')) return 'Sem ligação à internet.';
+  if (err.includes('operation-not-allowed')) return 'Login por email não está ativo.';
+
+  return 'Ocorreu um erro. Tenta novamente.';
 }
 
 function setLoading(on, primaryText, ghostText) {
@@ -290,7 +288,7 @@ function wireHandlers() {
         closeLoginModal();
         toast('Conta criada. Bem-vindo!');
       } else {
-        showError(mapFirebaseError(res.error && res.error.code));
+        showError(mapFirebaseError(res.error));
       }
       return;
     }
@@ -302,7 +300,7 @@ function wireHandlers() {
       closeLoginModal();
       toast('Sessão iniciada.');
     } else {
-      showError(mapFirebaseError(res.error && res.error.code));
+      showError(mapFirebaseError(res.error));
     }
   });
 
@@ -327,7 +325,7 @@ function wireHandlers() {
       toast('Email de recuperação enviado.');
       showError('');
     } else {
-      showError(mapFirebaseError(res.error && res.error.code));
+      showError(mapFirebaseError(res.error));
     }
   });
 }

@@ -69,7 +69,7 @@ async function ensureSubscriptionDoc(user) {
       createdAt: now
     };
     await setDoc(ref, payload);
-    console.log('[Auth] subscriptions/' + user.uid + ' criado (trial 48h)');
+    console.log('[Auth] subscriptions/' + user.uid.slice(0, 4) + '*** criado (trial 48h)');
     return payload;
   } catch (e) {
     console.warn('[Auth] setDoc falhou:', e && e.message);
@@ -131,26 +131,26 @@ export function hasActiveAccess() {
 export async function signUp(email, password) {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
-    console.log('[Auth] Conta criada:', cred.user.uid);
+    console.log('[Auth] Conta criada:', cred.user.uid.slice(0, 4) + '***');
     await ensureSubscriptionDoc(cred.user);
     return { ok: true, user: cred.user };
   } catch (e) {
     console.error('[Auth] signUp erro:', e && e.code, e && e.message);
     eventBus.emit('auth:error', { action: 'signUp', code: e && e.code, message: e && e.message });
-    return { ok: false, error: e };
+    return { ok: false, error: e?.message ?? 'Erro desconhecido.' };
   }
 }
 
 export async function signIn(email, password) {
   try {
     const cred = await signInWithEmailAndPassword(auth, email, password);
-    console.log('[Auth] Login OK:', cred.user.uid);
+    console.log('[Auth] Login OK:', cred.user.uid.slice(0, 4) + '***');
     await ensureSubscriptionDoc(cred.user);
     return { ok: true, user: cred.user };
   } catch (e) {
     console.error('[Auth] signIn erro:', e && e.code, e && e.message);
     eventBus.emit('auth:error', { action: 'signIn', code: e && e.code, message: e && e.message });
-    return { ok: false, error: e };
+    return { ok: false, error: e?.message ?? 'Erro desconhecido.' };
   }
 }
 
@@ -161,7 +161,7 @@ export async function signOut() {
     return { ok: true };
   } catch (e) {
     console.error('[Auth] signOut erro:', e && e.message);
-    return { ok: false, error: e };
+    return { ok: false, error: e?.message ?? 'Erro desconhecido.' };
   }
 }
 
@@ -172,12 +172,12 @@ export function onAuthChange(callback) {
 export async function sendPasswordReset(email) {
   try {
     await sendPasswordResetEmail(auth, email);
-    console.log('[Auth] Reset enviado para', email);
+    console.log('[Auth] Reset enviado para', email.replace(/(.{1}).*(@.*)/, '$1***$2'));
     return { ok: true };
   } catch (e) {
     console.error('[Auth] reset erro:', e && e.code, e && e.message);
     eventBus.emit('auth:error', { action: 'reset', code: e && e.code, message: e && e.message });
-    return { ok: false, error: e };
+    return { ok: false, error: e?.message ?? 'Erro desconhecido.' };
   }
 }
 
