@@ -1,4 +1,4 @@
-0name: Obfuscate and Deploy to GitHub Pages
+name: Obfuscate and Deploy to GitHub Pages
 
 on:
   push:
