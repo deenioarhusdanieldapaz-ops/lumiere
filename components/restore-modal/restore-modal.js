@@ -68,10 +68,10 @@ export function showRestoreModal(backup) {
 
   // Ações
   const actions = el('div', 'restore-modal__actions');
-  
+
   const btnRestore = el('button', 'restore-btn restore-btn--primary', 'RESTAURAR');
   btnRestore.type = 'button';
-  
+
   const btnIgnore = el('button', 'restore-btn restore-btn--ghost', 'IGNORAR');
   btnIgnore.type = 'button';
 
@@ -99,27 +99,39 @@ export function showRestoreModal(backup) {
     btnRestore.textContent = 'A RESTAURAR...';
     btnIgnore.disabled = true;
 
+    let isSuccess = false;
+
     try {
       const result = await restoreData(backup.payload);
 
       if (result?.success === true) {
+        isSuccess = true;
+        const total = result.restoredCount || 0;
+        const failed = result.failedCount || 0;
+
         closeRestoreModal();
-        try { eventBus.emit('toast:show', { type: 'success', text: 'Dados restaurados com sucesso!' }); } catch (_) {}
+
+        if (failed > 0) {
+          try { eventBus.emit('toast:show', { type: 'success', text: `Dados restaurados! (${total} registados recuperados, ${failed} ignorados).` }); } catch (_) {}
+        } else {
+          try { eventBus.emit('toast:show', { type: 'success', text: 'Dados restaurados com sucesso!' }); } catch (_) {}
+        }
         setTimeout(() => window.location.reload(), 1000);
       } else {
-        // Falha tratada (success === false ou inesperado)
+        // Falha tratada (success === false)
+        const errorMsg = (result?.errors && result.errors.length > 0) ? result.errors[0] : 'O restauro não foi concluído. O ficheiro pode ser inválido ou incompatível.';
+        try { eventBus.emit('toast:show', { type: 'error', text: errorMsg }); } catch (_) {}
+      }
+    } catch (err) {
+      console.warn('[Restore UI] Ocorreu uma falha inesperada durante o processo de restauro.');
+      try { eventBus.emit('toast:show', { type: 'error', text: 'Ocorreu um erro inesperado. Tenta novamente.' }); } catch (_) {}
+    } finally {
+      // Garante que os botões são reativados se NÃO houver sucesso
+      if (!isSuccess) {
         btnRestore.textContent = 'ERRO. TENTAR NOVAMENTE';
         btnRestore.disabled = false;
         btnIgnore.disabled = false;
-        try { eventBus.emit('toast:show', { type: 'error', text: 'O restauro não foi concluído. O ficheiro pode ser inválido ou incompatível.' }); } catch (_) {}
       }
-    } catch (err) {
-      // Exceção inesperada: sem logs de objetos brutos
-      console.warn('[Restore UI] Ocorreu uma falha inesperada durante o processo de restauro.');
-      btnRestore.textContent = 'ERRO. TENTAR NOVAMENTE';
-      btnRestore.disabled = false;
-      btnIgnore.disabled = false;
-      try { eventBus.emit('toast:show', { type: 'error', text: 'Ocorreu um erro inesperado. Tenta novamente.' }); } catch (_) {}
     }
   });
 }
