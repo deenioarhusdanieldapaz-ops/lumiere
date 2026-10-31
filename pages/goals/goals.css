@@ -19,7 +19,7 @@
 .goals-header__title {
   margin: 0;
   font-size: var(--font-size-xl, 1.25rem);
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   font-weight: var(--font-weight-medium, 500);
 }
 
@@ -31,8 +31,8 @@
 /* Botões */
 .goals-btn {
   background: transparent;
-  border: 1px solid var(--color-gold, #d4af37);
-  color: var(--color-gold, #d4af37);
+  border: 1px solid var(--color-gold, var(--color-gold));
+  color: var(--color-gold, var(--color-gold));
   border-radius: var(--radius-sm, 8px);
   padding: 0.5rem 1rem;
   font-size: var(--font-size-sm, 0.875rem);
@@ -43,14 +43,14 @@
 
 .goals-btn:hover,
 .goals-btn:focus-visible {
-  background: var(--color-gold, #d4af37);
-  color: var(--color-bg-primary, #0a0a0a);
+  background: var(--color-gold, var(--color-gold));
+  color: var(--color-bg-primary, var(--color-bg-primary));
   outline: none;
 }
 
 .goals-btn--primary {
-  background: var(--color-gold, #d4af37);
-  color: var(--color-bg-primary, #0a0a0a);
+  background: var(--color-gold, var(--color-gold));
+  color: var(--color-bg-primary, var(--color-bg-primary));
 }
 
 .goals-btn--primary:hover,
@@ -60,7 +60,7 @@
 
 /* Formulário */
 .goals-form {
-  background: var(--color-bg-secondary, #1a1715);
+  background: var(--color-bg-secondary, var(--color-bg-secondary));
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: var(--radius-md, 12px);
   padding: var(--space-md, 1rem);
@@ -72,7 +72,7 @@
 .goals-form__title {
   margin: 0;
   font-size: var(--font-size-md, 1rem);
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
 }
 
 .goals-form__grid {
@@ -89,17 +89,17 @@
 
 .goals-form__field label {
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
 }
 
 .goals-form__field input,
 .goals-form__field select,
 .goals-form__field textarea {
-  background: var(--color-bg-input, #2a2521);
+  background: var(--color-bg-input, var(--color-bg-input));
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: var(--radius-sm, 8px);
   padding: 0.5rem;
-  color: var(--color-text-primary, #f5f0eb);
+  color: var(--color-text-primary, var(--color-text-primary));
   font-family: inherit;
   font-size: var(--font-size-sm, 0.875rem);
 }
@@ -129,7 +129,7 @@
 
 /* Item individual */
 .goal-item {
-  background: var(--color-bg-secondary, #1a1715);
+  background: var(--color-bg-secondary, var(--color-bg-secondary));
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: var(--radius-md, 12px);
   padding: var(--space-md, 1rem);
@@ -140,11 +140,11 @@
 }
 
 .goal-item:hover {
-  border-color: var(--color-border-light, #b8956a);
+  border-color: var(--color-border-light, var(--color-text-secondary));
 }
 
 .goal-item--completed {
-  border-color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, var(--color-gold));
   opacity: 0.85;
 }
 
@@ -184,7 +184,7 @@
 .goal-item__name {
   margin: 0;
   font-size: var(--font-size-md, 1rem);
-  color: var(--color-text-primary, #f5f0eb);
+  color: var(--color-text-primary, var(--color-text-primary));
   font-weight: var(--font-weight-medium, 500);
 }
 
@@ -193,7 +193,7 @@
   flex-wrap: wrap;
   gap: var(--space-xs, 0.25rem);
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
 }
 
 .goal-item__tag {
@@ -205,7 +205,7 @@
 .goal-item__description {
   margin: 0;
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
 }
 
 /* Barra de progresso dentro do item */
@@ -221,7 +221,7 @@
 .goal-item__actions button {
   background: transparent;
   border: 1px solid var(--color-border, #4a3f38);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
   border-radius: var(--radius-sm, 8px);
   min-width: 40px;
   min-height: 40px;
@@ -238,8 +238,8 @@
 
 .goal-item__actions button:hover,
 .goal-item__actions button:focus-visible {
-  color: var(--color-gold, #d4af37);
-  border-color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
+  border-color: var(--color-gold, var(--color-gold));
   outline: none;
 }
 
@@ -247,7 +247,7 @@
 .goals-state {
   text-align: center;
   padding: var(--space-xl, 2rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
   font-style: italic;
 }
 
@@ -273,12 +273,12 @@
 }
 
 .goal-item__btn-primary:hover {
-  color: #d4af37;
+  color: var(--color-gold);
   transform: scale(1.1);
 }
 
 .goal-item__btn-primary.is-active {
-  color: #d4af37;
+  color: var(--color-gold);
   text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 }
 
@@ -317,7 +317,7 @@
 
 /* === DESIGN PREMIUM (LUM-CARD) === */
 .goal-item {
-  background-image: linear-gradient(rgba(5, 5, 5, 0.1), rgba(5, 5, 5, 0.5)), url('../../assets/bg/goals-card-bg.png') !important;
+  background-image: var(--card-overlay-gradient), url('../../assets/bg/goals-card-bg.png') !important;
   background-size: cover !important;
   background-position: center !important;
   border: 1px solid rgba(212, 175, 55, 0.25) !important;
@@ -333,7 +333,7 @@
 
 /* Ícone Glow */
 .goal-item__icon {
-  color: #d4af37 !important;
+  color: var(--color-gold) !important;
   width: 44px !important; height: 44px !important;
   border-radius: 50% !important;
   background: rgba(212, 175, 55, 0.12) !important;
@@ -343,7 +343,7 @@
 }
 
 /* Título e Layout */
-.goal-item__name { 
+.goal-item__name {
   font-family: var(--font-sans, sans-serif) !important;
   font-size: 1.05rem !important;
   font-weight: 500 !important;
@@ -356,49 +356,49 @@
 
 /* Tags Premium */
 .goal-item__meta { display: flex; flex-wrap: wrap; gap: 8px; }
-.goal-item__tag { 
-  background: rgba(212, 175, 55, 0.08) !important; 
-  border: 1px solid rgba(212, 175, 55, 0.3) !important; 
-  color: #f5d76e !important; 
-  border-radius: 12px !important; 
-  padding: 5px 12px !important; 
-  font-size: 11px !important; 
-  font-weight: 600 !important; 
-  letter-spacing: 0.5px !important; 
+.goal-item__tag {
+  background: rgba(212, 175, 55, 0.08) !important;
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+  color: var(--color-gold) !important;
+  border-radius: 12px !important;
+  padding: 5px 12px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
 }
 
 /* Menu Oculto Sólido */
 details.goal-item__actions { position: relative !important; display: inline-block !important; }
 .goal-item__menu-dropdown {
   position: absolute !important; top: calc(100% + 5px) !important; right: 0 !important; left: auto !important;
-  background-color: #141414 !important; background-image: none !important; opacity: 1 !important;
+  background-color: var(--color-surface) !important; background-image: none !important; opacity: 1 !important;
   border: 1px solid rgba(212, 175, 55, 0.4) !important; border-radius: 12px !important;
   box-shadow: 0 10px 30px rgba(0,0,0,0.9) !important;
   display: none; flex-direction: column; min-width: 170px; z-index: 99999 !important; padding: 6px;
 }
 details.goal-item__actions[open] .goal-item__menu-dropdown { display: flex !important; }
 .goal-item__menu-dropdown button {
-  background: transparent !important; border: none !important; color: #f5f0eb !important;
+  background: transparent !important; border: none !important; color: var(--color-text) !important;
   text-align: left !important; padding: 12px 16px !important; border-radius: 8px !important;
   font-size: 14px !important; display: flex !important; align-items: center !important;
   gap: 10px !important; width: 100% !important; cursor: pointer !important;
 }
-.goal-item__menu-dropdown button:hover { background: rgba(212, 175, 55, 0.15) !important; color: #d4af37 !important; }
+.goal-item__menu-dropdown button:hover { background: rgba(212, 175, 55, 0.15) !important; color: var(--color-gold) !important; }
 .goal-item__menu-dropdown button:last-child { color: #e74c3c !important; border-top: 1px solid rgba(255, 255, 255, 0.05) !important; }
-.goal-item__menu-btn { list-style: none; background: transparent; border: none; color: #d4af37; font-size: 20px; padding: 4px 8px; cursor: pointer; border-radius: 50%; }
+.goal-item__menu-btn { list-style: none; background: transparent; border: none; color: var(--color-gold); font-size: 20px; padding: 4px 8px; cursor: pointer; border-radius: 50%; }
 .goal-item__menu-btn::-webkit-details-marker { display: none; }
 
 /* Descrição e Ler Mais */
 .goal-item__desc-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-.goal-item__description { 
-  margin: 0; font-size: 13px; color: rgba(240, 230, 210, 0.6); 
-  line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; 
+.goal-item__description {
+  margin: 0; font-size: 13px; color: var(--color-text-muted);
+  line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2;
   -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap;
 }
 .goal-item__desc-wrap.is-expanded .goal-item__description { display: block; -webkit-line-clamp: unset; }
-.goal-item__read-more { 
-  background: transparent; border: none; color: #d4af37; font-size: 12px; 
-  padding: 0; cursor: pointer; text-decoration: underline; font-weight: 600; 
+.goal-item__read-more {
+  background: transparent; border: none; color: var(--color-gold); font-size: 12px;
+  padding: 0; cursor: pointer; text-decoration: underline; font-weight: 600;
 }
 
 /* Rodapé */
@@ -408,6 +408,6 @@ details.goal-item__actions[open] .goal-item__menu-dropdown { display: flex !impo
 }
 .goal-item__footer-info {
   display: inline-flex; align-items: center; font-size: 12px;
-  color: rgba(240, 230, 210, 0.6); letter-spacing: 0.3px;
+  color: var(--color-text-muted); letter-spacing: 0.3px;
 }
-.goal-item__arrow { color: #d4af37; display: flex; align-items: center; }
+.goal-item__arrow { color: var(--color-gold); display: flex; align-items: center; }

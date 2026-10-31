@@ -1,7 +1,7 @@
 export function createDataState(stats) {
   const div = document.createElement('div');
   div.className = 'wr-page';
-  
+
   const percent = stats.tasks.percent || 0;
   const tasksCompleted = stats.tasks.completed || 0;
   const tasksTotal = stats.tasks.total || 0;
@@ -35,7 +35,7 @@ export function createDataState(stats) {
     <div class="wr-card">
       <div class="wr-summary-header">
         <div class="wr-summary-content">
-          <div class="wr-circle" style="background: conic-gradient(#D9AD50 ${percent}%, #2a2521 0);"><span>${percent}%</span></div>
+          <div class="wr-circle" style="background: conic-gradient(#D9AD50 ${percent}%, var(--color-bg-input) 0);"><span>${percent}%</span></div>
           <div class="wr-summary-text">
             <h3>Resumo da Semana</h3>
             <p>Você manteve o foco e avançou<br>nos seus objetivos.</p>

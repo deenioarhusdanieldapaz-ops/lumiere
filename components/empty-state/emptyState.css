@@ -19,7 +19,7 @@
 .lumiere-empty__icon {
   font-size: 2rem;
   line-height: 1;
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   opacity: 0.7;
 }
 
@@ -40,8 +40,8 @@
 .lumiere-empty__action {
   margin-top: var(--space-sm, 8px);
   background: transparent;
-  color: var(--color-gold, #d4af37);
-  border: 1px solid var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
+  border: 1px solid var(--color-gold, var(--color-gold));
   border-radius: var(--radius-sm, 4px);
   padding: 6px 14px;
   font-size: var(--font-size-sm, 0.875rem);
@@ -51,8 +51,8 @@
 
 .lumiere-empty__action:hover,
 .lumiere-empty__action:focus-visible {
-  background: var(--color-gold, #d4af37);
-  color: var(--color-bg, #0a0a0a);
+  background: var(--color-gold, var(--color-gold));
+  color: var(--color-bg, var(--color-bg-primary));
   outline: none;
 }
 

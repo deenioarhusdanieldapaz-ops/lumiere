@@ -24,7 +24,7 @@
 }
 
 .lumiere-chart__line {
-  stroke: var(--color-gold, #d4af37);
+  stroke: var(--color-gold, var(--color-gold));
   stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -32,8 +32,8 @@
 }
 
 .lumiere-chart__dot {
-  fill: var(--color-bg-primary, #0a0a0a);
-  stroke: var(--color-gold, #d4af37);
+  fill: var(--color-bg-primary, var(--color-bg-primary));
+  stroke: var(--color-gold, var(--color-gold));
   stroke-width: 2;
 }
 
@@ -62,7 +62,7 @@
   width: 24px;
   height: 24px;
   border: 3px solid rgba(212, 175, 55, 0.2);
-  border-top-color: var(--color-gold, #d4af37);
+  border-top-color: var(--color-gold, var(--color-gold));
   border-radius: 50%;
   animation: lumiere-chart-spin 800ms linear infinite;
 }
@@ -73,5 +73,5 @@
 
 /* Tema claro: dots com fundo claro */
 html[data-theme="lumiere"] .lumiere-chart__dot {
-  fill: var(--color-bg-primary, #f5f0eb);
+  fill: var(--color-bg-primary, var(--color-text-primary));
 }

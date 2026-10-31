@@ -20,7 +20,7 @@
 @keyframes fadeIn { to { opacity: 1; } }
 
 .restore-modal {
-  background: radial-gradient(ellipse at top, #1a1206 0%, #050505 60%);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.4);
   border-radius: 20px;
   width: 100%;
@@ -40,7 +40,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #d4af37;
+  color: var(--color-gold);
   filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.4));
 }
 .restore-modal__icon-svg {
@@ -51,7 +51,7 @@
 .restore-modal__title {
   font-family: 'Cinzel', Georgia, serif;
   font-size: 20px;
-  color: #d4af37;
+  color: var(--color-gold);
   margin: 0 0 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -63,7 +63,7 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
-  color: #d4af37;
+  color: var(--color-gold);
 }
 .restore-modal__divider::before,
 .restore-modal__divider::after {
@@ -86,13 +86,13 @@
   align-items: center;
   gap: 12px;
   font-size: 13.5px;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   line-height: 1.4;
 }
 
 /* Ícones das linhas (SVG) */
 .restore-info-row__icon {
-  color: #d4af37;
+  color: var(--color-gold);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -107,7 +107,7 @@
 
 .restore-modal__question {
   font-size: 14px;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   margin-bottom: 24px;
   font-weight: 500;
 }
@@ -135,20 +135,20 @@
 .restore-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .restore-btn--primary {
-  background: linear-gradient(180deg, #e0bd45 0%, #d4af37 100%);
+  background: linear-gradient(180deg, #e0bd45 0%, var(--color-gold) 100%);
   color: #000;
-  border: 1px solid #d4af37;
+  border: 1px solid var(--color-gold);
   box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
 }
 
 .restore-btn--ghost {
   background: transparent;
-  color: #d4af37;
+  color: var(--color-gold);
   border: 1px solid rgba(212, 175, 55, 0.5);
 }
 
 .restore-modal__warning {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--color-bg-secondary);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 10px 12px;
@@ -157,11 +157,11 @@
   gap: 8px;
   text-align: left;
   font-size: 10.5px;
-  color: rgba(240, 230, 210, 0.5);
+  color: var(--color-text-muted);
   line-height: 1.4;
 }
 
 .restore-modal__warning-icon {
-  color: rgba(240, 230, 210, 0.5);
+  color: var(--color-text-muted);
   font-size: 16px;
 }

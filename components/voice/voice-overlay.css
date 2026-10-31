@@ -24,7 +24,7 @@
   border-radius: 50%;
   background: transparent;
   border: 1px solid rgba(212, 175, 55, 0.35);
-  color: #d4af37;
+  color: var(--color-gold);
   font-size: 18px;
   cursor: pointer;
   display: flex;
@@ -49,7 +49,7 @@
   font-size: 20px;
   font-weight: 500;
   letter-spacing: 3px;
-  color: #d4af37;
+  color: var(--color-gold);
   margin: 0;
   text-align: center;
 }
@@ -81,7 +81,7 @@
 .voice-ov__transcript {
   font-size: 18px;
   font-family: 'Cinzel', Georgia, serif;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   text-align: center;
   margin: 0;
   padding: 0 8px;
@@ -106,7 +106,7 @@
   flex: 1;
   min-width: 1px;
   height: 10%;
-  background: linear-gradient(180deg, #F5D76E, #d4af37);
+  background: linear-gradient(180deg, #F5D76E, var(--color-gold));
   border-radius: 2px;
   transition: height 0.08s ease;
 }
@@ -161,7 +161,7 @@
 }
 .voice-ov__chip-val {
   font-size: 14px;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -191,7 +191,7 @@
 }
 .voice-ov__examples-list li {
   font-size: 12px;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   padding-left: 14px;
   position: relative;
   line-height: 1.4;
@@ -200,7 +200,7 @@
   content: '\2022';
   position: absolute;
   left: 0;
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .voice-ov__footer {
@@ -223,14 +223,14 @@
   transition: background 0.15s;
 }
 .voice-ov__btn--primary {
-  background: #d4af37;
-  color: #141414;
-  border-color: #d4af37;
+  background: var(--color-gold);
+  color: var(--color-surface);
+  border-color: var(--color-gold);
 }
 .voice-ov__btn--primary:hover { background: #e0bd45; }
 .voice-ov__btn--ghost {
   background: transparent;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   border-color: rgba(212, 175, 55, 0.35);
 }
 .voice-ov__btn--ghost:hover { background: rgba(212, 175, 55, 0.10); }

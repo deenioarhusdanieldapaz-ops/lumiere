@@ -28,7 +28,7 @@
   flex: 0 0 auto;
   margin-left: auto;
   font-variant-numeric: tabular-nums;
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   font-weight: 600;
 }
 
@@ -43,7 +43,7 @@
 .lumiere-progress__fill {
   height: 100%;
   width: 0;
-  background: var(--color-gold, #d4af37);
+  background: var(--color-gold, var(--color-gold));
   transition: width 0.4s ease;
   border-radius: inherit;
 }
@@ -59,7 +59,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--color-gold, #d4af37) 50%,
+    var(--color-gold, var(--color-gold)) 50%,
     transparent 100%
   );
   animation: lumiere-progress-indeterminate 1.4s linear infinite;

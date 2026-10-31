@@ -157,7 +157,7 @@
 }
 
 .onb-btn-solid {
-  background: linear-gradient(180deg, #E8C968 0%, #C59B27 100%) !important;
+  background: linear-gradient(180deg, var(--color-gold) 0%, #C59B27 100%) !important;
   color: #0A0A0A !important;
   border: none !important;
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3) !important;
@@ -196,7 +196,7 @@
 .onb-back-btn {
   background: transparent;
   border: none;
-  color: #E8C968;
+  color: var(--color-gold);
   font-family: 'Manrope', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
@@ -225,7 +225,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  background: rgba(23, 21, 18, 0.6);
+  background: var(--color-surface);
   border: 1px solid #D4AF37;
   border-radius: 16px;
   padding: 0 16px;
@@ -264,7 +264,7 @@
 .onb-card {
   display: flex;
   align-items: center;
-  background: rgba(23, 21, 18, 0.6);
+  background: var(--color-surface);
   border: 1px solid #40351D;
   border-radius: 12px;
   padding: 12px;
@@ -273,7 +273,7 @@
   position: relative;
 }
 .onb-card.selected {
-  border-color: #E8C968;
+  border-color: var(--color-gold);
   background: rgba(212, 175, 55, 0.1);
 }
 .onb-card-icon { margin-right: 10px; }
@@ -287,8 +287,8 @@
   right: 10px;
 }
 .onb-card.selected .onb-card-radio {
-  border-color: #E8C968;
-  background: #E8C968;
+  border-color: var(--color-gold);
+  background: var(--color-gold);
   box-shadow: inset 0 0 0 3px #0A0A0A;
 }
 .onb-btn-outro {
@@ -303,7 +303,7 @@
   justify-content: center;
   gap: 8px;
 }
-.onb-btn-outro span { color: #E8C968; font-size: 1.2rem; }
+.onb-btn-outro span { color: var(--color-gold); font-size: 1.2rem; }
 
 /* VISTAS ESPECÍFICAS */
 .onb-view-2 .onb-brand { margin-bottom: 2vh; transform: scale(0.8); }

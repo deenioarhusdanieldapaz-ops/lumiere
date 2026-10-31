@@ -242,23 +242,23 @@ function render() {
   const page = document.createElement('div');
   page.className = 'lumiere-page';
 
-  
+
   page.appendChild(renderHeader());
 
   // Cartão de Recomendação
   if (_state.recommendation) {
     const recCard = document.createElement('div');
     recCard.className = 'lum-card';
-    recCard.style.cssText = 'margin-bottom: 16px; padding: 16px; border: 1px solid #D4AF37; border-radius: 12px; background: rgba(23, 21, 18, 0.6); display: flex; flex-direction: column; gap: 8px;';
-    
+    recCard.style.cssText = 'margin-bottom: 16px; padding: 16px; border: 1px solid #D4AF37; border-radius: 12px; background: var(--color-surface); display: flex; flex-direction: column; gap: 8px;';
+
     const recTitle = document.createElement('h3');
-    recTitle.style.cssText = 'font-family: "Playfair Display", serif; font-size: 1.1rem; color: #E8C968; margin: 0;';
+    recTitle.style.cssText = 'font-family: "Playfair Display", serif; font-size: 1.1rem; color: var(--color-gold); margin: 0;';
     recTitle.textContent = _state.recommendation.title;
-    
+
     const recText = document.createElement('p');
     recText.style.cssText = 'font-size: 0.85rem; color: #F5F0EB; margin: 0; line-height: 1.4;';
     recText.textContent = _state.recommendation.text;
-    
+
     recCard.append(recTitle, recText);
     page.appendChild(recCard);
   }
@@ -380,7 +380,7 @@ function renderItem(item, tabId) {
   const icon = document.createElement('span');
   icon.className = 'lum-card__icon lumiere-item__icon';
   const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>';
-  
+
   let emojiFallback = null;
   if (tabId === 'products') emojiFallback = emojiForProduct(item.name, item.category);
   else if (tabId === 'customers') emojiFallback = emojiForCustomer(item.name);
@@ -422,7 +422,7 @@ function renderItem(item, tabId) {
     summary.innerHTML = '⋮';
     summary.setAttribute('aria-label', 'Mais ações');
     actions.appendChild(summary);
-    
+
     const menuDropdown = document.createElement('div');
     menuDropdown.className = 'lumiere-item__menu-dropdown';
 
@@ -461,7 +461,7 @@ function renderItem(item, tabId) {
   // Rodapé
   const footer = document.createElement('div');
   footer.className = 'lumiere-item__footer';
-  
+
   let dateStr = 'Hoje';
   if (item.createdAt) {
     const d = new Date(item.createdAt);

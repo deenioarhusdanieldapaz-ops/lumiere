@@ -8,7 +8,7 @@
   gap: 0.65rem;
   padding: 0.75rem 0.9rem;
   border-radius: 0.7rem;
-  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.16);
   margin-bottom: 1.5rem;
   font-family: 'Manrope', sans-serif;
@@ -38,7 +38,7 @@
   justify-content: center;
   flex-shrink: 0;
   margin-top: 1px;
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .lumiere-context-line--bad .lumiere-context-line__icon {
@@ -60,15 +60,15 @@
 .lumiere-context-line__text {
   font-size: 0.75rem;
   line-height: 1.4;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   margin: 0;
   font-style: italic;
 }
 
-.lumiere-context-line--info .lumiere-context-line__text { color: #b8b0a4; }
-.lumiere-context-line--warning .lumiere-context-line__text { color: #f0e6d2; }
-.lumiere-context-line--bad .lumiere-context-line__text { color: #f0e6d2; }
-.lumiere-context-line--good .lumiere-context-line__text { color: #f0e6d2; }
+.lumiere-context-line--info .lumiere-context-line__text { color: var(--color-text-secondary); }
+.lumiere-context-line--warning .lumiere-context-line__text { color: var(--color-text-primary); }
+.lumiere-context-line--bad .lumiere-context-line__text { color: var(--color-text-primary); }
+.lumiere-context-line--good .lumiere-context-line__text { color: var(--color-text-primary); }
 
 @media (max-width: 479px) {
   .lumiere-context-line {

@@ -21,20 +21,20 @@
 .lumiere-card--clickable:hover,
 .lumiere-card--clickable:focus-visible {
   box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.4));
-  border-color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, var(--color-gold));
   transform: translateY(-1px);
 }
 
 .lumiere-card--clickable:focus-visible {
-  outline: 2px solid var(--color-gold, #d4af37);
+  outline: 2px solid var(--color-gold, var(--color-gold));
   outline-offset: 2px;
 }
 
 .lumiere-card--compact { padding: var(--space-sm, 8px); }
 
 .lumiere-card--highlight {
-  border-color: var(--color-gold, #d4af37);
-  box-shadow: 0 0 0 1px var(--color-gold, #d4af37), var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.4));
+  border-color: var(--color-gold, var(--color-gold));
+  box-shadow: 0 0 0 1px var(--color-gold, var(--color-gold)), var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
 .lumiere-card__header {
@@ -78,8 +78,8 @@
 
 .lumiere-card__action:hover,
 .lumiere-card__action:focus-visible {
-  color: var(--color-gold, #d4af37);
-  border-color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
+  border-color: var(--color-gold, var(--color-gold));
   outline: none;
 }
 

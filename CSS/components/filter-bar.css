@@ -20,7 +20,7 @@
 .filter-chip {
   background: transparent;
   border: 1.5px solid rgba(212, 175, 55, 0.5);
-  color: #d4af37;
+  color: var(--color-gold);
   border-radius: 20px;
   padding: 8px 16px;
   font-family: inherit;
@@ -36,8 +36,8 @@
 }
 
 .filter-chip.is-active {
-  background: #d4af37;
-  color: #0a0a0a;
-  border-color: #d4af37;
+  background: var(--color-gold);
+  color: var(--color-bg-primary);
+  border-color: var(--color-gold);
   font-weight: 600;
 }

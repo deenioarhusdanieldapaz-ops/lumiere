@@ -36,7 +36,7 @@
   font-family: 'Cinzel', serif;
   font-size: 1.7rem;
   font-weight: 400;
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   margin: 0 0 0.25rem;
   letter-spacing: 0.02em;
 }
@@ -65,7 +65,7 @@
 .progress__empty-message {
   font-size: 0.92rem;
   line-height: 1.4;
-  color: #f0e6d2;
+  color: var(--color-text);
   margin: 0;
   max-width: 320px;
   font-weight: 500;
@@ -87,7 +87,7 @@
   border-radius: 999px;
   border: 1px solid rgba(212, 175, 55, 0.55);
   background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.04) 100%);
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   font-family: 'Manrope', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
@@ -117,7 +117,7 @@
   gap: 1rem;
   padding: 1.25rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.2);
   margin-bottom: 1.75rem;
   overflow: hidden;
@@ -166,7 +166,7 @@
   border-radius: 999px;
   background: rgba(212, 175, 55, 0.12);
   border: 1px solid rgba(212, 175, 55, 0.35);
-  color: #d4af37 !important;
+  color: var(--color-gold) !important;
   font-size: 0.7rem;
   font-weight: 500;
   letter-spacing: 0.03em;
@@ -182,14 +182,14 @@
   font-family: 'Cinzel', serif;
   font-size: 1rem;
   line-height: 1.25;
-  color: #f0e6d2 !important;
+  color: var(--color-text) !important;
   margin: 0;
 }
 
 .progress__hero-text {
   font-size: 0.76rem;
   line-height: 1.4;
-  color: #b8b0a4 !important;
+  color: var(--color-text-muted) !important;
   margin: 0;
 }
 
@@ -214,7 +214,7 @@
   height: 20px;
   flex-shrink: 0;
   margin-top: 3px;
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
 }
 
 .progress__signals-header-icon svg {
@@ -232,14 +232,14 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #d4af37 !important;
+  color: var(--color-gold) !important;
   margin: 0 0 0.25rem;
 }
 
 .progress__signals-sub {
   font-size: 0.72rem;
   line-height: 1.35;
-  color: #b8b0a4 !important;
+  color: var(--color-text-muted) !important;
   margin: 0;
 }
 
@@ -257,7 +257,7 @@
   gap: 0.4rem;
   padding: 0.75rem 0.7rem 0.65rem;
   border-radius: 0.8rem;
-  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.16);
   cursor: pointer;
   text-align: left;
@@ -287,7 +287,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(212, 175, 55, 0.1);
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   flex-shrink: 0;
 }
 
@@ -320,7 +320,7 @@
 .progress__signal-name {
   font-size: 0.7rem;
   font-weight: 500;
-  color: #f0e6d2 !important;
+  color: var(--color-text) !important;
   line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
@@ -338,7 +338,7 @@
 }
 
 .progress__signal-status--good    { color: #9ecc8f; }
-.progress__signal-status--warning { color: var(--color-gold, #d4af37); }
+.progress__signal-status--warning { color: var(--color-gold, var(--color-gold)); }
 .progress__signal-status--bad     { color: #d4665a; }
 .progress__signal-status--empty   { color: #6d6660; }
 
@@ -358,13 +358,13 @@
 }
 
 .progress__signal-bar--good    { background: #9ecc8f; }
-.progress__signal-bar--warning { background: var(--color-gold, #d4af37); }
+.progress__signal-bar--warning { background: var(--color-gold, var(--color-gold)); }
 .progress__signal-bar--bad     { background: #d4665a; }
 .progress__signal-bar--empty   { background: transparent; }
 
 .progress__signal-footer {
   font-size: 0.58rem;
-  color: #b8b0a4 !important;
+  color: var(--color-text-muted) !important;
   line-height: 1.15;
   width: 100%;
   white-space: nowrap;
@@ -447,7 +447,7 @@
 .progress__hero-period {
   display: inline-block;
   font-size: 0.7rem;
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
   padding: 0.15rem 0.5rem;
   background: rgba(184, 149, 106, 0.1);
   border-radius: 40px;
@@ -478,14 +478,14 @@
 
 .progress__hero-pill--flat {
   background: rgba(184, 149, 106, 0.15);
-  color: #b8956a;
+  color: var(--color-text-secondary);
 }
 
 /* Empty state: contagem de dias */
 .progress__empty-days {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--color-text-primary, #f5f0eb);
+  color: var(--color-text-primary, var(--color-text));
   margin-top: 0.75rem;
   text-align: center;
 }
@@ -502,7 +502,7 @@
 
 .progress__empty-days-fill {
   height: 100%;
-  background: var(--color-gold, #d4af37);
+  background: var(--color-gold, var(--color-gold));
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -510,7 +510,7 @@
 /* Secção "Como é calculado?" */
 .progress__how-calc {
   margin-top: 1.25rem;
-  background: var(--color-bg-secondary, #1a1715);
+  background: var(--color-bg-secondary, var(--color-bg-secondary));
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: 10px;
   overflow: hidden;
@@ -521,7 +521,7 @@
   cursor: pointer;
   padding: 0.75rem 1rem;
   font-size: 0.85rem;
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -552,7 +552,7 @@
 .progress__how-calc-hint {
   margin: 0.6rem 0 0.8rem;
   font-size: 0.75rem;
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
   line-height: 1.5;
 }
 
@@ -579,11 +579,11 @@
 }
 
 .progress__how-calc-name {
-  color: var(--color-text-primary, #f5f0eb);
+  color: var(--color-text-primary, var(--color-text));
 }
 
 .progress__how-calc-weight {
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }

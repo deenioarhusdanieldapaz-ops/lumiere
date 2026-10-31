@@ -111,9 +111,7 @@ function buildSummaryCard(totalCycles, totalMinutes) {
 
   card.appendChild(el('span', 'focus-list__summary-chev', '\u203A'));
 
-  card.addEventListener('click', () => {
-    try { eventBus.emit('toast:show', { type: 'info', text: 'Estatísticas de foco em breve.' }); } catch (_) {}
-  });
+
   return card;
 }
 
@@ -148,7 +146,8 @@ function buildItem(entity, kind) {
     const play = el('button', 'focus-item__play', '\u25B6');
     play.type = 'button';
     play.setAttribute('aria-label', 'Iniciar foco em ' + (entity.name || ''));
-    play.addEventListener('click', () => {
+    play.addEventListener('click', (e) => {
+      e.stopPropagation(); // Impede que o clique vá para o cartão
       console.log('[Focus] play clicked | kind=' + kind + ' | id=' + entity.id);
       openConfigFor({
         type: kind,

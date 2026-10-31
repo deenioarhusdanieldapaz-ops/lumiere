@@ -9,8 +9,8 @@
   height: 48px;
   border-radius: 50%;
   border: none;
-  background: #d4af37;
-  color: #0a0a0a;
+  background: var(--color-gold);
+  color: var(--color-bg-primary);
   font-size: 22px;
   font-weight: 300;
   line-height: 1;
@@ -73,10 +73,10 @@
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  background: #1a1715;
+  background: var(--color-bg-secondary);
   border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 999px;
-  color: #f5f0eb;
+  color: var(--color-text-primary);
   font-family: inherit;
   font-size: 0.875rem;
   cursor: pointer;
@@ -91,14 +91,14 @@
 
 .fab-menu__item:hover {
   background: rgba(212, 175, 55, 0.12);
-  border-color: #d4af37;
+  border-color: var(--color-gold);
 }
 
 .fab-menu__item-icon {
   display: inline-flex;
   width: 18px;
   height: 18px;
-  color: #d4af37;
+  color: var(--color-gold);
   align-items: center;
   justify-content: center;
 }
@@ -109,7 +109,7 @@
 }
 
 .fab-menu__item-label {
-  color: #f5f0eb;
+  color: var(--color-text-primary);
 }
 
 /* ============================================================
@@ -155,7 +155,7 @@ body.fab-hidden .fab-menu {
 }
 
 .save-tpl-dialog {
-  background: #1a1715;
+  background: var(--color-bg-secondary);
   border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 14px;
   padding: 18px;
@@ -175,23 +175,23 @@ body.fab-hidden .fab-menu {
 .save-tpl-title {
   margin: 0;
   font-size: 1.05rem;
-  color: #d4af37;
+  color: var(--color-gold);
   font-weight: 500;
 }
 
 .save-tpl-label {
   display: block;
   font-size: 0.75rem;
-  color: #b8956a;
+  color: var(--color-text-secondary);
   margin-bottom: 4px;
   font-weight: 500;
 }
 
 .save-tpl-input {
   width: 100%;
-  background: #2a2521;
+  background: var(--color-bg-input);
   border: 1px solid #4a3f38;
-  color: #f5f0eb;
+  color: var(--color-text-primary);
   border-radius: 8px;
   padding: 0.55rem 0.7rem;
   font-size: 0.9rem;
@@ -201,7 +201,7 @@ body.fab-hidden .fab-menu {
 
 .save-tpl-input:focus {
   outline: none;
-  border-color: #d4af37;
+  border-color: var(--color-gold);
 }
 
 .save-tpl-meta {
@@ -209,7 +209,7 @@ body.fab-hidden .fab-menu {
   flex-wrap: wrap;
   gap: 6px;
   font-size: 0.75rem;
-  color: #b8956a;
+  color: var(--color-text-secondary);
 }
 
 .save-tpl-meta span {
@@ -224,7 +224,7 @@ body.fab-hidden .fab-menu {
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 0.8rem;
-  color: #b8956a;
+  color: var(--color-text-secondary);
   max-height: 140px;
   overflow-y: auto;
 }
@@ -237,7 +237,7 @@ body.fab-hidden .fab-menu {
 }
 
 .save-tpl-preview__row strong {
-  color: #f5f0eb;
+  color: var(--color-text-primary);
   font-weight: 500;
 }
 
@@ -258,8 +258,8 @@ body.fab-hidden .fab-menu {
 
 .save-tpl-btn {
   background: transparent;
-  border: 1px solid #d4af37;
-  color: #d4af37;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
   border-radius: 8px;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
@@ -268,8 +268,8 @@ body.fab-hidden .fab-menu {
 }
 
 .save-tpl-btn--primary {
-  background: #d4af37;
-  color: #0a0a0a;
+  background: var(--color-gold);
+  color: var(--color-bg-primary);
   font-weight: 500;
 }
 

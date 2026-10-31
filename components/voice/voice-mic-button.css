@@ -8,7 +8,7 @@
   border-radius: 50%;
   background: #0f0f0f;
   border: 1.5px solid rgba(212, 175, 55, 0.55);
-  color: #d4af37;
+  color: var(--color-gold);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -28,7 +28,7 @@
 }
 
 .lumiere-ring__bar {
-  stroke: var(--color-gold, #d4af37);
+  stroke: var(--color-gold, var(--color-gold));
   filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.35));
 }
 
@@ -39,7 +39,7 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
 }
 
 .lumiere-ring__center-value {
@@ -67,7 +67,7 @@
   width: 20px;
   height: 20px;
   border: 3px solid rgba(212, 175, 55, 0.2);
-  border-top-color: var(--color-gold, #d4af37);
+  border-top-color: var(--color-gold, var(--color-gold));
   border-radius: 50%;
   animation: lumiere-ring-spin 800ms linear infinite;
   align-self: center;

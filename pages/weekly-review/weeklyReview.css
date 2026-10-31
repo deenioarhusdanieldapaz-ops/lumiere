@@ -115,7 +115,7 @@
   width: 75px;
   height: 75px;
   border-radius: 50%;
-  background: conic-gradient(#D9AD50 78%, #2a2521 0);
+  background: conic-gradient(#D9AD50 78%, var(--color-bg-input) 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -343,7 +343,7 @@
 .wr-empty-screen {
   width: 100vw;
   min-height: 100vh;
-  background-image: 
+  background-image:
     linear-gradient(to bottom, rgba(9, 9, 7, 0.8) 0%, rgba(9, 9, 7, 0.3) 50%, rgba(9, 9, 7, 0.9) 100%),
     url('../../assets/bg/weekly-review-empty-bg.png');
   background-size: cover;
@@ -574,7 +574,7 @@
   margin: 0 !important;
   padding: 20px 16px 80px 16px !important;
   background-color: #090907;
-  background-image: 
+  background-image:
     linear-gradient(to bottom, rgba(9, 9, 7, 0.8) 0%, rgba(9, 9, 7, 0.3) 50%, rgba(9, 9, 7, 0.9) 100%),
     url('../../assets/bg/weekly-review-empty-bg.png');
   background-size: cover;
@@ -653,7 +653,7 @@
   width: 75px;
   height: 75px;
   border-radius: 50%;
-  background: #2a2521; /* Cor de fundo quando está a 0% */
+  background: var(--color-bg-input); /* Cor de fundo quando está a 0% */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -704,7 +704,7 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: conic-gradient(#D9AD50 var(--percent), #2a2521 0);
+  background: conic-gradient(#D9AD50 var(--percent), var(--color-bg-input) 0);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -316,7 +316,7 @@ function renderHabitItem(habit) {
   const icon = document.createElement('span');
   icon.className = 'lum-card__icon habit-item__icon';
   const svgIcon = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>';
-  
+
   if (habit.icon) {
     icon.textContent = habit.icon;
   } else {
@@ -339,7 +339,7 @@ function renderHabitItem(habit) {
   summary.innerHTML = '⋮';
   summary.setAttribute('aria-label', 'Mais ações');
   actions.appendChild(summary);
-  
+
   const menuDropdown = document.createElement('div');
   menuDropdown.className = 'habit-item__menu-dropdown';
 
@@ -379,7 +379,7 @@ function renderHabitItem(habit) {
     const badge = document.createElement('span');
     badge.className = 'habit-item__tag';
     badge.style.background = 'rgba(212, 175, 55, 0.2)';
-    badge.style.color = '#d4af37';
+    badge.style.color = 'var(--color-gold)';
     badge.textContent = 'HOJE';
     meta.appendChild(badge);
   }

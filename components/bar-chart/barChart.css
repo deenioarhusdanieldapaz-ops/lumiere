@@ -30,7 +30,7 @@
 }
 
 .lumiere-bar-chart__value.is-highlight {
-  fill: var(--color-gold, #d4af37);
+  fill: var(--color-gold, var(--color-gold));
 }
 
 .lumiere-bar-chart__label {
@@ -43,7 +43,7 @@
 }
 
 .lumiere-bar-chart__label.is-highlight {
-  fill: var(--color-gold, #d4af37);
+  fill: var(--color-gold, var(--color-gold));
   font-weight: 700;
 }
 
@@ -64,7 +64,7 @@
   width: 24px;
   height: 24px;
   border: 3px solid rgba(212, 175, 55, 0.2);
-  border-top-color: var(--color-gold, #d4af37);
+  border-top-color: var(--color-gold, var(--color-gold));
   border-radius: 50%;
   animation: lumiere-bar-chart-spin 800ms linear infinite;
 }

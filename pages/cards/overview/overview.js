@@ -791,24 +791,24 @@ function getDayPeriod() {
     // Usar exatamente a mesma classe do cartão "HOJE"
     recCard.className = 'overview__today-card';
     recCard.style.marginTop = '16px';
-    
+
     const header = document.createElement('div');
     header.className = 'overview__today-header';
-    
+
     const title = document.createElement('span');
     title.className = 'overview__today-header-title';
     title.textContent = rec.title;
-    
+
     header.appendChild(title);
-    
+
     const textWrap = document.createElement('div');
     textWrap.className = 'overview__today-empty'; // Usa o estilo de texto vazio ou meta
     textWrap.style.padding = '16px';
     textWrap.style.fontSize = '0.9rem';
     textWrap.style.lineHeight = '1.4';
-    textWrap.style.color = '#F5F0EB';
+    textWrap.style.color = 'var(--color-text)';
     textWrap.textContent = rec.text;
-    
+
     recCard.append(header, textWrap);
     section.appendChild(recCard);
   }

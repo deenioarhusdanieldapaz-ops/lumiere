@@ -39,14 +39,14 @@
   font-family: 'Cinzel', serif;
   font-size: 1.7rem;
   font-weight: 400;
-  color: #d4af37;
+  color: var(--color-gold);
   margin: 0 0 0.25rem;
   letter-spacing: 0.02em;
 }
 
 .lumiere-card__sub {
   font-size: 0.82rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -54,7 +54,7 @@
 .lumiere-card__hero {
   position: relative;
   border-radius: 1rem;
-  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.22);
   padding: 1.25rem;
   margin-bottom: 1.5rem;
@@ -92,7 +92,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #d4af37;
+  color: var(--color-gold);
   flex-shrink: 0;
 }
 
@@ -109,7 +109,7 @@
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .lumiere-card__hero-body {
@@ -130,7 +130,7 @@
   font-family: 'Cinzel', serif;
   font-size: 3rem;
   font-weight: 500;
-  color: #d4af37;
+  color: var(--color-gold);
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -139,13 +139,13 @@
   font-family: 'Manrope', sans-serif;
   font-size: 1rem;
   font-weight: 500;
-  color: #f0e6d2;
+  color: var(--color-text);
   line-height: 1;
 }
 
 .lumiere-card__hero-period {
   font-size: 0.78rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   margin: 0 0 1rem;
 }
 
@@ -166,12 +166,12 @@
 }
 
 .lumiere-card__seg.is-filled {
-  background: #d4af37;
+  background: var(--color-gold);
 }
 
 .lumiere-card__hero-meta {
   font-size: 0.72rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -187,7 +187,7 @@
   font-family: 'Manrope', sans-serif;
   font-size: 0.65rem;
   font-weight: 500;
-  color: #d4af37;
+  color: var(--color-gold);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -205,7 +205,7 @@
 }
 
 .lumiere-card__pill--empty {
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   border-color: rgba(184, 176, 164, 0.25);
   background: rgba(120, 112, 105, 0.15);
 }
@@ -224,7 +224,7 @@
 .lumiere-card__loading {
   text-align: center;
   padding: 3rem 1rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   font-family: 'Manrope', sans-serif;
 }
 
@@ -266,15 +266,15 @@
 
 .lumiere-card__hero,
 .lumiere-card__hero * {
-  color: #f0e6d2;
+  color: var(--color-text);
 }
 
 .lumiere-card__hero-icon,
 .lumiere-card__hero-label,
 .lumiere-card__hero-number,
 .lumiere-card__seg.is-filled {
-  color: #d4af37;
-  background-color: #d4af37;
+  color: var(--color-gold);
+  background-color: var(--color-gold);
 }
 
 .lumiere-card__hero-icon,
@@ -285,11 +285,11 @@
 
 .lumiere-card__hero-period,
 .lumiere-card__hero-meta {
-  color: #b8b0a4;
+  color: var(--color-text-muted);
 }
 
 .lumiere-card__pill {
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 /* ============================================================
@@ -320,7 +320,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #d4af37;
+  color: var(--color-gold);
   flex-shrink: 0;
 }
 
@@ -337,7 +337,7 @@
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .lumiere-card__revenue-body {
@@ -363,7 +363,7 @@
 
 .lumiere-card__revenue-col-label {
   font-size: 0.7rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   line-height: 1.2;
 }
 
@@ -371,14 +371,14 @@
   font-family: 'Cinzel', serif;
   font-size: 1.25rem;
   font-weight: 500;
-  color: #d4af37;
+  color: var(--color-gold);
   line-height: 1.1;
   letter-spacing: -0.01em;
 }
 
 .lumiere-card__revenue-legend {
   font-size: 0.7rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   margin: 0;
   padding-top: 0.6rem;
   border-top: 1px solid rgba(212, 175, 55, 0.1);
@@ -387,18 +387,18 @@
 /* FIX tema claro */
 .lumiere-card__revenue,
 .lumiere-card__revenue * {
-  color: #f0e6d2;
+  color: var(--color-text);
 }
 
 .lumiere-card__revenue-icon,
 .lumiere-card__revenue-label,
 .lumiere-card__revenue-col-value {
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .lumiere-card__revenue-col-label,
 .lumiere-card__revenue-legend {
-  color: #b8b0a4;
+  color: var(--color-text-muted);
 }
 
 /* Mobile */
@@ -439,7 +439,7 @@
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #d4af37;
+  color: var(--color-gold);
   margin: 0;
 }
 
@@ -449,19 +449,19 @@
   padding: 0.25rem 0;
   font-family: 'Manrope', sans-serif;
   font-size: 0.72rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: color 150ms ease;
 }
 
 .lumiere-card__section-see-all:hover {
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .lumiere-card__section-empty {
   font-family: 'Manrope', sans-serif;
   font-size: 0.78rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   text-align: center;
   padding: 1.25rem 0.5rem;
   margin: 0;
@@ -495,8 +495,8 @@
 }
 
 .lumiere-card__sale.is-paid .lumiere-card__sale-toggle {
-  background: #d4af37;
-  border-color: #d4af37;
+  background: var(--color-gold);
+  border-color: var(--color-gold);
 }
 
 .lumiere-card__sale.is-paid .lumiere-card__sale-toggle::after {
@@ -518,7 +518,7 @@
 .lumiere-card__sale-name {
   font-size: 0.82rem;
   font-weight: 500;
-  color: #f0e6d2;
+  color: var(--color-text);
   line-height: 1.2;
   margin-bottom: 0.12rem;
   white-space: nowrap;
@@ -528,14 +528,14 @@
 
 .lumiere-card__sale-date {
   font-size: 0.66rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   line-height: 1.2;
 }
 
 .lumiere-card__sale-total {
   font-size: 0.82rem;
   font-weight: 500;
-  color: #f0e6d2;
+  color: var(--color-text);
   white-space: nowrap;
 }
 
@@ -549,12 +549,12 @@
 
 .lumiere-card__sale-badge--paid {
   background: rgba(212, 175, 55, 0.2);
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .lumiere-card__sale-badge--pending {
   background: rgba(120, 112, 105, 0.25);
-  color: #b8b0a4;
+  color: var(--color-text-muted);
 }
 
 .lumiere-card__sale-badge--cancelled {
@@ -563,12 +563,12 @@
 }
 
 /* FIX tema claro */
-.lumiere-card__section-title { color: #d4af37; }
+.lumiere-card__section-title { color: var(--color-gold); }
 .lumiere-card__section-see-all,
 .lumiere-card__section-empty,
-.lumiere-card__sale-date { color: #b8b0a4; }
+.lumiere-card__sale-date { color: var(--color-text-muted); }
 .lumiere-card__sale-name,
-.lumiere-card__sale-total { color: #f0e6d2; }
+.lumiere-card__sale-total { color: var(--color-text); }
 
 @media (max-width: 479px) {
   .lumiere-card__sale {
@@ -611,7 +611,7 @@
 .lumiere-card__top-product-name {
   font-size: 0.82rem;
   font-weight: 500;
-  color: #f0e6d2;
+  color: var(--color-text);
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -629,13 +629,13 @@
 .lumiere-card__top-product-bar {
   height: 100%;
   border-radius: 999px;
-  background: #d4af37;
+  background: var(--color-gold);
   transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .lumiere-card__top-product-count {
   font-size: 0.68rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -649,7 +649,7 @@
   align-items: flex-start;
   gap: 0.75rem;
   border-radius: 1rem;
-  background: linear-gradient(180deg, #0d0a07 0%, #0a0806 100%);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.14);
   padding: 1rem 1.1rem;
   margin: 0 0.25rem 1rem;
@@ -659,7 +659,7 @@
   width: 22px;
   height: 22px;
   flex-shrink: 0;
-  color: #d4af37;
+  color: var(--color-gold);
   margin-top: 1px;
 }
 
@@ -674,15 +674,15 @@
 .lumiere-card__tip-text {
   font-size: 0.78rem;
   line-height: 1.4;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   margin: 0;
   font-style: italic;
 }
 
 /* FIX tema claro */
-.lumiere-card__top-product-name { color: #f0e6d2; }
+.lumiere-card__top-product-name { color: var(--color-text); }
 .lumiere-card__top-product-count,
-.lumiere-card__tip-text { color: #b8b0a4; }
+.lumiere-card__tip-text { color: var(--color-text-muted); }
 
 /* Mobile */
 @media (max-width: 479px) {
@@ -713,7 +713,7 @@
 
 .lumiere-card__empty-card {
   border-radius: 1rem;
-  background: linear-gradient(135deg, #0d0a07 0%, #15100a 45%, #1f1508 100%);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.22);
   padding: 2rem 1.5rem 1.75rem;
   margin-bottom: 1.5rem;
@@ -730,7 +730,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #d4af37;
+  color: var(--color-gold);
   margin-bottom: 0.25rem;
 }
 
@@ -747,7 +747,7 @@
   font-family: 'Manrope', sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
-  color: #f0e6d2;
+  color: var(--color-text);
   margin: 0;
   line-height: 1.3;
   max-width: 300px;
@@ -756,7 +756,7 @@
 .lumiere-card__empty-text {
   font-size: 0.8rem;
   line-height: 1.45;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   margin: 0;
   max-width: 300px;
 }
@@ -769,7 +769,7 @@
   border-radius: 999px;
   border: 1px solid rgba(212, 175, 55, 0.55);
   background: linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
-  color: #d4af37;
+  color: var(--color-gold);
   font-family: 'Manrope', sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
@@ -807,7 +807,7 @@
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #d4af37;
+  color: var(--color-gold);
   margin: 0;
 }
 
@@ -824,7 +824,7 @@
   gap: 0.85rem;
   padding: 1rem 1rem;
   border-radius: 0.85rem;
-  background: linear-gradient(160deg, #131008 0%, #0c0906 100%);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.16);
   cursor: pointer;
   text-align: left;
@@ -845,7 +845,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(212, 175, 55, 0.1);
-  color: #d4af37;
+  color: var(--color-gold);
   flex-shrink: 0;
 }
 
@@ -864,19 +864,19 @@
 .lumiere-card__setup-title {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #f0e6d2;
+  color: var(--color-text);
   line-height: 1.2;
   margin-bottom: 0.15rem;
 }
 
 .lumiere-card__setup-sub {
   font-size: 0.7rem;
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   line-height: 1.2;
 }
 
 .lumiere-card__setup-chevron {
-  color: #b8b0a4;
+  color: var(--color-text-muted);
   font-size: 1.1rem;
   line-height: 1;
   opacity: 0.6;
@@ -887,7 +887,7 @@
 .lumiere-card__empty-card *,
 .lumiere-card__setup-tile,
 .lumiere-card__setup-tile * {
-  color: #f0e6d2;
+  color: var(--color-text);
 }
 
 .lumiere-card__empty-icon,
@@ -895,13 +895,13 @@
 .lumiere-card__empty-cta-plus,
 .lumiere-card__setup-header-title,
 .lumiere-card__setup-icon {
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .lumiere-card__empty-text,
 .lumiere-card__setup-sub,
 .lumiere-card__setup-chevron {
-  color: #b8b0a4;
+  color: var(--color-text-muted);
 }
 
 /* Mobile */

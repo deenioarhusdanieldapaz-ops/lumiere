@@ -147,7 +147,7 @@ async function bootstrap() {
         try {
           const localTasks = await dataManager.list('tasks');
           const localHabits = await dataManager.list('habits');
-          
+
           // Se a base local estiver vazia, procura backup
           if (localTasks.length === 0 && localHabits.length === 0) {
             const cloudBackup = await getLatestCloudBackup(user.uid);
@@ -321,3 +321,22 @@ if (document.readyState === 'loading') {
 
 // Exposição global para testes
 window.stateManager = stateManager;
+
+// ============================================================
+// [PATCH] Sair do Modo Imersivo do Foco (Clique no botão X)
+// ============================================================
+document.addEventListener('click', (e) => {
+  const focusPage = e.target.closest('.focus-page');
+  if (!focusPage) return;
+
+  const x = e.clientX;
+  const y = e.clientY;
+  const winW = window.innerWidth;
+
+  // Verifica se o clique foi no canto superior direito (área do botão X)
+  if (x > winW - 80 && y < 80) {
+    if (window.__lumiere && window.__lumiere.navigation) {
+      window.__lumiere.navigation.goTo('overview');
+    }
+  }
+});

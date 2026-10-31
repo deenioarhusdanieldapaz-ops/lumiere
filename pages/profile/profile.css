@@ -3,7 +3,7 @@
    ============================================================ */
 
 .profile {
-  color: var(--color-text-primary, #f5f0eb);
+  color: var(--color-text-primary, var(--color-text-primary));
   max-width: 560px;
   margin: 0 auto;
   padding: var(--space-md, 1rem) 0;
@@ -22,7 +22,7 @@
   border-radius: 50%;
   width: 36px;
   height: 36px;
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   cursor: pointer;
   font-size: 1.1rem;
   display: inline-flex;
@@ -40,7 +40,7 @@
   font-size: 1.4rem;
   font-weight: 500;
   letter-spacing: 0.05em;
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   margin: 0;
 }
 
@@ -57,7 +57,7 @@
   height: 96px;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #d4af37, #9f7f20);
+  background: linear-gradient(135deg, var(--color-gold), #9f7f20);
   color: #060505;
   display: flex;
   align-items: center;
@@ -82,8 +82,8 @@
 .profile__avatar-btn {
   font-family: 'Manrope', sans-serif;
   font-size: 0.85rem;
-  color: var(--color-gold, #d4af37);
-  border: 1px solid var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
+  border: 1px solid var(--color-gold, var(--color-gold));
   padding: 0.4rem 1rem;
   border-radius: var(--radius-md, 8px);
   cursor: pointer;
@@ -125,7 +125,7 @@
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: var(--radius-md, 8px);
   padding: 0.7rem 0.9rem;
-  color: var(--color-text-primary, #f5f0eb);
+  color: var(--color-text-primary, var(--color-text-primary));
   font-family: 'Manrope', sans-serif;
   font-size: 0.95rem;
   outline: none;
@@ -133,7 +133,7 @@
 }
 
 .profile__input:focus {
-  border-color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, var(--color-gold));
 }
 
 .profile__input--textarea {
@@ -159,7 +159,7 @@
 }
 
 .profile__btn--primary {
-  background: linear-gradient(135deg, #d4af37, #9f7f20);
+  background: linear-gradient(135deg, var(--color-gold), #9f7f20);
   color: #060505;
 }
 

@@ -21,14 +21,14 @@
 
 .lumiere-menu__trigger:hover,
 .lumiere-menu__trigger:focus-visible {
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   border-color: var(--color-border, rgba(212, 175, 55, 0.15));
   outline: none;
 }
 
 .lumiere-menu__trigger[aria-expanded="true"] {
-  color: var(--color-gold, #d4af37);
-  border-color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
+  border-color: var(--color-gold, var(--color-gold));
 }
 
 .lumiere-menu__list {
@@ -75,7 +75,7 @@
 .lumiere-menu__action:hover,
 .lumiere-menu__action:focus-visible {
   background: var(--color-hover, rgba(212, 175, 55, 0.1));
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   outline: none;
 }
 

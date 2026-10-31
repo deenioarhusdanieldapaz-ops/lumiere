@@ -10,14 +10,14 @@
 
 /* ---------- VARIÁVEIS (TOKENS) ---------- */
 :root {
-  --color-bg-primary: #0a0a0a;
-  --color-bg-secondary: #1a1715;
-  --color-bg-input: #2a2521;
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-bg-input: var(--color-bg-input);
   --color-border: #4a3f38;
-  --color-border-light: #b8956a;
-  --color-text-primary: #f5f0eb;
-  --color-text-secondary: #b8956a;
-  --color-gold: #d4af37;
+  --color-border-light: var(--color-text-secondary);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-gold: var(--color-gold);
   --color-gold-hover: #e6c34a;
   --color-error: #e74c3c;
   --color-success: #2ecc71;
@@ -52,6 +52,19 @@
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
   --transition-slow: 0.4s ease;
+  /* --- ALIASES DO DESIGN SYSTEM (F4.2-D) --- */
+  --color-bg: var(--color-bg-primary);
+  --color-surface: var(--color-bg-secondary);
+  --color-text: var(--color-text-primary);
+  --color-text-muted: var(--color-text-secondary);
+  --font-sans: var(--font-family-base);
+  --font-size-md: var(--font-size-base);
+
+  /* Sombras base (Neutras, adaptáveis) */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --card-overlay-gradient: linear-gradient(rgba(5, 5, 5, 0.1), rgba(5, 5, 5, 0.5));
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+
 }
 
 /* ---------- RESET GLOBAL ---------- */
@@ -136,3 +149,34 @@ a:hover { color: var(--color-gold-hover); }
 
 /* ---------- FIX: garantir que [hidden] esconde sempre ---------- */
 [hidden] { display: none !important; }
+
+/* ============================================================
+   ILHAS DE CONTRASTE: CARDS COM IMAGEM SÃO SEMPRE ESCUROS
+   ============================================================ */
+.task-item, .note-item, .habit-item, .study-item,
+.template-item, .goal-item, .finance-item, .lumiere-item {
+  /* Forçamos as variáveis locais a serem claras nestes cards */
+  --color-text-primary: #f5f0eb;
+  --color-text-secondary: #b8b0a4;
+  --color-text-muted: #a0a0a0;
+  --color-bg-secondary: #1a1715;
+}
+
+/* Forçar os textos e as tags especificamente dentro destes cards */
+.task-item__name, .note-item__name, .habit-item__name, .study-item__name,
+.template-item__name, .goal-item__name, .finance-item__name, .lumiere-item__name,
+.task-item__description, .note-item__content, .habit-item__description {
+  color: #f5f0eb !important;
+}
+
+.task-item__tag, .note-item__tag, .habit-item__tag,
+.study-item__tag, .template-item__tag, .goal-item__tag, .finance-item__tag {
+  color: #d4af37 !important;
+  background: rgba(26, 23, 21, 0.8) !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+}
+
+/* Corrigir as datas e ícones secundários nos cards */
+.task-item__footer-info, .habit-item__streak-label, .habit-item__streak-num {
+  color: #b8b0a4 !important;
+}

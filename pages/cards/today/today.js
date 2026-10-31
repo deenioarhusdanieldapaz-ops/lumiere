@@ -538,22 +538,22 @@ function formatTime(iso) {
 }
 
 const EVENT_CATEGORY_COLORS = {
-  work: '#d4af37',
+  work: 'var(--color-gold)',
   personal: '#9ecc8f',
   study: '#7fb3d5',
   health: '#d4665a',
-  finance: '#d4af37',
-  home: '#b8956a',
-  lumiere: '#d4af37',
+  finance: 'var(--color-gold)',
+  home: 'var(--color-text-secondary)',
+  lumiere: 'var(--color-gold)',
   leisure: '#9ecc8f',
-  other: '#b8b0a4'
+  other: 'var(--color-text-secondary)'
 };
 
 function buildEventRow(event) {
   const row = document.createElement('div');
   row.className = 'today__event';
 
-  const barColor = EVENT_CATEGORY_COLORS[event.category] || '#b8b0a4';
+  const barColor = EVENT_CATEGORY_COLORS[event.category] || 'var(--color-text-secondary)';
   const bar = document.createElement('span');
   bar.className = 'today__event-bar';
   bar.style.background = barColor;
@@ -642,7 +642,7 @@ function buildStudyRow(session, study, maxMin) {
   const row = document.createElement('div');
   row.className = 'today__study';
 
-  const barColor = '#d4af37';
+  const barColor = 'var(--color-gold)';
 
   const barLeft = document.createElement('span');
   barLeft.className = 'today__study-bar';

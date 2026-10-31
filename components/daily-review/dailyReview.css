@@ -14,8 +14,8 @@
 .dr-backdrop.is-open { opacity: 1; }
 
 .dr-modal {
-  background: #141414;
-  color: #f0e6d2;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
   width: 100%;
   max-width: 520px;
   max-height: 88vh;
@@ -41,14 +41,14 @@
 .dr-title {
   font-family: 'Cinzel', serif;
   font-size: 20px;
-  color: #d4af37;
+  color: var(--color-gold);
   margin: 0;
   letter-spacing: 0.5px;
 }
 .dr-close {
   background: transparent;
   border: none;
-  color: #d4af37;
+  color: var(--color-gold);
   font-size: 28px;
   line-height: 1;
   cursor: pointer;
@@ -68,7 +68,7 @@
   background: rgba(212, 175, 55, 0.25);
   transition: background 0.3s;
 }
-.dr-indicator__dot.is-active { background: #d4af37; }
+.dr-indicator__dot.is-active { background: var(--color-gold); }
 .dr-indicator__dot.is-done { background: rgba(212, 175, 55, 0.7); }
 
 .dr-body {
@@ -89,7 +89,7 @@
 }
 .dr-step__title {
   font-size: 16px;
-  color: #d4af37;
+  color: var(--color-gold);
   margin: 0 0 14px;
   font-weight: 500;
 }
@@ -113,7 +113,7 @@
 .dr-mood__btn:hover { background: rgba(212, 175, 55, 0.15); }
 .dr-mood__btn.is-selected {
   background: rgba(212, 175, 55, 0.25);
-  border-color: #d4af37;
+  border-color: var(--color-gold);
   transform: scale(1.05);
 }
 
@@ -123,12 +123,12 @@
   border: 1px solid rgba(212, 175, 55, 0.25);
   border-radius: 10px;
   padding: 10px;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   font-family: inherit;
   font-size: 14px;
   resize: vertical;
 }
-.dr-note:focus { outline: none; border-color: #d4af37; }
+.dr-note:focus { outline: none; border-color: var(--color-gold); }
 
 .dr-list {
   display: flex;
@@ -146,13 +146,13 @@
   cursor: pointer;
 }
 .dr-item input[type="checkbox"] {
-  accent-color: #d4af37;
+  accent-color: var(--color-gold);
   width: 18px;
   height: 18px;
 }
 .dr-item__name {
   font-size: 14px;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
 }
 
 .dr-empty {
@@ -182,14 +182,14 @@
   transition: all 0.2s;
 }
 .dr-btn--primary {
-  background: #d4af37;
-  color: #141414;
-  border-color: #d4af37;
+  background: var(--color-gold);
+  color: var(--color-surface);
+  border-color: var(--color-gold);
 }
 .dr-btn--primary:hover { background: #e0bd45; }
 .dr-btn--ghost {
   background: transparent;
-  color: #f0e6d2;
+  color: var(--color-text-primary);
   border-color: rgba(212, 175, 55, 0.3);
 }
 .dr-btn--ghost:hover { background: rgba(212, 175, 55, 0.1); }

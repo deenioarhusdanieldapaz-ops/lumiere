@@ -115,7 +115,7 @@ function render() {
 
   customHeader.append(topRow, pageTitle, pageSubtitle);
   page.appendChild(customHeader);
-  
+
   const title = pageTitle; // Mantém a referência para o gesto secreto funcionar
 
 
@@ -192,7 +192,7 @@ function render() {
         };
         header.append(h2, closeBtn);
         sheet.appendChild(header);
-        
+
         const content = renderFn();
         if(content) {
           content.style.padding = '0';
@@ -212,10 +212,10 @@ function render() {
     secGeral.className = 'settings-section-title';
     secGeral.textContent = 'GERAL';
     page.appendChild(secGeral);
-    
+
     const listGeral = document.createElement('div');
     listGeral.className = 'settings-menu-list';
-    
+
     listGeral.appendChild(createSettingsRow('Aparência', 'Tema, intensidade dourada e tamanho da interface', '🎨', renderAppearanceModal));
     listGeral.appendChild(createSettingsRow('Idioma', 'Escolhe o teu idioma preferido', '🌐', renderLanguageModal));
     listGeral.appendChild(createSettingsRow('Notificações', 'Alertas, lembretes e sons', '🔔', renderNotificationsModal));
@@ -252,7 +252,7 @@ function render() {
 
     const listAvancado = document.createElement('div');
     listAvancado.className = 'settings-menu-list';
-    
+
     const rowPerigo = createSettingsRow('Apagar todos os dados', 'Esta ação é irreversível', '🗑️', renderActions);
     rowPerigo.classList.add('settings-row-danger');
     listAvancado.appendChild(rowPerigo);
@@ -266,11 +266,23 @@ function render() {
 function renderAppearanceModal() {
   const wrap = document.createElement('div');
   const p = _state.prefs;
-  wrap.appendChild(makeSelect('Tema', 'theme', p.theme, [
+  // [TEMPORÁRIO - TESTES DE TEMA] Auto-save no select de tema
+  const themeWrap = makeSelect('Tema', 'theme', p.theme, [
     { value: 'noir', label: 'Noir (escuro)' },
     { value: 'lumiere', label: 'Lumière (claro)' },
     { value: 'auto', label: 'Automático' }
-  ]));
+  ]);
+  const selectEl = themeWrap.querySelector('select');
+  if (selectEl) {
+    selectEl.addEventListener('change', (e) => {
+      const newTheme = e.target.value;
+      p.theme = newTheme;
+      localStorage.setItem('lumierePreferences', JSON.stringify(p));
+      applyTheme(newTheme);
+      try { eventBus.emit('toast:show', { type: 'success', text: 'Tema alterado para testes.' }); } catch (_) {}
+    });
+  }
+  wrap.appendChild(themeWrap);
   wrap.appendChild(makeSelect('Intensidade dourada', 'goldIntensity', p.goldIntensity, [
     { value: 'subtle', label: 'Sutil' },
     { value: 'balanced', label: 'Equilibrada' },
@@ -297,7 +309,7 @@ function renderLanguageModal() {
 function renderNotificationsModal() {
   const wrap = document.createElement('div');
   const p = _state.prefs;
-  
+
   // Notificações
   const notifRow = document.createElement('div');
   notifRow.className = 'settings-field settings-field--row';
@@ -327,13 +339,13 @@ function renderNotificationsModal() {
   });
   voiceRow.append(voiceLabel, voiceCb);
   wrap.appendChild(voiceRow);
-  
+
   const hint = document.createElement('p');
   hint.className = 'settings-hint';
   hint.style.marginTop = '10px';
   hint.textContent = 'Mostra o botão de microfone no ecrã principal.';
   wrap.appendChild(hint);
-  
+
   return wrap;
 }
 
@@ -575,7 +587,7 @@ function renderBackup() {
   const statusTxt = document.createElement('p');
   statusTxt.className = 'settings-hint';
   statusTxt.style.marginBottom = '12px';
-  statusTxt.style.color = '#d4af37';
+  statusTxt.style.color = 'var(--color-gold)';
   statusTxt.textContent = 'A verificar último backup...';
   sec.appendChild(statusTxt);
 
@@ -583,7 +595,7 @@ function renderBackup() {
   btnBackup.type = 'button';
   btnBackup.className = 'settings-btn';
   btnBackup.textContent = 'Fazer Backup Agora';
-  
+
   const user = getCurrentUser();
   if (!user) {
     btnBackup.disabled = true;
@@ -605,7 +617,7 @@ function renderBackup() {
       btnBackup.disabled = true;
       const original = btnBackup.textContent;
       btnBackup.textContent = 'A enviar...';
-      
+
       const res = await forceUploadBackup(user.uid);
       if (res.ok) {
         statusTxt.textContent = 'Último backup: ' + res.date;
@@ -615,7 +627,7 @@ function renderBackup() {
         btnBackup.textContent = 'Erro. Tentar novamente';
         try { eventBus.emit('toast:show', { type: 'error', text: res.error || 'Falha no backup.' }); } catch (_) {}
       }
-      
+
       setTimeout(() => {
         btnBackup.disabled = false;
         btnBackup.textContent = original;

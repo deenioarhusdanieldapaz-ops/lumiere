@@ -1,6 +1,5 @@
 /* ========================================
    TEMA LUMIÈRE (claro)
-   Aplicado quando <html data-theme="lumiere">
    ======================================== */
 html[data-theme="lumiere"] {
   --color-bg-primary: #f5f0eb;
@@ -12,4 +11,7 @@ html[data-theme="lumiere"] {
   --color-text-secondary: #4a3f38;
   --color-gold: #b8956a;
   --color-gold-hover: #d4af37;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --card-overlay-gradient: linear-gradient(rgba(5, 5, 5, 0.3), rgba(5, 5, 5, 0.7));
 }

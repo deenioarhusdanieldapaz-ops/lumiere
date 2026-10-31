@@ -25,7 +25,7 @@
   background-size: 100% 100%, cover;
   background-repeat: no-repeat, no-repeat;
 
-  color: #d4af37;
+  color: var(--color-gold);
   font-family: 'Manrope', system-ui, -apple-system, sans-serif;
   transition: opacity 500ms ease-out;
   overflow: hidden;
@@ -54,11 +54,11 @@
   margin: 0;
   padding-left: 0.25em;
   opacity: 1;
-  background: linear-gradient(180deg, #f5d76e 0%, #d4af37 50%, #9f7f20 100%);
+  background: linear-gradient(180deg, #f5d76e 0%, var(--color-gold) 50%, #9f7f20 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: #d4af37;
+  color: var(--color-gold);
 }
 
 .splash__divider {
@@ -103,7 +103,7 @@
 .splash__loader-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #9f7f20, #d4af37, #f5d76e);
+  background: linear-gradient(90deg, #9f7f20, var(--color-gold), #f5d76e);
   border-radius: 2px;
   animation: splash-progress 12000ms ease-in-out 0ms forwards;
 }
@@ -145,7 +145,7 @@
 }
 
 100% { transform: translateX(320%); }
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .splash__symbol,

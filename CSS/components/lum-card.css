@@ -8,7 +8,7 @@
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--color-surface);
   border: 1px solid rgba(212, 175, 55, 0.15);
   border-radius: 14px;
   padding: 16px;
@@ -49,7 +49,7 @@
 .lum-card__title {
   margin: 0;
   font-size: 1rem;
-  color: #f5f0eb;
+  color: var(--color-text);
   font-weight: 500;
   overflow-wrap: anywhere; /* Quebra palavras/links gigantes */
   white-space: normal;     /* Permite quebra de linha natural */
@@ -68,7 +68,7 @@
 
 .lum-card__tag {
   background: rgba(255, 255, 255, 0.06);
-  color: rgba(240, 230, 210, 0.8);
+  color: var(--color-text-muted);
   border-radius: 12px;
   padding: 4px 10px;
   font-size: 11px;

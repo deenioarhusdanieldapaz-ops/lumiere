@@ -123,7 +123,7 @@ export function createBarChart({
         </linearGradient>
         <linearGradient id="barGoldHighlight" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stop-color="#fceab0"/>
-          <stop offset="100%" stop-color="#d4af37"/>
+          <stop offset="100%" stop-color="var(--color-gold)"/>
         </linearGradient>
         <filter id="barGlow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" result="blur"/>

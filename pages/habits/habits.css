@@ -19,7 +19,7 @@
 .habits-header__title {
   margin: 0;
   font-size: var(--font-size-xl, 1.25rem);
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
   font-weight: var(--font-weight-medium, 500);
 }
 
@@ -31,8 +31,8 @@
 /* Botões */
 .habits-btn {
   background: transparent;
-  border: 1px solid var(--color-gold, #d4af37);
-  color: var(--color-gold, #d4af37);
+  border: 1px solid var(--color-gold, var(--color-gold));
+  color: var(--color-gold, var(--color-gold));
   border-radius: var(--radius-sm, 8px);
   padding: 0.5rem 1rem;
   font-size: var(--font-size-sm, 0.875rem);
@@ -43,14 +43,14 @@
 
 .habits-btn:hover,
 .habits-btn:focus-visible {
-  background: var(--color-gold, #d4af37);
-  color: var(--color-bg-primary, #0a0a0a);
+  background: var(--color-gold, var(--color-gold));
+  color: var(--color-bg-primary, var(--color-bg-primary));
   outline: none;
 }
 
 .habits-btn--primary {
-  background: var(--color-gold, #d4af37);
-  color: var(--color-bg-primary, #0a0a0a);
+  background: var(--color-gold, var(--color-gold));
+  color: var(--color-bg-primary, var(--color-bg-primary));
 }
 
 .habits-btn--primary:hover,
@@ -60,7 +60,7 @@
 
 /* Formulário */
 .habits-form {
-  background: var(--color-bg-secondary, #1a1715);
+  background: var(--color-bg-secondary, var(--color-bg-secondary));
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: var(--radius-md, 12px);
   padding: var(--space-md, 1rem);
@@ -72,7 +72,7 @@
 .habits-form__title {
   margin: 0;
   font-size: var(--font-size-md, 1rem);
-  color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
 }
 
 .habits-form__grid {
@@ -89,17 +89,17 @@
 
 .habits-form__field label {
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
 }
 
 .habits-form__field input,
 .habits-form__field select,
 .habits-form__field textarea {
-  background: var(--color-bg-input, #2a2521);
+  background: var(--color-bg-input, var(--color-bg-input));
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: var(--radius-sm, 8px);
   padding: 0.5rem;
-  color: var(--color-text-primary, #f5f0eb);
+  color: var(--color-text-primary, var(--color-text-primary));
   font-family: inherit;
   font-size: var(--font-size-sm, 0.875rem);
 }
@@ -129,7 +129,7 @@
 
 /* Item individual */
 .habit-item {
-  background: var(--color-bg-secondary, #1a1715);
+  background: var(--color-bg-secondary, var(--color-bg-secondary));
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: var(--radius-md, 12px);
   padding: var(--space-md, 1rem);
@@ -140,11 +140,11 @@
 }
 
 .habit-item:hover {
-  border-color: var(--color-border-light, #b8956a);
+  border-color: var(--color-border-light, var(--color-text-secondary));
 }
 
 .habit-item--done {
-  border-color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, var(--color-gold));
 }
 
 .habit-item--paused {
@@ -183,7 +183,7 @@
 .habit-item__name {
   margin: 0;
   font-size: var(--font-size-md, 1rem);
-  color: var(--color-text-primary, #f5f0eb);
+  color: var(--color-text-primary, var(--color-text-primary));
   font-weight: var(--font-weight-medium, 500);
 }
 
@@ -192,7 +192,7 @@
   flex-wrap: wrap;
   gap: var(--space-xs, 0.25rem);
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
 }
 
 .habit-item__tag {
@@ -204,7 +204,7 @@
 .habit-item__description {
   margin: 0;
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
 }
 
 .habit-item__actions {
@@ -216,7 +216,7 @@
 .habit-item__actions button {
   background: transparent;
   border: 1px solid var(--color-border, #4a3f38);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
   border-radius: var(--radius-sm, 8px);
   min-width: 40px;
   min-height: 40px;
@@ -233,8 +233,8 @@
 
 .habit-item__actions button:hover,
 .habit-item__actions button:focus-visible {
-  color: var(--color-gold, #d4af37);
-  border-color: var(--color-gold, #d4af37);
+  color: var(--color-gold, var(--color-gold));
+  border-color: var(--color-gold, var(--color-gold));
   outline: none;
 }
 
@@ -242,7 +242,7 @@
 .habits-state {
   text-align: center;
   padding: var(--space-xl, 2rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
   font-style: italic;
 }
 
@@ -275,11 +275,11 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.35rem 0.6rem;
-  background: var(--color-bg-input, #2a2521);
+  background: var(--color-bg-input, var(--color-bg-input));
   border: 1px solid var(--color-border, #4a3f38);
   border-radius: var(--radius-sm, 8px);
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #b8956a);
+  color: var(--color-text-secondary, var(--color-text-secondary));
   cursor: pointer;
   user-select: none;
 }
@@ -287,29 +287,29 @@
 .habits-form__day input[type="checkbox"] {
   width: 14px;
   height: 14px;
-  accent-color: var(--color-gold, #d4af37);
+  accent-color: var(--color-gold, var(--color-gold));
   cursor: pointer;
 }
 
 .habits-form__day:has(input:checked) {
   background: rgba(212, 175, 55, 0.15);
-  border-color: var(--color-gold, #d4af37);
-  color: var(--color-gold, #d4af37);
+  border-color: var(--color-gold, var(--color-gold));
+  color: var(--color-gold, var(--color-gold));
 }
 
 /* ============================================================
    Item do hábito — destaque HOJE
    ============================================================ */
 .habit-item--today {
-  border-left: 3px solid var(--color-gold, #d4af37);
+  border-left: 3px solid var(--color-gold, var(--color-gold));
 }
 
 .habit-item__badge-today {
   display: inline-block;
   margin-left: 0.5rem;
   padding: 0.1rem 0.45rem;
-  background: var(--color-gold, #d4af37);
-  color: #0a0a0a;
+  background: var(--color-gold, var(--color-gold));
+  color: var(--color-bg-primary);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -344,7 +344,7 @@
 .habit-item__streak-num {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #d4af37;
+  color: var(--color-gold);
   display: inline-flex;
   align-items: baseline;
   gap: 4px;
@@ -360,7 +360,7 @@
 .habit-item__streak-label {
   font-size: 0.75rem;
   font-weight: 400;
-  color: #b8956a;
+  color: var(--color-text-secondary);
 }
 
 .habit-item__streak-week {
@@ -382,7 +382,7 @@
   width: 22px;
   height: 22px;
   border-radius: 5px;
-  background: #2a2521;
+  background: var(--color-bg-input);
   border: 1px solid rgba(212, 175, 55, 0.08);
   box-sizing: border-box;
 }
@@ -393,7 +393,7 @@
 }
 
 .habit-item__streak-cell.is-missed {
-  background: #2a2521;
+  background: var(--color-bg-input);
   border-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -403,7 +403,7 @@
 }
 
 .habit-item__streak-cell.is-today {
-  border: 1.5px solid #d4af37;
+  border: 1.5px solid var(--color-gold);
   box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.3);
 }
 
@@ -416,7 +416,7 @@
 }
 
 .habit-item__streak-col:has(.is-today) .habit-item__streak-day {
-  color: #d4af37;
+  color: var(--color-gold);
   font-weight: 700;
 }
 
@@ -457,7 +457,7 @@
 /* fix-limpeza3-badge */
 /* === DESIGN PREMIUM (LUM-CARD) PARA HÁBITOS === */
 .habit-item {
-  background-image: linear-gradient(rgba(5, 5, 5, 0.1), rgba(5, 5, 5, 0.5)), url('../../assets/bg/habits-card-bg.png') !important;
+  background-image: var(--card-overlay-gradient), url('../../assets/bg/habits-card-bg.png') !important;
   background-size: cover !important;
   background-position: center !important;
   border: 1px solid rgba(212, 175, 55, 0.25) !important;
@@ -473,7 +473,7 @@
 
 /* Ícone Glow */
 .habit-item__icon {
-  color: #d4af37 !important;
+  color: var(--color-gold) !important;
   width: 44px !important; height: 44px !important;
   border-radius: 50% !important;
   background: rgba(212, 175, 55, 0.12) !important;
@@ -483,7 +483,7 @@
 }
 
 /* Título e Layout (Override do antigo flex-wrap) */
-.habit-item__name { 
+.habit-item__name {
   font-family: var(--font-sans, sans-serif) !important;
   font-size: 1.05rem !important;
   font-weight: 500 !important;
@@ -496,47 +496,44 @@
 
 /* Tags Premium */
 .habit-item__meta { display: flex; flex-wrap: wrap; gap: 8px; }
-.habit-item__tag { 
-  background: rgba(212, 175, 55, 0.08) !important; 
-  border: 1px solid rgba(212, 175, 55, 0.3) !important; 
-  color: #f5d76e !important; 
-  border-radius: 12px !important; 
-  padding: 5px 12px !important; 
-  font-size: 11px !important; 
-  font-weight: 600 !important; 
-  letter-spacing: 0.5px !important; 
+.habit-item__tag { color: var(--color-gold) !important;
+  border-radius: 12px !important;
+  padding: 5px 12px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
 }
 
 /* Menu Oculto Sólido */
 details.habit-item__actions { position: relative !important; display: inline-block !important; }
 .habit-item__menu-dropdown {
   position: absolute !important; top: calc(100% + 5px) !important; right: 0 !important; left: auto !important;
-  background-color: #141414 !important; background-image: none !important; opacity: 1 !important;
+  background-color: var(--color-surface) !important; background-image: none !important; opacity: 1 !important;
   border: 1px solid rgba(212, 175, 55, 0.4) !important; border-radius: 12px !important;
   box-shadow: 0 10px 30px rgba(0,0,0,0.9) !important;
   display: none; flex-direction: column; min-width: 170px; z-index: 99999 !important; padding: 6px;
 }
 details.habit-item__actions[open] .habit-item__menu-dropdown { display: flex !important; }
 .habit-item__menu-dropdown button {
-  background: transparent !important; border: none !important; color: #f5f0eb !important;
+  background: transparent !important; border: none !important; color: var(--color-text) !important;
   text-align: left !important; padding: 12px 16px !important; border-radius: 8px !important;
   font-size: 14px !important; display: flex !important; align-items: center !important;
   gap: 10px !important; width: 100% !important; cursor: pointer !important;
 }
-.habit-item__menu-dropdown button:hover { background: rgba(212, 175, 55, 0.15) !important; color: #d4af37 !important; }
+.habit-item__menu-dropdown button:hover { background: rgba(212, 175, 55, 0.15) !important; color: var(--color-gold) !important; }
 .habit-item__menu-dropdown button:last-child { color: #e74c3c !important; border-top: 1px solid rgba(255, 255, 255, 0.05) !important; }
-.habit-item__menu-btn { list-style: none; background: transparent; border: none; color: #d4af37; font-size: 20px; padding: 4px 8px; cursor: pointer; border-radius: 50%; }
+.habit-item__menu-btn { list-style: none; background: transparent; border: none; color: var(--color-gold); font-size: 20px; padding: 4px 8px; cursor: pointer; border-radius: 50%; }
 .habit-item__menu-btn::-webkit-details-marker { display: none; }
 
 /* Descrição e Ler Mais */
 .habit-item__desc-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-.habit-item__description { 
-  margin: 0; font-size: 13px; color: rgba(240, 230, 210, 0.6); 
-  line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; 
+.habit-item__description {
+  margin: 0; font-size: 13px; color: var(--color-text-muted);
+  line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2;
   -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap;
 }
 .habit-item__desc-wrap.is-expanded .habit-item__description { display: block; -webkit-line-clamp: unset; }
-.habit-item__read-more { 
-  background: transparent; border: none; color: #d4af37; font-size: 12px; 
-  padding: 0; cursor: pointer; text-decoration: underline; font-weight: 600; 
+.habit-item__read-more {
+  background: transparent; border: none; color: var(--color-gold); font-size: 12px;
+  padding: 0; cursor: pointer; text-decoration: underline; font-weight: 600;
 }
