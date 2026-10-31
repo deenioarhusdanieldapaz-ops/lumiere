@@ -21,6 +21,7 @@
   --color-gold-hover: #e6c34a;
   --color-error: #e74c3c;
   --color-success: #2ecc71;
+  --color-warning: #f5d76e;
 
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -179,4 +180,21 @@ a:hover { color: var(--color-gold-hover); }
 /* Corrigir as datas e ícones secundários nos cards */
 .task-item__footer-info, .habit-item__streak-label, .habit-item__streak-num {
   color: #b8b0a4 !important;
+}
+
+
+/* ============================================================
+   CONSISTÊNCIA DO EMPTY STATE (Esconder botão do topo)
+   ============================================================ */
+/* Quando a página tem um Empty State, o botão do header desaparece para não duplicar ações */
+
+.habits-page:has(.lumiere-empty) .habits-header__actions,
+.goals-page:has(.lumiere-empty) .goals-header__actions,
+.notes-page:has(.lumiere-empty) .notes-header__actions,
+.studies-page:has(.lumiere-empty) .studies-header__actions,
+.calendar-page:has(.lumiere-empty) .calendar-header__actions,
+.templates-page:has(.lumiere-empty) .templates-header__actions,
+.lumiere-page:has(.lumiere-empty) .lumiere-header__actions,
+.finances-page:has(.lumiere-empty) .finances-header__actions {
+  display: none !important;
 }

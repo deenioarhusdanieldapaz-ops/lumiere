@@ -82,22 +82,22 @@
 /* Cores por estado */
 .lumiere-stat-row--good .lumiere-stat-row__check {
   background: rgba(76, 175, 80, 0.15);
-  color: #4caf50;
+  color: var(--color-success);
 }
 
 .lumiere-stat-row--warning .lumiere-stat-row__check {
   background: rgba(245, 215, 110, 0.15);
-  color: #f5d76e;
+  color: var(--color-warning);
 }
 
 .lumiere-stat-row--bad .lumiere-stat-row__check {
   background: rgba(231, 76, 60, 0.15);
-  color: #e74c3c;
+  color: var(--color-error);
 }
 
 .lumiere-stat-row--empty .lumiere-stat-row__check {
   background: rgba(136, 136, 136, 0.15);
-  color: #888;
+  color: var(--color-text-muted);
 }
 
 .lumiere-stat-row--empty .lumiere-stat-row__value-text {

@@ -13,6 +13,7 @@ if (!window.__lumiereNoteMenuListener) {
  * Notes Page
  */
 import { dataManager } from '../../core/dataManager.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
@@ -150,7 +151,16 @@ function render() {
   } else if (_state.error) {
     page.appendChild(renderState(_state.error, true));
   } else if (_state.notes.length === 0) {
-    page.appendChild(renderState('Sem notas. Toque em "Nova nota" para criar a primeira.'));
+    const empty = createEmptyState({
+      title: 'O teu espaço em branco',
+      message: 'Captura as tuas ideias, pensamentos ou listas. Tudo começa com uma primeira nota.',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>',
+      actionLabel: '+ Criar nota',
+      onAction: () => openForm(),
+      variant: 'default',
+      fullWidth: true
+    });
+    page.appendChild(empty);
   } else {
     const list = document.createElement('div');
     list.className = 'notes-list';
@@ -163,7 +173,7 @@ function render() {
   _container.appendChild(page);
 }
 
-function renderHeader() {
+function renderHeader(isEmpty = false) {
   const header = document.createElement('header');
   header.className = 'notes-header';
 

@@ -1,72 +1,121 @@
-/**
- * EmptyState Component - Estilos
- */
-
+/* ============================================================
+   EMPTY STATE - COMPONENTE BASE (F4.3)
+   ============================================================ */
 .lumiere-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--space-lg, 24px) var(--space-md, 16px);
-  gap: var(--space-sm, 8px);
-  color: var(--color-text-muted, #a0a0a0);
-  border: 1px dashed var(--color-border, rgba(212, 175, 55, 0.15));
-  border-radius: var(--radius-md, 8px);
+  padding: 2rem 1rem;
   background: transparent;
 }
 
+/* Ícone */
 .lumiere-empty__icon {
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--color-gold, var(--color-gold));
-  opacity: 0.7;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold);
+  margin-bottom: 1rem;
+}
+.lumiere-empty__icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
 }
 
+/* Tipografia */
 .lumiere-empty__title {
-  margin: 0;
-  font-size: var(--font-size-md, 1rem);
-  font-weight: 600;
-  color: var(--color-text, #f5f5f5);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem 0;
 }
-
 .lumiere-empty__message {
-  margin: 0;
-  font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text-muted, #a0a0a0);
-  max-width: 40ch;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0 0 1.5rem 0;
+  max-width: 320px;
+  line-height: 1.4;
 }
 
-.lumiere-empty__action {
-  margin-top: var(--space-sm, 8px);
-  background: transparent;
-  color: var(--color-gold, var(--color-gold));
-  border: 1px solid var(--color-gold, var(--color-gold));
-  border-radius: var(--radius-sm, 4px);
-  padding: 6px 14px;
-  font-size: var(--font-size-sm, 0.875rem);
+/* Ações */
+.lumiere-empty__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.lumiere-empty__btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: all 0.2s ease;
 }
-
-.lumiere-empty__action:hover,
-.lumiere-empty__action:focus-visible {
-  background: var(--color-gold, var(--color-gold));
-  color: var(--color-bg, var(--color-bg-primary));
-  outline: none;
+.lumiere-empty__btn--primary {
+  background: var(--color-gold);
+  color: #0a0a0a;
+  border: 1px solid var(--color-gold);
 }
-
-/* Variante compact */
-.lumiere-empty--compact {
-  padding: var(--space-md, 16px) var(--space-sm, 8px);
-  gap: var(--space-xs, 4px);
-}
-.lumiere-empty--compact .lumiere-empty__icon { font-size: 1.25rem; }
-.lumiere-empty--compact .lumiere-empty__title { font-size: var(--font-size-sm, 0.875rem); }
-
-/* Variante inline (sem borda, para uso dentro de cards/seções) */
-.lumiere-empty--inline {
-  border: none;
-  padding: var(--space-md, 16px) var(--space-sm, 8px);
+.lumiere-empty__btn--secondary {
   background: transparent;
+  color: var(--color-gold);
+  border: 1px solid var(--color-gold);
 }
+
+/* === VARIANTES === */
+/* 01. Minimalista (Compacto) */
+.lumiere-empty--minimal { padding: 1rem; }
+.lumiere-empty--minimal .lumiere-empty__icon { width: 40px; height: 40px; margin-bottom: 0.5rem; }
+.lumiere-empty--minimal .lumiere-empty__title { font-size: var(--font-size-base); }
+
+/* 02. Padrão (Lista/Módulo) */
+.lumiere-empty--default { padding: 3rem 1rem; }
+
+/* 03. Destacado */
+.lumiere-empty--featured {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 3rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 04. Ilustração */
+.lumiere-empty--illustration {
+  padding: 2rem;
+}
+.lumiere-empty--illustration .lumiere-empty__icon { width: 120px; height: 120px; margin-bottom: 1.5rem; }
+
+/* 05. Duas Opções (Gap ajustado para botões lado a lado) */
+.lumiere-empty--double .lumiere-empty__actions { gap: 1rem; }
+
+/* 06. Contextual (Filtros/Pesquisa) */
+.lumiere-empty--contextual { padding: 2rem 1rem; }
+.lumiere-empty--contextual .lumiere-empty__icon { width: 48px; height: 48px; opacity: 0.5; }
+
+/* 07. Cartão / Painel */
+.lumiere-empty--card {
+  background: var(--color-bg-secondary);
+  border: 1px dashed var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 2rem 1rem;
+}
+
+/* 08. Mobile (Focado em ecrãs pequenos) */
+.lumiere-empty--mobile {
+  padding: 2rem 0.5rem;
+}
+.lumiere-empty--mobile .lumiere-empty__actions { flex-direction: column; width: 100%; }
+.lumiere-empty--mobile .lumiere-empty__btn { width: 100%; }
+
+/* Full Width (para módulos inteiros) */
+.lumiere-empty.is-full-width { width: 100%; min-height: 40vh; justify-content: center; }

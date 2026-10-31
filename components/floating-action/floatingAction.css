@@ -190,7 +190,7 @@ body.fab-hidden .fab-menu {
 .save-tpl-input {
   width: 100%;
   background: var(--color-bg-input);
-  border: 1px solid #4a3f38;
+  border: 1px solid var(--color-border);
   color: var(--color-text-primary);
   border-radius: 8px;
   padding: 0.55rem 0.7rem;
@@ -244,7 +244,7 @@ body.fab-hidden .fab-menu {
 .save-tpl-error {
   margin: 0;
   padding: 0.5rem 0.7rem;
-  color: #e74c3c;
+  color: var(--color-error);
   font-size: 0.85rem;
   background: rgba(231, 76, 60, 0.1);
   border-radius: 8px;
@@ -274,7 +274,7 @@ body.fab-hidden .fab-menu {
 }
 
 .save-tpl-btn--primary:hover {
-  background: #e6c34a;
+  background: var(--color-gold-hover);
 }
 
 .save-tpl-btn:disabled {

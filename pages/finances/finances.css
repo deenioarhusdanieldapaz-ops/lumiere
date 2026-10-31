@@ -28,13 +28,18 @@
 }
 
 /* Sub-tabs (horizontal, com scroll) */
+/* Abas estilo Segmented Control */
 .finances-tabs {
   display: flex;
-  gap: var(--space-xs, 0.25rem);
-  border-bottom: 1px solid var(--color-border, #4a3f38);
+  gap: 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 4px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  margin-bottom: 1rem;
 }
 .finances-tabs::-webkit-scrollbar { display: none; }
 

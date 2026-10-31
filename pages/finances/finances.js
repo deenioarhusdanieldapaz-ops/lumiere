@@ -9,6 +9,7 @@ import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
 import { createProgress } from '../../components/progress/progress.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 
 function normalizeText(str) {
   return (str || '')
@@ -274,7 +275,24 @@ function renderPanel() {
   const items = _state.data[_state.activeTab] || [];
   if (items.length === 0) {
     const tab = TABS.find(t => t.id === _state.activeTab);
-    panel.appendChild(renderState('Sem ' + tab.label.toLowerCase() + '. Toque em "Novo" para criar.'));
+    // Dicionário para corrigir a gramática baseada na aba ativa
+    const labels = {
+      accounts: { title: 'Sem contas', msg: 'Adiciona a tua primeira conta para começares a controlar as tuas finanças.', btn: '+ Nova conta' },
+      transactions: { title: 'Sem transações', msg: 'Regista a tua primeira transação para acompanhares o teu dinheiro.', btn: '+ Nova transação' },
+      budgets: { title: 'Sem orçamentos', msg: 'Define o teu primeiro orçamento para gerires os teus gastos.', btn: '+ Novo orçamento' }
+    };
+    const text = labels[_state.activeTab] || labels.accounts;
+
+    const empty = createEmptyState({
+      title: text.title,
+      message: text.msg,
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>',
+      actionLabel: text.btn,
+      onAction: () => openForm(),
+      variant: 'default',
+      fullWidth: true
+    });
+    panel.appendChild(empty);
     return panel;
   }
 

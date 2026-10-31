@@ -7,6 +7,7 @@ import { dataManager } from '../../core/dataManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 
 // ============================================================
 // Icones automaticos — 21 keywords (titulo) + 9 categorias
@@ -122,7 +123,16 @@ function render() {
   } else if (_state.error) {
     page.appendChild(renderState(_state.error, true));
   } else if (_state.events.length === 0) {
-    page.appendChild(renderState('Sem eventos. Toque em "Novo evento" para criar o primeiro.'));
+    const empty = createEmptyState({
+      title: 'Sem eventos',
+      message: 'O teu calendário está livre. Adiciona o teu primeiro evento para começares a organizar o teu tempo.',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
+      actionLabel: '+ Novo evento',
+      onAction: () => openForm(),
+      variant: 'default',
+      fullWidth: true
+    });
+    page.appendChild(empty);
   } else {
     page.appendChild(renderListGrouped());
   }

@@ -4,6 +4,7 @@
  * Estrutura inicial: init + load + render list/empty.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
@@ -155,7 +156,16 @@ function render() {
   } else if (_state.error) {
     page.appendChild(renderState(_state.error, true));
   } else if (_state.habits.length === 0) {
-    page.appendChild(renderState('Sem hábitos. Toque em "Novo hábito" para criar o primeiro.'));
+    const empty = createEmptyState({
+      title: 'Ainda não tens hábitos',
+      message: 'Começa por criar o teu primeiro hábito para construíres uma rotina.',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 4-4 5-4 10a4 4 0 0 0 8 0c0-2-1-3-1-3s3 2 3 5a6 6 0 0 1-12 0c0-6 6-8 6-12z"></path></svg>',
+      actionLabel: '+ Criar hábito',
+      onAction: () => openForm(),
+      variant: 'default',
+      fullWidth: true
+    });
+    page.appendChild(empty);
   } else {
     page.appendChild(renderList());
   }
@@ -163,7 +173,7 @@ function render() {
   _container.appendChild(page);
 }
 
-function renderHeader() {
+function renderHeader(isEmpty = false) {
   const header = document.createElement('header');
   header.className = 'habits-header';
 

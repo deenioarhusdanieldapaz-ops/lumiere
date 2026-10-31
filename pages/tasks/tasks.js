@@ -18,6 +18,7 @@ if (!window.__lumiereTaskMenuListener) {
  * Camadas: UI → Core (DataManager) → Storage → EventBus
  */
 import { dataManager } from '../../core/dataManager.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 import { stateManager } from '../../core/stateManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
@@ -210,18 +211,23 @@ function render() {
   const page = document.createElement('div');
   page.className = 'tasks-page';
 
-  page.appendChild(renderHeader());
+  const isListEmpty = _state.tasks.length === 0;
 
-  // Fase 2.6a - Barra de Filtros
-  const filterContainer = document.createElement('div');
-  filterContainer.id = 'tasks-filters';
-  renderFilterBar(filterContainer, [
-    { key: 'all', label: 'Todas' },
-    { key: 'pending', label: 'Pendentes' },
-    { key: 'completed', label: 'Concluídas' },
-    { key: 'high', label: 'Alta Prioridade' }
-  ], _state.activeFilter);
-  page.appendChild(filterContainer);
+  // Só mostra o header com o botão "Nova Tarefa" se a lista NÃO estiver vazia
+  page.appendChild(renderHeader(isListEmpty));
+
+  // Só mostra os filtros se a lista NÃO estiver vazia
+  if (!isListEmpty) {
+    const filterContainer = document.createElement('div');
+    filterContainer.id = 'tasks-filters';
+    renderFilterBar(filterContainer, [
+      { key: 'all', label: 'Todas' },
+      { key: 'pending', label: 'Pendentes' },
+      { key: 'completed', label: 'Concluídas' },
+      { key: 'high', label: 'Alta Prioridade' }
+    ], _state.activeFilter);
+    page.appendChild(filterContainer);
+  }
 
   if (_state.showForm) {
     page.appendChild(renderForm());
@@ -232,7 +238,18 @@ function render() {
   } else if (_state.error) {
     page.appendChild(renderState(_state.error, true));
   } else if (_state.tasks.length === 0) {
-    page.appendChild(renderState('Sem tarefas. Toque em "Nova tarefa" para criar a primeira.'));
+    
+    const empty = createEmptyState({
+      title: 'Sem tarefas',
+      message: 'Ainda não tens tarefas criadas. Cria a tua primeira tarefa para começares a organizar o teu dia.',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>',
+      actionLabel: '+ Nova Tarefa',
+      onAction: () => openForm(),
+      variant: 'default',
+      fullWidth: true
+    });
+    page.appendChild(empty);
+    
   } else {
     page.appendChild(renderList());
   }
@@ -243,7 +260,7 @@ function render() {
 /**
  * Cabeçalho (título + ações).
  */
-function renderHeader() {
+function renderHeader(isEmpty = false) {
   const header = document.createElement('header');
   header.className = 'tasks-header';
 
@@ -252,17 +269,21 @@ function renderHeader() {
   title.textContent = 'Tarefas';
   header.appendChild(title);
 
-  const actions = document.createElement('div');
-  actions.className = 'tasks-header__actions';
+  // Só adiciona o botão de topo se a lista NÃO estiver vazia
+  if (!isEmpty) {
+    const actions = document.createElement('div');
+    actions.className = 'tasks-header__actions';
 
-  const btnNew = document.createElement('button');
-  btnNew.type = 'button';
-  btnNew.className = 'tasks-btn tasks-btn--primary';
-  btnNew.textContent = 'Nova tarefa';
-  btnNew.addEventListener('click', () => openForm());
-  actions.appendChild(btnNew);
+    const btnNew = document.createElement('button');
+    btnNew.type = 'button';
+    btnNew.className = 'tasks-btn tasks-btn--primary';
+    btnNew.textContent = 'Nova tarefa';
+    btnNew.addEventListener('click', () => openForm());
+    actions.appendChild(btnNew);
 
-  header.appendChild(actions);
+    header.appendChild(actions);
+  }
+  
   return header;
 }
 

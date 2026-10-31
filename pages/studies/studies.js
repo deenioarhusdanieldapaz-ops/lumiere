@@ -5,6 +5,7 @@
  * Cada estudo carrega as suas sessões e mostra-as dentro do cartão.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
@@ -175,7 +176,16 @@ function render() {
   } else if (_state.error) {
     page.appendChild(renderState(_state.error, true));
   } else if (_state.studies.length === 0) {
-    page.appendChild(renderState('Sem estudos. Toque em "Novo estudo" para criar o primeiro.'));
+    const empty = createEmptyState({
+      title: 'Hora de aprender algo novo',
+      message: 'Organiza os teus temas de estudo e acompanha o teu progresso.',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>',
+      actionLabel: '+ Adicionar matéria',
+      onAction: () => openForm(),
+      variant: 'default',
+      fullWidth: true
+    });
+    page.appendChild(empty);
   } else {
     page.appendChild(renderList());
   }
@@ -183,7 +193,7 @@ function render() {
   _container.appendChild(page);
 }
 
-function renderHeader() {
+function renderHeader(isEmpty = false) {
   const header = document.createElement('header');
   header.className = 'studies-header';
 

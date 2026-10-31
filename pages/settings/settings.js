@@ -5,7 +5,7 @@
  * e ações destrutivas (reset onboarding, apagar dados).
  */
 import { dataManager } from '../../core/dataManager.js';
-import { storageManager } from '../../core/storageManager.js';
+import { storageManager, runTransaction } from '../../core/storageManager.js';
 import { eventBus } from '../../core/eventBus.js';
 import { createSheet } from '../../components/sheet/sheet.js';
 import { dailyReviewTrigger } from '../../js/dailyReviewTrigger.js';
@@ -14,6 +14,7 @@ import { hardReload, isDevMode, activateDevMode } from '../../js/dev-tools.js';
 import { openConfigFor } from '../focus/focus-timer.js';
 import { setForceExpired, hasActiveAccess, getCurrentUser } from '../../core/auth.js';
 import { getLatestCloudBackup, forceUploadBackup } from '../../core/backup.js';
+import { showDeleteModal } from '../../components/delete-modal/delete-modal.js';
 
 let _container = null;
 let _state = {
@@ -653,7 +654,16 @@ function renderActions() {
   btnReset.type = 'button';
   btnReset.className = 'settings-btn';
   btnReset.textContent = 'Reiniciar onboarding';
-  btnReset.addEventListener('click', handleResetOnboarding);
+  btnReset.addEventListener('click', () => {
+    showDeleteModal({
+      title: 'Reiniciar Onboarding',
+      description: 'Esta ação irá apagar o teu nome, perfil e preferências. Os teus dados (tarefas, hábitos, etc.) permanecerão intactos.',
+      confirmWord: 'REINICIAR',
+      actionLabel: 'Reiniciar',
+      isDanger: false, // Usa o botão dourado em vez de vermelho
+      onConfirm: handleResetOnboarding
+    });
+  });
   sec.appendChild(btnReset);
 
   const hintReset = document.createElement('p');
@@ -666,7 +676,9 @@ function renderActions() {
   btnWipe.type = 'button';
   btnWipe.className = 'settings-btn settings-btn--danger';
   btnWipe.textContent = 'Apagar TODOS os dados';
-  btnWipe.addEventListener('click', handleWipeAll);
+  btnWipe.addEventListener('click', () => {
+    showDeleteModal({ onConfirm: handleWipeAll });
+  });
   sec.appendChild(btnWipe);
 
   const hintWipe = document.createElement('p');
@@ -717,8 +729,7 @@ async function handleSavePrefs(sec) {
 }
 
 function handleResetOnboarding() {
-  if (!confirm('Reiniciar onboarding? O nome e preferências serão apagados.')) return;
-  try {
+    try {
     localStorage.removeItem('lumiereUserName');
     localStorage.removeItem(PREF_KEY);
     console.log('[Settings] Onboarding reiniciado');
@@ -730,26 +741,93 @@ function handleResetOnboarding() {
 }
 
 async function handleWipeAll() {
-  if (!confirm('TEM CERTEZA? Isto apaga TODOS os dados (tarefas, hábitos, finanças, etc.).')) return;
-  if (!confirm('Confirmação final: esta operação é IRREVERSÍVEL. Continuar?')) return;
+  
+  
+
+  // P3: Backup obrigatório antes de eliminar
+  let uid = null;
+  try {
+    const authModule = await import('../../core/auth.js');
+    const user = authModule.getCurrentUser ? authModule.getCurrentUser() : null;
+    uid = user?.uid || null;
+  } catch (e) {
+    console.warn('[Settings] Não foi possível obter o utilizador:', e?.message ?? 'erro');
+  }
+
+  if (uid) {
+    try {
+      const backupResult = await forceUploadBackup(uid);
+      if (!backupResult || !backupResult.ok) {
+        const continuar = confirm('AVISO: O backup falhou (' + (backupResult?.error || 'sem detalhes') + '). Se continuar, os dados serão apagados SEM CÓPIA DE SEGURANÇA. Deseja continuar?');
+        if (!continuar) return;
+      }
+    } catch (backupErr) {
+      const continuar = confirm('AVISO: Não foi possível criar backup (' + (backupErr?.message || 'erro') + '). Se continuar, os dados serão apagados SEM CÓPIA DE SEGURANÇA. Deseja continuar?');
+      if (!continuar) return;
+    }
+  } else {
+    const continuar = confirm('AVISO: Não foi possível criar backup (utilizador não autenticado). Se continuar, os dados serão apagados SEM CÓPIA DE SEGURANÇA. Deseja continuar?');
+    if (!continuar) return;
+  }
+
+  // P4: Snapshot do localStorage antes da transação (para restaurar em caso de falha)
+  const lsBackup = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    lsBackup[key] = localStorage.getItem(key);
+  }
+
+  const collections = [
+    'userProfiles','tasks','habits','habitLogs','studies','studySessions',
+    'goals','goalMilestones','calendarEvents','financeAccounts','financeTransactions',
+    'budgets','notes','lumiereBusinesses','lumiereProducts','lumiereCustomers',
+    'lumiereSales','reminders','categories','tags','preferences'
+  ];
 
   try {
-    const collections = [
-      'userProfiles','tasks','habits','habitLogs','studies','studySessions',
-      'goals','goalMilestones','calendarEvents','financeAccounts','financeTransactions',
-      'budgets','notes','lumiereBusinesses','lumiereProducts','lumiereCustomers',
-      'lumiereSales','reminders','categories','tags','preferences'
-    ];
-    for (const col of collections) {
-      try { await storageManager.clear(col); } catch (e) { /* ignora coleção em falta */ }
-    }
+    // P1: Transação atómica
+    await runTransaction(async () => {
+      for (const col of collections) {
+        // P2: Sem catch vazio — o erro propaga e a transação faz rollback
+        await storageManager.clear(col);
+      }
+    });
+
+    // P4: localStorage.clear() APÓS a transação ter sucesso
+    // (Não é tecnicamente transacional, mas é o mais seguro possível)
     localStorage.clear();
-    console.log('[Settings] Todos os dados apagados');
+
+    // P5: Verificação pós-eliminação
+    let restante = 0;
+    for (const col of collections) {
+      try {
+        const records = await storageManager.list(col);
+        restante += records.length;
+      } catch (_) {
+        // Ignora coleções que não existem
+      }
+    }
+
+    if (restante > 0) {
+      alert('ERRO: ' + restante + ' registos não foram apagados. NÃO recarregue. Contacte o suporte.');
+      return;
+    }
+
+    console.log('[Settings] Todos os dados apagados com sucesso');
     alert('Dados apagados. A recarregar...');
     location.reload();
   } catch (err) {
-    console.error('[Settings] Erro ao apagar:', err);
-    alert('Erro: ' + (err.message || err));
+    // P6: Sanitização de log
+    console.error('[Settings] Erro ao apagar:', err?.message ?? 'erro desconhecido');
+
+    // Restaurar localStorage se a transação falhou
+    try {
+      for (const key in lsBackup) {
+        localStorage.setItem(key, lsBackup[key]);
+      }
+    } catch (_) {}
+
+    alert('Erro ao apagar: ' + (err?.message || 'erro desconhecido') + '. Os dados estão seguros.');
   }
 }
 

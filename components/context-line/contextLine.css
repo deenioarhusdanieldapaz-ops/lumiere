@@ -42,11 +42,11 @@
 }
 
 .lumiere-context-line--bad .lumiere-context-line__icon {
-  color: #d4665a;
+  color: var(--color-error);
 }
 
 .lumiere-context-line--good .lumiere-context-line__icon {
-  color: #9ecc8f;
+  color: var(--color-success);
 }
 
 .lumiere-context-line__icon svg {

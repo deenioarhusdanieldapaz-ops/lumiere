@@ -92,9 +92,9 @@
 }
 
 .lumiere-mini-card--error {
-  border-color: #e74c3c;
+  border-color: var(--color-error);
 }
 
 .lumiere-mini-card--error .lumiere-mini-card__value {
-  color: #e74c3c;
+  color: var(--color-error);
 }

@@ -9,7 +9,7 @@ import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
-import { getOnboardingRecommendation } from '../../core/intelligence/onboardingRecommendations.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 
 // ============================================================
 // Icones automaticos — 50 Products + 25 Customers
@@ -223,9 +223,7 @@ async function loadAll() {
       customers:  Array.isArray(customers)  ? customers  : [],
       sales:      Array.isArray(sales)      ? sales      : []
     };
-    _state.recommendation = getOnboardingRecommendation({
-      tasks, habits, goals, financeTransactions
-    });
+    
   } catch (err) {
     console.error('[Lumière] Erro ao carregar:', err);
     _state.error = err.message || 'Erro ao carregar dados.';
@@ -245,25 +243,7 @@ function render() {
 
   page.appendChild(renderHeader());
 
-  // Cartão de Recomendação
-  if (_state.recommendation) {
-    const recCard = document.createElement('div');
-    recCard.className = 'lum-card';
-    recCard.style.cssText = 'margin-bottom: 16px; padding: 16px; border: 1px solid #D4AF37; border-radius: 12px; background: var(--color-surface); display: flex; flex-direction: column; gap: 8px;';
-
-    const recTitle = document.createElement('h3');
-    recTitle.style.cssText = 'font-family: "Playfair Display", serif; font-size: 1.1rem; color: var(--color-gold); margin: 0;';
-    recTitle.textContent = _state.recommendation.title;
-
-    const recText = document.createElement('p');
-    recText.style.cssText = 'font-size: 0.85rem; color: #F5F0EB; margin: 0; line-height: 1.4;';
-    recText.textContent = _state.recommendation.text;
-
-    recCard.append(recTitle, recText);
-    page.appendChild(recCard);
-  }
-
-  page.appendChild(renderTabs());
+    page.appendChild(renderTabs());
 
   if (_state.showForm && ['businesses','customers','products','sales'].includes(_state.activeTab)) {
     page.appendChild(renderForm());
@@ -271,7 +251,7 @@ function render() {
 
   page.appendChild(renderPanel());
 
-  _container.appendChild(page);
+    _container.appendChild(page);
 }
 
 function renderHeader() {
@@ -354,7 +334,24 @@ function renderPanel() {
 
   if (items.length === 0) {
     const tab = TABS.find(t => t.id === _state.activeTab);
-    panel.appendChild(renderState('Sem ' + tab.label.toLowerCase() + '. Toque em "Novo" para criar.'));
+    const labels = {
+      businesses: { title: 'Sem negócios', msg: 'Cria o teu primeiro negócio para começares a gerir a tua empresa.', btn: '+ Novo negócio' },
+      products: { title: 'Sem produtos', msg: 'Adiciona o teu primeiro produto ao catálogo.', btn: '+ Novo produto' },
+      customers: { title: 'Sem clientes', msg: 'Regista o teu primeiro cliente para começares a vender.', btn: '+ Novo cliente' },
+      sales: { title: 'Sem vendas', msg: 'Ainda não tens vendas registadas.', btn: '+ Nova venda' }
+    };
+    const text = labels[_state.activeTab] || labels.businesses;
+
+    const empty = createEmptyState({
+      title: text.title,
+      message: text.msg,
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"></path><path d="M2 9h20"></path><path d="M12 21L6 9l6-6 6 6-6 12z"></path></svg>',
+      actionLabel: text.btn,
+      onAction: () => openForm(),
+      variant: 'default',
+      fullWidth: true
+    });
+    panel.appendChild(empty);
     return panel;
   }
 

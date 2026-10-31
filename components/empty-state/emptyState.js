@@ -1,41 +1,37 @@
 /**
- * EmptyState Component
- * Exibe um estado vazio (ausência de dados).
- * NÃO é um erro. NÃO é loading.
- * Pode ter um ícone, título, mensagem e ação opcional.
+ * EmptyState Component - V2 (F4.3)
+ * Suporta as 8 variantes do Design System (LUM-DES-EMPTY-001).
  */
 
-/**
- * @param {Object} options
- * @param {string} [options.title='Sem dados'] - Título principal
- * @param {string} [options.message=''] - Mensagem explicativa
- * @param {string} [options.icon='—'] - Ícone textual/símbolo
- * @param {string} [options.actionLabel=''] - Rótulo do botão de ação
- * @param {Function} [options.onAction=null] - Callback do botão
- * @param {string} [options.variant='default'] - 'default' | 'compact' | 'inline'
- * @returns {HTMLElement}
- */
 export function createEmptyState({
   title = 'Sem dados',
   message = '',
-  icon = '—',
+  icon = null,          // Pode ser um SVG string, emoji ou null
   actionLabel = '',
   onAction = null,
-  variant = 'default'
+  secondaryLabel = '',  // Para a variante de duas opções
+  onSecondary = null,
+  variant = 'default',  // 'minimal', 'default', 'featured', 'illustration', 'double', 'contextual', 'card', 'mobile'
+  fullWidth = false
 } = {}) {
   const wrapper = document.createElement('div');
-  wrapper.className = `lumiere-empty lumiere-empty--${variant}`;
+  wrapper.className = `lumiere-empty lumiere-empty--${variant} ${fullWidth ? 'is-full-width' : ''}`;
   wrapper.setAttribute('role', 'status');
   wrapper.setAttribute('aria-live', 'polite');
 
+  // Ícone / Ilustração
   if (icon) {
-    const iconEl = document.createElement('div');
-    iconEl.className = 'lumiere-empty__icon';
-    iconEl.setAttribute('aria-hidden', 'true');
-    iconEl.textContent = icon;
-    wrapper.appendChild(iconEl);
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'lumiere-empty__icon';
+    if (icon.startsWith('<svg')) {
+      iconWrap.innerHTML = icon;
+    } else {
+      iconWrap.textContent = icon;
+    }
+    wrapper.appendChild(iconWrap);
   }
 
+  // Título
   if (title) {
     const titleEl = document.createElement('h3');
     titleEl.className = 'lumiere-empty__title';
@@ -43,6 +39,7 @@ export function createEmptyState({
     wrapper.appendChild(titleEl);
   }
 
+  // Descrição
   if (message) {
     const msgEl = document.createElement('p');
     msgEl.className = 'lumiere-empty__message';
@@ -50,16 +47,31 @@ export function createEmptyState({
     wrapper.appendChild(msgEl);
   }
 
-  if (actionLabel && typeof onAction === 'function') {
+  // Ações (Botões)
+  const actionsWrap = document.createElement('div');
+  actionsWrap.className = 'lumiere-empty__actions';
+
+  if (actionLabel) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'lumiere-empty__action';
+    btn.className = 'lumiere-empty__btn lumiere-empty__btn--primary';
     btn.textContent = actionLabel;
-    btn.addEventListener('click', () => onAction());
-    wrapper.appendChild(btn);
+    if (onAction) btn.addEventListener('click', onAction);
+    actionsWrap.appendChild(btn);
+  }
+
+  if (secondaryLabel) {
+    const btnSec = document.createElement('button');
+    btnSec.type = 'button';
+    btnSec.className = 'lumiere-empty__btn lumiere-empty__btn--secondary';
+    btnSec.textContent = secondaryLabel;
+    if (onSecondary) btnSec.addEventListener('click', onSecondary);
+    actionsWrap.appendChild(btnSec);
+  }
+
+  if (actionsWrap.children.length > 0) {
+    wrapper.appendChild(actionsWrap);
   }
 
   return wrapper;
 }
-
-export default createEmptyState;

@@ -4,6 +4,7 @@
  * Estrutura inicial: init + load + render list/empty.
  */
 import { dataManager } from '../../core/dataManager.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 import { stateManager } from '../../core/stateManager.js';
 import { calculationsManager } from '../../core/calculationsManager.js';
 import { requireAccess } from '../../core/auth.js';
@@ -151,7 +152,16 @@ function render() {
   } else if (_state.error) {
     page.appendChild(renderState(_state.error, true));
   } else if (_state.goals.length === 0) {
-    page.appendChild(renderState('Sem objetivos. Toque em "Novo objetivo" para criar o primeiro.'));
+    const empty = createEmptyState({
+      title: 'Define os teus objetivos',
+      message: 'Dá o primeiro passo para uma vida mais organizada e focada.',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>',
+      actionLabel: '+ Criar objetivo',
+      onAction: () => openForm(),
+      variant: 'default',
+      fullWidth: true
+    });
+    page.appendChild(empty);
   } else {
     page.appendChild(renderList());
   }
@@ -159,7 +169,7 @@ function render() {
   _container.appendChild(page);
 }
 
-function renderHeader() {
+function renderHeader(isEmpty = false) {
   const header = document.createElement('header');
   header.className = 'goals-header';
 

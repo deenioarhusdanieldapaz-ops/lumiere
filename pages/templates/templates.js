@@ -21,6 +21,7 @@ import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { createMenu } from '../../components/menu/menu.js';
 import { t } from '../../js/i18n.js';
+import { createEmptyState } from '../../components/empty-state/emptyState.js';
 
 // ============================================================
 // Metadados dos módulos destino
@@ -110,7 +111,7 @@ function render() {
 
   if (_state.showForm) {
     page.appendChild(renderForm());
-  } else {
+  } else if (_state.templates.length > 0) {
     page.appendChild(renderFilters());
   }
 
@@ -124,7 +125,16 @@ function render() {
     } else {
     const visible = getVisibleTemplates();
     if (visible.length === 0) {
-      page.appendChild(renderState('Ainda não tens templates. Guarda um hábito/tarefa como template para começares.'));
+      const empty = createEmptyState({
+        title: 'Ainda não tens templates',
+        message: 'Cria estruturas reutilizáveis para poupares tempo no futuro.',
+        icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>',
+        actionLabel: '+ Criar template',
+        onAction: () => openForm(),
+        variant: 'default',
+        fullWidth: true
+      });
+      page.appendChild(empty);
     } else {
       const list = document.createElement('div');
       list.className = 'templates-list';

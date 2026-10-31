@@ -186,7 +186,7 @@
   color: var(--color-surface);
   border-color: var(--color-gold);
 }
-.dr-btn--primary:hover { background: #e0bd45; }
+.dr-btn--primary:hover { background: var(--color-gold-hover); }
 .dr-btn--ghost {
   background: transparent;
   color: var(--color-text-primary);
