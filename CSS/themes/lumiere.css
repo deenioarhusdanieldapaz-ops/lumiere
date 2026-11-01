@@ -14,4 +14,5 @@ html[data-theme="lumiere"] {
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --card-overlay-gradient: linear-gradient(rgba(5, 5, 5, 0.3), rgba(5, 5, 5, 0.7));
+  --color-illustration-gold: #a67c40;
 }
