@@ -1,0 +1,195 @@
+/* Botão de Ajuda */
+.lum-help-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid var(--color-gold); background: transparent;
+  color: var(--color-gold); display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: all 0.2s ease;
+  margin-left: auto; /* Empurra para a direita */
+}
+.lum-help-btn:hover { background: var(--color-gold); color: #0a0a0a; }
+
+
+
+
+
+
+
+/* ============================================================
+   MODAL DE BOAS-VINDAS (SIMPLES COM TIPOGRAFIA PREMIUM)
+   ============================================================ */
+.help-welcome-backdrop {
+  position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+  backdrop-filter: blur(4px);
+}
+.help-welcome-backdrop.is-active { opacity: 1; }
+
+.help-welcome-modal {
+  position: relative; width: 90%; max-width: 400px;
+  background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.15) 0%, var(--color-surface) 60%);
+  border: 1px solid var(--color-border); border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 2rem 1.5rem;
+  transform: translateY(20px); transition: transform 0.3s;
+}
+.help-welcome-backdrop.is-active .help-welcome-modal { transform: translateY(0); }
+
+.hw-close { 
+  position: absolute; top: 1rem; right: 1rem; 
+  background: transparent; border: none; color: var(--color-text-muted); 
+  font-size: 1.2rem; cursor: pointer; padding: 0.5rem; 
+}
+
+
+
+/* AQUI ESTÁ O ESTILO DE LETRA DA SEGUNDA IMAGEM */
+.hw-title { 
+  font-family: 'Manrope', sans-serif; 
+  color: var(--color-gold); 
+  margin: 0 0 1rem 0; 
+  line-height: 1.2; 
+  font-weight: 700;
+  text-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  width: 100%;
+}
+.hw-title-line1 {
+  font-size: 1.25rem; /* Tamanho ajustado para caber na horizontal */
+  white-space: nowrap; /* OBRIGA a ficar na mesma linha */
+}
+.hw-title-line2 {
+  font-size: 1.8rem; /* Destaque para o nome do módulo */
+  color: var(--color-gold);
+  line-height: 1;
+}
+
+
+.hw-desc { 
+  font-family: 'Manrope', sans-serif; 
+  font-size: 0.95rem; 
+  color: var(--color-text-secondary); 
+  line-height: 1.4; 
+  margin: 0 0 2rem 0; 
+}
+
+.hw-actions { 
+  display: flex; flex-direction: column; gap: 0.8rem; width: 100%; 
+}
+
+.hw-btn { 
+  width: 100%; padding: 0.9rem; border-radius: 999px; 
+  font-family: 'Manrope', sans-serif; font-size: 0.95rem; font-weight: 600; 
+  cursor: pointer; border: 1px solid transparent; transition: all 0.2s; 
+}
+
+.hw-btn--primary { 
+  background: var(--color-gold); 
+  color: #0a0a0a; 
+}
+.hw-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
+
+.hw-btn--ghost { 
+  background: transparent; 
+  color: var(--color-text-primary); 
+  border-color: var(--color-border); 
+}
+.hw-btn--ghost:hover { background: rgba(255, 255, 255, 0.05); }
+
+
+
+.hw-image-plant {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hw-svg-botanico {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+}
+
+/* Suporte a subtítulos no Sheet */
+.lumiere-sheet__label-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: flex-start;
+}
+.lumiere-sheet__sublabel {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+/* Destaque para o item do Manual (Último) */
+.lumiere-sheet__btn.is-highlighted {
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  margin: 8px 16px;
+  border-radius: 8px;
+  width: calc(100% - 32px);
+}
+.lumiere-sheet__btn.is-highlighted:hover {
+  background: rgba(212, 175, 55, 0.15);
+}
+
+/* ============================================================
+   MODAL DE FAQ (Acordeão)
+   ============================================================ */
+.help-faq-backdrop {
+  position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+  backdrop-filter: blur(4px);
+}
+.help-faq-backdrop.is-active { opacity: 1; }
+
+.help-faq-modal {
+  background: var(--color-surface);
+  border: 1px solid var(--color-gold);
+  border-radius: 16px;
+  width: 90%; max-width: 500px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transform: translateY(20px); transition: transform 0.3s;
+  max-height: 85vh; overflow-y: auto;
+}
+.help-faq-backdrop.is-active .help-faq-modal { transform: translateY(0); }
+
+.faq-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--color-gold); margin: 0 0 1.5rem 0; text-align: center; }
+
+.faq-item {
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.8rem 0;
+}
+.faq-item:last-of-type { border-bottom: none; }
+
+.faq-question {
+  font-family: 'Manrope', sans-serif; font-size: 0.95rem; font-weight: 600;
+  color: var(--color-text-primary); cursor: pointer; list-style: none;
+  display: flex; justify-content: space-between; align-items: flex-start; /* Alinha ao topo */
+  gap: 10px;
+}
+.faq-question::-webkit-details-marker { display: none; }
+.faq-question::after { content: '+'; color: var(--color-gold); font-size: 1.2rem; font-weight: 400; transition: transform 0.2s; flex-shrink: 0; margin-top: 2px; }
+.faq-item[open] .faq-question::after { transform: rotate(45deg); }
+
+.faq-answer {
+  font-family: 'Manrope', sans-serif; font-size: 0.85rem; color: var(--color-text-secondary);
+  line-height: 1.5; margin: 0.8rem 0 0 0; padding-left: 0.5rem; border-left: 2px solid var(--color-gold);
+}
+
+.faq-close-btn {
+  width: 100%; margin-top: 1.5rem; padding: 0.8rem;
+  background: var(--color-gold); color: #0a0a0a;
+  border: none; border-radius: 999px; font-weight: 600; cursor: pointer;
+}

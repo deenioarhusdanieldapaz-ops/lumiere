@@ -25,6 +25,10 @@ import { t } from '../../js/i18n.js';
 import { requireAccess } from '../../core/auth.js';
 import { renderFilterBar } from '../../components/filter-bar/filter-bar.js';
 import { applyFilters } from '../../core/filterEngine.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
 
 // ============================================================
 // Icones automaticos — 50 keywords (nome) + 9 categorias
@@ -227,6 +231,20 @@ function render() {
       { key: 'high', label: 'Alta Prioridade' }
     ], _state.activeFilter);
     page.appendChild(filterContainer);
+
+  // Dica Contextual: Filtros
+  setTimeout(() => {
+    const filterEl = document.querySelector('#tasks-filters');
+    if (filterEl) {
+      console.log('[Tooltip] Alvo encontrado: Filtros');
+      showHelpTooltip({
+        targetEl: filterEl, id: 'tip_filters', title: 'Filtrar a Lista',
+        text: 'Usa estes filtros para encontrares rapidamente as tarefas pendentes ou esconder as concluídas.'
+      });
+    } else {
+      console.warn('[Tooltip] Alvo Filtros NÃO encontrado.');
+    }
+  }, 1500);
   }
 
   if (_state.showForm) {
@@ -268,6 +286,53 @@ function renderHeader(isEmpty = false) {
   title.className = 'tasks-header__title';
   title.textContent = 'Tarefas';
   header.appendChild(title);
+
+  // O botão de ajuda deve estar sempre visível, mesmo que a lista esteja vazia
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_tasks_seen');
+    if (!hasSeen) {
+      // Define os passos do tutorial do Eng. 9
+      const tutorialSteps = [
+        { target: '.tasks-btn--primary', title: 'Cria a tua primeira tarefa', text: 'Toca aqui para adicionares um novo item. Podes definir prazos, prioridades e categorias.' },
+        { target: '#tasks-filters', title: 'Encontra o que precisas', text: 'Usa estes filtros para veres apenas as tarefas pendentes ou as que já concluíste.' },
+        { target: '.task-item__actions', title: 'Gere as tuas tarefas', text: 'Toca nos três pontos para editares, apagares ou guardares a tarefa como um modelo reutilizável.' }
+      ];
+
+      showHelpWelcome('Tarefas', () => {
+        console.log('[Tasks] A iniciar tutorial...');
+        try {
+          showHelpTutorial(tutorialSteps, () => {
+            localStorage.setItem('lumiere_help_tasks_seen', 'true');
+            eventBus.emit('toast:show', { type: 'success', text: 'Guia de Tarefas concluído!' });
+          });
+        } catch (err) {
+          console.error('[Tasks] Erro ao iniciar tutorial:', err);
+        }
+      });
+    } else {
+      showHelpPanel('tasks');
+    }
+  });
+  header.appendChild(btnHelp);
+
+  // Dica Contextual: Botão Nova Tarefa
+  setTimeout(() => {
+    const btnNewEl = document.querySelector('.tasks-header .tasks-btn--primary') || document.querySelector('.lumiere-empty__btn');
+    if (btnNewEl) {
+      console.log('[Tooltip] Alvo encontrado: Nova Tarefa');
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_new_task', title: 'Adicionar Tarefa',
+        text: 'Toca aqui para criares um novo item. Podes definir prazos e prioridades.'
+      });
+    } else {
+      console.warn('[Tooltip] Alvo Nova Tarefa NÃO encontrado.');
+    }
+  }, 1500);
 
   // Só adiciona o botão de topo se a lista NÃO estiver vazia
   if (!isEmpty) {

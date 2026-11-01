@@ -1,0 +1,39 @@
+.help-tutorial-backdrop {
+  position: fixed; inset: 0; z-index: 9998; background: rgba(0,0,0,0.8);
+  opacity: 0; transition: opacity 0.3s;
+}
+.help-tutorial-backdrop.is-active { opacity: 1; }
+
+.help-tutorial-spotlight {
+  position: fixed; z-index: 9999;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.6);
+  border: 2px solid var(--color-gold);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.help-tutorial-tooltip {
+  position: fixed; z-index: 10000;
+  background: var(--color-surface);
+  border: 1px solid var(--color-gold);
+  border-radius: 12px;
+  padding: 1.25rem;
+  width: 300px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  color: var(--color-text-primary);
+  transition: all 0.3s ease;
+}
+
+.tut-step-indicator { font-size: 0.7rem; color: var(--color-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; font-weight: 700; }
+.tut-title { font-family: 'Manrope', sans-serif; font-size: 1.1rem; color: var(--color-text-primary); margin: 0 0 0.5rem 0; font-weight: 700; }
+.tut-desc { font-size: 0.85rem; color: var(--color-text-secondary); margin: 0 0 1rem 0; line-height: 1.4; }
+
+.tut-actions { display: flex; justify-content: space-between; align-items: center; }
+.tut-nav { display: flex; gap: 0.5rem; }
+
+.tut-btn { padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+.tut-btn--skip { background: transparent; color: var(--color-text-secondary); padding: 0; }
+.tut-btn--skip:hover { color: var(--color-text-primary); text-decoration: underline; }
+.tut-btn--prev { background: transparent; color: var(--color-text-primary); border-color: var(--color-border); }
+.tut-btn--next { background: var(--color-gold); color: #0a0a0a; }

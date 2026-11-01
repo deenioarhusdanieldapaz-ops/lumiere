@@ -1,0 +1,31 @@
+
+.tooltip-arrow {
+  position: absolute;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-gold);
+  border-left: 1px solid var(--color-gold);
+  transform: rotate(45deg);
+  z-index: -1; /* Fica por trás do balão para esconder a linha interna */
+}
+
+.help-tooltip-bubble {
+  position: absolute; z-index: 10050; width: 260px;
+  background: var(--color-surface); border: 1px solid var(--color-gold);
+  border-radius: 12px; padding: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  display: flex; flex-direction: column; gap: 0.5rem;
+  animation: tooltipFadeIn 0.2s ease-out;
+}
+@keyframes tooltipFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+.tooltip-header { display: flex; align-items: center; gap: 0.5rem; }
+.tooltip-title { font-family: 'Manrope', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--color-text-primary); }
+.tooltip-text { font-family: 'Manrope', sans-serif; font-size: 0.8rem; color: var(--color-text-secondary); margin: 0; line-height: 1.4; }
+.tooltip-checkbox-label { font-family: 'Manrope', sans-serif; font-size: 0.7rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+.tooltip-btn { 
+  background: var(--color-gold); color: #0a0a0a; 
+  border: none; padding: 0.5rem; border-radius: 8px; 
+  font-weight: 600; font-size: 0.8rem; cursor: pointer; margin-top: 0.5rem; 
+}

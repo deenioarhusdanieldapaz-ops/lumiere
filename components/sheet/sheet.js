@@ -59,17 +59,41 @@ export function createSheet({
       btn.setAttribute('aria-disabled', 'true');
     }
 
-    if (item.icon) {
+    
+    if (item.iconHtml) {
+      const ico = document.createElement('span');
+      ico.className = 'lumiere-sheet__icon';
+      ico.innerHTML = item.iconHtml;
+      btn.appendChild(ico);
+    } else if (item.icon) {
       const ico = document.createElement('span');
       ico.className = 'lumiere-sheet__icon';
       ico.setAttribute('data-icon', item.icon);
       btn.appendChild(ico);
     }
 
+
+    
+    const labelWrap = document.createElement('div');
+    labelWrap.className = 'lumiere-sheet__label-wrap';
+
     const label = document.createElement('span');
     label.className = 'lumiere-sheet__label';
     label.textContent = item.label || '';
-    btn.appendChild(label);
+    labelWrap.appendChild(label);
+
+    if (item.sublabel) {
+      const sub = document.createElement('span');
+      sub.className = 'lumiere-sheet__sublabel';
+      sub.textContent = item.sublabel;
+      labelWrap.appendChild(sub);
+    }
+    btn.appendChild(labelWrap);
+
+    if (item.highlight) {
+      btn.classList.add('is-highlighted');
+    }
+
 
     const chev = document.createElement('span');
     chev.className = 'lumiere-sheet__chevron';
