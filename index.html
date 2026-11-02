@@ -121,6 +121,18 @@
       </div>
       <nav class="app-sidebar__nav" aria-label="Navegação principal">
 
+        <!-- PERFIL NO TOPO (F4.4) -->
+        <div class="app-sidebar__profile-container">
+          <button class="app-sidebar__profile" type="button" id="btn-profile">
+            <span class="app-sidebar__avatar" id="sidebar-avatar">EM</span>
+            <span class="app-sidebar__profile-info">
+              <span class="app-sidebar__profile-name" id="sidebar-user-name">Utilizador</span>
+              <span class="app-sidebar__profile-tagline">Organize • Conquiste • Realize</span>
+            </span>
+          </button>
+        </div>
+
+
         <div class="app-nav-section">
           <h3 class="app-nav-section__title">Principal</h3>
           <button class="app-nav-item is-active" data-page="overview" type="button">
@@ -198,17 +210,20 @@
           </button>
         </div>
 
-      </nav>
-      <div class="app-sidebar__footer">
-        <button class="app-sidebar__profile" type="button" id="btn-profile">
-          <span class="app-sidebar__avatar" id="sidebar-avatar">EM</span>
-          <span class="app-sidebar__profile-info">
-            <span class="app-sidebar__profile-name" id="sidebar-user-name">Utilizador</span>
-            <span class="app-sidebar__profile-link">Meu progresso →</span>
-          </span>
-        </button>
-      </div>
-    </aside>
+      <div class="app-nav-section">
+            <h3 class="app-nav-section__title">Suporte</h3>
+            <button class="app-nav-item" id="btn-global-help" type="button">
+              <span class="app-nav-item__icon" data-icon="help"></span>
+              <span class="app-nav-item__label">Ajuda Global</span>
+            </button>
+            <button class="app-nav-item" id="btn-about" type="button">
+              <span class="app-nav-item__icon" data-icon="info"></span>
+              <span class="app-nav-item__label">Sobre o Lumière</span>
+            </button>
+          </div>
+
+        </nav>
+      </aside>
 
     <div class="app-main">
       <header class="app-topbar">

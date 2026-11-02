@@ -18,6 +18,11 @@ import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
+
 
 // ============================================================
 // Icones automaticos — 21 keywords (titulo) + 9 categorias
@@ -66,6 +71,27 @@ function emojiForNote(title, category) {
   }
   return CATEGORY_EMOJI_NOTES[category] || '\u{1F4CC}';
 }
+
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo às tuas Notas",
+    subtitle: "Captura as tuas ideias, pensamentos e listas num só lugar."
+  },
+  tutorial: [
+    { target: '.notes-btn--primary', title: 'Nova Nota', text: 'Toca aqui para criares uma nova nota.' },
+    { target: '.note-item', title: 'Os teus registos', text: 'Aqui encontras todas as tuas notas guardadas.' },
+    { target: '.note-item__actions', title: 'Gerir Nota', text: 'Fixa, edita ou apaga a nota aqui.' }
+  ],
+  tips: [
+    { id: 'tip_note_new', target: '.lumiere-empty__btn', title: 'Nova Nota', text: 'Toca aqui para capturares uma nova ideia.' },
+    { id: 'tip_note_menu', target: '.note-item__actions', title: 'Menu da Nota', text: 'Fixa a nota no topo ou apaga-a aqui.' }
+  ],
+  faq: [
+    { q: 'Posso fixar uma nota?', a: "Sim, no menu ⋮ escolhe 'Fixar no topo'." },
+    { q: 'Como guardo uma nota como template?', a: "No menu ⋮ escolhe 'Guardar como Template'." }
+  ]
+};
 
 let _container = null;
 let _state = {
@@ -171,6 +197,18 @@ function render() {
   }
 
   _container.appendChild(page);
+
+  // Dica Contextual Automática: Nova Nota
+  setTimeout(() => {
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) btnNewEl = document.querySelector('.notes-btn--primary');
+    if (btnNewEl) {
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_note_new', title: 'Nova Nota',
+        text: 'Toca aqui para capturares uma nova ideia.'
+      });
+    }
+  }, 1500);
 }
 
 function renderHeader(isEmpty = false) {
@@ -191,6 +229,25 @@ function renderHeader(isEmpty = false) {
   btnNew.textContent = 'Nova nota';
   btnNew.addEventListener('click', () => openForm());
   actions.appendChild(btnNew);
+
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_notas_seen');
+    if (!hasSeen) {
+      showHelpWelcome('Notas', () => {
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_notas_seen', 'true');
+        });
+      }, HELP_CONFIG.welcome);
+    } else {
+      showHelpPanel('Notas', HELP_CONFIG);
+    }
+  });
+  actions.appendChild(btnHelp);
 
   header.appendChild(actions);
   return header;

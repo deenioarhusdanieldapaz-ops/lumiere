@@ -22,6 +22,10 @@ import { eventBus } from '../../core/eventBus.js';
 import { createMenu } from '../../components/menu/menu.js';
 import { t } from '../../js/i18n.js';
 import { createEmptyState } from '../../components/empty-state/emptyState.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
 
 // ============================================================
 // Metadados dos módulos destino
@@ -35,6 +39,27 @@ const APPLIES_TO_META = {
 };
 
 const APPLIES_TO_ORDER = ['tasks', 'habits', 'studies', 'goals', 'notes'];
+
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo aos teus Templates",
+    subtitle: "Modelos reutilizáveis para poupares tempo. Cria, edita e usa os teus templates."
+  },
+  tutorial: [
+    { target: '.templates-btn--primary', title: 'Novo Template', text: 'Cria um novo modelo a partir do zero.' },
+    { target: '.templates-item', title: 'Os teus Templates', text: 'Aqui encontras todos os modelos que criaste.' },
+    { target: '.templates-item__actions', title: 'Gerir Template', text: 'Edita, duplica ou elimina o template aqui.' }
+  ],
+  tips: [
+    { id: 'tip_tpl_new', target: '.lumiere-empty__btn', title: 'Novo Template', text: 'Toca aqui para criares o teu primeiro modelo.' },
+    { id: 'tip_tpl_menu', target: '.templates-item__actions', title: 'Menu do Template', text: 'Edita, duplica ou elimina o modelo aqui.' }
+  ],
+  faq: [
+    { q: 'Como crio um template?', a: "Toca em '+ Novo' ou guarda uma tarefa/hábito existente como template." },
+    { q: 'Posso duplicar um template?', a: "Sim, no menu ⋮ escolhe a opção 'Duplicar'." }
+  ]
+};
 
 let _container = null;
 let _state = {
@@ -145,6 +170,18 @@ function render() {
   }
 
   _container.appendChild(page);
+
+  // Dica Contextual Automática: Novo Template
+  setTimeout(() => {
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) btnNewEl = document.querySelector('.templates-btn--primary');
+    if (btnNewEl) {
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_tpl_new', title: 'Novo Template',
+        text: 'Toca aqui para criares o teu primeiro modelo.'
+      });
+    }
+  }, 1500);
 }
 
 function getVisibleTemplates() {
@@ -180,6 +217,25 @@ function renderHeader() {
   btnNew.textContent = '+ Novo';
   btnNew.addEventListener('click', () => openForm());
   actions.appendChild(btnNew);
+
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_templates_seen');
+    if (!hasSeen) {
+      showHelpWelcome('Templates', () => {
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_templates_seen', 'true');
+        });
+      }, HELP_CONFIG.welcome);
+    } else {
+      showHelpPanel('Templates', HELP_CONFIG);
+    }
+  });
+  actions.appendChild(btnHelp);
 
   header.appendChild(actions);
   return header;

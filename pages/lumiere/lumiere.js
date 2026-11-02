@@ -10,6 +10,10 @@ import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
 import { createEmptyState } from '../../components/empty-state/emptyState.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
 
 // ============================================================
 // Icones automaticos — 50 Products + 25 Customers
@@ -160,6 +164,28 @@ function emojiForCustomer(name) {
   return '\u{1F464}';
 }
 
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo ao Lumière",
+    subtitle: "O teu centro de negócios. Gere negócios, produtos, clientes e vendas num só lugar."
+  },
+  tutorial: [
+    { target: '.lumiere-btn--primary', title: 'Criar novo registo', text: 'Cria um novo negócio, produto, cliente ou venda.' },
+    { target: '.lumiere-tabs', title: 'Navega entre abas', text: 'Alterna entre as visões de Negócios, Produtos, Clientes e Vendas.' },
+    { target: '.lumiere-item__actions', title: 'Gerir registos', text: 'Edita ou apaga qualquer registo através deste menu.' }
+  ],
+  tips: [
+    { id: 'tip_lum_new', target: '.lumiere-empty__btn', title: 'Novo Registo', text: 'Toca aqui para criares o teu primeiro registo.' },
+    { id: 'tip_lum_tabs', target: '.lumiere-tabs', title: 'Abas de Navegação', text: 'Usa estas abas para alternares entre as diferentes visões.' },
+    { id: 'tip_lum_menu', target: '.lumiere-item__actions', title: 'Menu de Ações', text: 'Edita ou apaga o registo aqui.' }
+  ],
+  faq: [
+    { q: 'O que posso gerir no Lumière?', a: "Negócios, Produtos, Clientes e Vendas. Cada aba tem a sua própria lista e formulário." },
+    { q: 'Como crio uma venda?', a: "Vai à aba 'Vendas' e toca em 'Nova venda'. Precisas de ter pelo menos um produto e um cliente criados." }
+  ]
+};
+
 let _container = null;
 
 const TABS = [
@@ -252,6 +278,18 @@ function render() {
   page.appendChild(renderPanel());
 
     _container.appendChild(page);
+
+  // Dica Contextual Automática: Novo Registo no Lumière
+  setTimeout(() => {
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) btnNewEl = document.querySelector('.lumiere-btn--primary');
+    if (btnNewEl) {
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_lum_new', title: 'Novo Registo',
+        text: 'Toca aqui para criares o teu primeiro registo.'
+      });
+    }
+  }, 1500);
 }
 
 function renderHeader() {
@@ -286,6 +324,25 @@ function renderHeader() {
   }
 
   actions.appendChild(btnNew);
+
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_lumiere_seen');
+    if (!hasSeen) {
+      showHelpWelcome('Lumière', () => {
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_lumiere_seen', 'true');
+        });
+      }, HELP_CONFIG.welcome);
+    } else {
+      showHelpPanel('Lumière', HELP_CONFIG);
+    }
+  });
+  actions.appendChild(btnHelp);
 
   header.appendChild(actions);
   return header;

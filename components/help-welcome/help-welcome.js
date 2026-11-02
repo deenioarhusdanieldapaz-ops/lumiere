@@ -1,4 +1,4 @@
-export function showHelpWelcome(moduleName = 'Tarefas', onComplete) {
+export function showHelpWelcome(moduleName = 'Tarefas', onComplete, customText = {}) {
   const backdrop = document.createElement('div');
   backdrop.className = 'help-welcome-backdrop';
 
@@ -29,11 +29,11 @@ export function showHelpWelcome(moduleName = 'Tarefas', onComplete) {
     <div class="hw-image-plant">${svgBotanico}</div>
     
     <h2 class="hw-title">
-      <span class="hw-title-line1">Bem-vindo ao Módulo</span>
-      <span class="hw-title-line2">${moduleName}</span>
+      <span class="hw-title-line1">${customText.title || "Bem-vindo ao Módulo"}</span>
+      <span class="hw-title-line2">${customText.title ? "" : moduleName}</span>
     </h2>
     
-    <p class="hw-desc">Este é o teu espaço para organizar a tua vida. Vamos dar uma vista de olhos rápida pelas funcionalidades?</p>
+    <p class="hw-desc">${customText.subtitle || "Este é o teu espaço para organizar a tua vida. Vamos dar uma vista de olhos rápida pelas funcionalidades?"}</p>
     
     <div class="hw-actions">
       <button type="button" class="hw-btn hw-btn--primary" id="hw-start">
@@ -56,13 +56,15 @@ export function showHelpWelcome(moduleName = 'Tarefas', onComplete) {
   modal.querySelector('#hw-close-btn').addEventListener('click', close);
   
   modal.querySelector('#hw-start').addEventListener('click', () => {
-    localStorage.setItem('lumiere_help_' + moduleName.toLowerCase() + '_seen', 'true');
+    const cleanName = moduleName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    localStorage.setItem('lumiere_help_' + cleanName + '_seen', 'true');
     close();
     if (onComplete) onComplete();
   });
 
   modal.querySelector('#hw-skip').addEventListener('click', () => {
-    localStorage.setItem('lumiere_help_' + moduleName.toLowerCase() + '_seen', 'true');
+    const cleanName = moduleName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    localStorage.setItem('lumiere_help_' + cleanName + '_seen', 'true');
     close();
   });
 

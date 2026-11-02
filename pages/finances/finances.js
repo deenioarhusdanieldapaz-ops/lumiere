@@ -10,6 +10,11 @@ import { eventBus } from '../../core/eventBus.js';
 import { t, formatMoney } from '../../js/i18n.js';
 import { createProgress } from '../../components/progress/progress.js';
 import { createEmptyState } from '../../components/empty-state/emptyState.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
+
 
 function normalizeText(str) {
   return (str || '')
@@ -90,6 +95,29 @@ function emojiForTransaction(description, category) {
   }
   return CATEGORY_EMOJI_FINANCE[category] || '\u{1F4CA}';
 }
+
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo às tuas Finanças",
+    subtitle: "O teu dinheiro, sob controlo. Regista as tuas transações e acompanha o teu saldo."
+  },
+  tutorial: [
+    { target: '.finances-btn--primary', title: 'Nova Transação', text: 'Adiciona um gasto ou ganho.' },
+    { target: '.finances-tabs', title: 'Visões', text: 'Alterna entre Contas, Transações e Orçamentos.' },
+    { target: '.finances-card__hero', title: 'Resumo', text: 'Vê o teu resumo do mês.' }
+  ],
+  tips: [
+    { id: 'tip_fin_new', target: '.finances-btn--primary', title: 'Nova Transação', text: 'Toca aqui para registares um novo gasto ou receita.' },
+    { id: 'tip_fin_tabs', target: '.finances-tabs', title: 'Abas', text: 'Usa estas abas para separares as Contas das Transações.' },
+    { id: 'tip_fin_menu', target: '.finances-item__actions', title: 'Menu', text: 'Edita ou apaga a transação aqui.' }
+  ],
+  faq: [
+    { q: 'Como adiciono uma conta?', a: "Vai ao separador 'Contas' e toca em 'Nova Conta'." },
+    { q: 'Posso editar uma transação?', a: 'Sim, toca no menu de 3 pontos (⋮) ao lado da transação.' },
+    { q: 'O que significa o saldo negativo?', a: 'Significa que as despesas foram maiores que as receitas.' }
+  ]
+};
 
 let _container = null;
 
@@ -195,6 +223,20 @@ function render() {
   page.appendChild(renderPanel());
 
   _container.appendChild(page);
+
+  // Dica Contextual Automática: Nova Transação (apenas se não dispensada)
+  setTimeout(() => {
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) {
+      btnNewEl = document.querySelector('.finances-btn--primary');
+    }
+    if (btnNewEl) {
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_fin_new', title: 'Nova Transação',
+        text: 'Toca aqui para registares um novo gasto ou receita.'
+      });
+    }
+  }, 1500);
 }
 
 function renderHeader() {
@@ -226,6 +268,25 @@ function renderHeader() {
     btnNew.title = 'Disponível no próximo bloco';
   }
   actions.appendChild(btnNew);
+
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_financas_seen');
+    if (!hasSeen) {
+      showHelpWelcome('Finanças', () => {
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_financas_seen', 'true');
+        });
+      }, HELP_CONFIG.welcome);
+    } else {
+      showHelpPanel('Finanças', { tips: HELP_CONFIG.tips, faq: HELP_CONFIG.faq, tutorial: HELP_CONFIG.tutorial });
+    }
+  });
+  actions.appendChild(btnHelp);
 
   header.appendChild(actions);
   return header;

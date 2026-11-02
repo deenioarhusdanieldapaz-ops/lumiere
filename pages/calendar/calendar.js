@@ -7,6 +7,11 @@ import { dataManager } from '../../core/dataManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
 import { t } from '../../js/i18n.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
+
 import { createEmptyState } from '../../components/empty-state/emptyState.js';
 
 // ============================================================
@@ -56,6 +61,27 @@ function emojiForEvent(title, category) {
   }
   return CATEGORY_EMOJI_CALENDAR[category] || '\u{1F4CC}';
 }
+
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo ao teu Calendário",
+    subtitle: "Organiza o teu tempo, regista eventos e não perdas prazos."
+  },
+  tutorial: [
+    { target: '.calendar-btn--primary', title: 'Novo Evento', text: 'Cria um novo evento ou compromisso.' },
+    { target: '.calendar-item', title: 'Os teus Eventos', text: 'Aqui vês todos os eventos agendados.' },
+    { target: '.calendar-item__actions', title: 'Gerir Evento', text: 'Edita ou apaga o evento através deste menu.' }
+  ],
+  tips: [
+    { id: 'tip_cal_new', target: '.lumiere-empty__btn', title: 'Novo Evento', text: 'Toca aqui para adicionares um novo compromisso.' },
+    { id: 'tip_cal_menu', target: '.calendar-item__actions', title: 'Menu do Evento', text: 'Edita ou apaga o evento aqui.' }
+  ],
+  faq: [
+    { q: 'Como crio um evento recorrente?', a: "No formulário, escolhe a opção 'Recorrência'." },
+    { q: 'Posso apagar um evento?', a: "Sim, toca no menu ⋮ do evento e escolhe 'Apagar'." }
+  ]
+};
 
 let _container = null;
 let _state = {
@@ -138,6 +164,18 @@ function render() {
   }
 
   _container.appendChild(page);
+
+  // Dica Contextual Automática: Novo Evento
+  setTimeout(() => {
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) btnNewEl = document.querySelector('.calendar-btn--primary');
+    if (btnNewEl) {
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_cal_new', title: 'Novo Evento',
+        text: 'Toca aqui para adicionares um novo compromisso.'
+      });
+    }
+  }, 1500);
 }
 
 function renderHeader() {
@@ -158,6 +196,25 @@ function renderHeader() {
   btnNew.textContent = 'Novo evento';
   btnNew.addEventListener('click', () => openForm());
   actions.appendChild(btnNew);
+
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_calendario_seen');
+    if (!hasSeen) {
+      showHelpWelcome('Calendário', () => {
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_calendario_seen', 'true');
+        });
+      }, HELP_CONFIG.welcome);
+    } else {
+      showHelpPanel('Calendário', HELP_CONFIG);
+    }
+  });
+  actions.appendChild(btnHelp);
 
   header.appendChild(actions);
   return header;

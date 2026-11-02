@@ -12,6 +12,7 @@ import { stateManager } from '../core/stateManager.js';
 import { eventBus } from '../core/eventBus.js';
 import { createSheet } from '../components/sheet/sheet.js';
 import { ICONS } from './icons.js';
+import { showHelpPanel } from '../components/help-panel/help-panel.js';
 
 class Navigation {
   constructor() {
@@ -45,6 +46,7 @@ class Navigation {
     this.bottomNavItems = Array.from(document.querySelectorAll('.app-bottom-nav__item[data-page]'));
 
     this._wireEvents();
+    this._initSwipeGesture();
     this._applyCurrentPage(stateManager.getState().currentPage || 'dashboard');
     this._restoreCollapsedState();
     this._initialized = true;
@@ -59,6 +61,31 @@ class Navigation {
     if (this.overlay) {
       this.overlay.addEventListener('click', () => this.closeMobile());
     }
+    // F4.4 - Ações do Perfil e Suporte
+    const profileBtn = document.getElementById('btn-profile');
+    if (profileBtn) {
+      profileBtn.addEventListener('click', () => {
+        this.goTo('settings');
+        if (this._isMobile()) this.closeMobile();
+      });
+    }
+
+    const globalHelpBtn = document.getElementById('btn-global-help');
+    if (globalHelpBtn) {
+      globalHelpBtn.addEventListener('click', () => {
+        showHelpPanel('Global', {}); 
+        if (this._isMobile()) this.closeMobile();
+      });
+    }
+
+    const aboutBtn = document.getElementById('btn-about');
+    if (aboutBtn) {
+      aboutBtn.addEventListener('click', () => {
+        this._showAboutModal();
+        if (this._isMobile()) this.closeMobile();
+      });
+    }
+
     for (const item of this.navItems) {
       item.addEventListener('click', () => {
         const page = item.dataset.page;
@@ -238,6 +265,73 @@ class Navigation {
         }
       });
     });
+  }
+
+
+  /** @private */
+  _initSwipeGesture() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false;
+
+    document.addEventListener('touchstart', (e) => {
+      if (!this._isMobile()) return;
+      const touch = e.touches[0];
+      const startX = touch.clientX;
+      const isSidebarOpen = this.shell.classList.contains('is-mobile-open');
+      
+      // Abrir: Início na borda esquerda (< 30px). Fechar: Início dentro do menu (< 260px).
+      if ((!isSidebarOpen && startX < 30) || (isSidebarOpen && startX < 260)) {
+        touchStartX = startX;
+        touchStartY = touch.clientY;
+        isSwiping = true;
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!isSwiping) return;
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
+
+      // Se o movimento for predominantemente vertical (scroll), cancela o swipe
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        isSwiping = false;
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      if (!isSwiping) return;
+      const touch = e.changedTouches[0];
+      const deltaX = touch.clientX - touchStartX;
+      const isSidebarOpen = this.shell.classList.contains('is-mobile-open');
+
+      // Se arrastou mais de 50px para a direita (abrir) ou esquerda (fechar)
+      if (deltaX > 50 && !isSidebarOpen) {
+        this.toggleSidebar();
+      } else if (deltaX < -50 && isSidebarOpen) {
+        this.toggleSidebar();
+      }
+      isSwiping = false;
+    }, { passive: true });
+  }
+
+  /** @private Mostra o modal "Sobre o Lumière" */
+  _showAboutModal() {
+    const backdrop = document.createElement('div');
+    backdrop.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
+    backdrop.innerHTML = `
+      <div style="background:var(--color-bg-secondary, #1a1a1a);border:1px solid var(--color-gold, #d4af37);border-radius:16px;padding:32px;max-width:400px;text-align:center;color:var(--color-text-primary, #fff);">
+        <img src="public/brand/master/app-icon-v3.svg" alt="Lumière" style="width:64px;height:64px;margin-bottom:16px;">
+        <h2 style="color:var(--color-gold, #d4af37);margin:0 0 8px 0;font-size:1.5rem;">Lumière Life Manager</h2>
+        <p style="color:var(--color-text-secondary, #b8956a);margin:0 0 24px 0;font-size:0.9rem;">Versão F4.4 (Frente 2)</p>
+        <p style="margin:0 0 24px 0;line-height:1.5;">Organize • Conquiste • Realize<br><br>© 2024 Lumière. Todos os direitos reservados.</p>
+        <button id="btn-close-about" style="background:var(--color-gold, #d4af37);color:#111;border:none;padding:12px 24px;border-radius:8px;font-weight:bold;cursor:pointer;width:100%;">Fechar</button>
+      </div>
+    `;
+    document.body.appendChild(backdrop);
+    document.getElementById('btn-close-about').addEventListener('click', () => backdrop.remove());
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.remove(); });
   }
 
   /** Limpa listeners. */

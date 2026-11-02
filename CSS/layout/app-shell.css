@@ -886,3 +886,81 @@
     padding-bottom: 80px;
   }
 }
+
+/* ============================================================
+   F4.4 — SOLUÇÃO FINAL (SEM BLUR, Z-INDEX CORRIGIDO)
+   ============================================================ */
+
+/* O conteúdo principal fica na camada 0 */
+.app-main {
+  position: relative;
+  z-index: 0;
+}
+
+/* O ecrã escuro (Overlay) fica na camada 998 (cobre tudo, exceto o menu) */
+.app-overlay {
+  z-index: 998 !important;
+  background: rgba(0, 0, 0, 0.7) !important; /* Escuro, sem blur */
+}
+
+/* O menu lateral fica na camada 999 (por cima do ecrã escuro) */
+@media (max-width: 767px) {
+  .app-sidebar {
+    z-index: 999 !important;
+  }
+}
+
+/* Estilos do Perfil */
+.app-sidebar__profile-container {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-border, #4a3f38);
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+}
+
+.app-sidebar__profile {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.app-sidebar__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-gold, #d4af37);
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.app-sidebar__profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.app-sidebar__profile-name {
+  font-weight: 600;
+  color: var(--color-text-primary, #f5f0eb);
+  font-size: 0.95rem;
+}
+
+.app-sidebar__profile-tagline {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary, #b8956a);
+  white-space: normal;
+  line-height: 1.2;
+}

@@ -110,6 +110,29 @@ function emojiForTask(name, category) {
   return CATEGORY_EMOJI_TASKS[category] || '\u{1F4CC}';
 }
 
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo às tuas Tarefas",
+    subtitle: "O teu espaço para organizar o dia. Cria tarefas, define prazos e acompanha o teu progresso."
+  },
+  tutorial: [
+    { target: '.tasks-btn--primary', title: 'Cria a tua primeira tarefa', text: 'Toca aqui para adicionares um novo item. Podes definir prazos, prioridades e categorias.' },
+    { target: '#tasks-filters', title: 'Encontra o que precisas', text: 'Usa estes filtros para veres apenas as tarefas pendentes ou as que já concluíste.' },
+    { target: '.task-item__actions', title: 'Gere as tuas tarefas', text: 'Toca nos três pontos para editares, apagares ou guardares a tarefa como um modelo reutilizável.' }
+  ],
+  tips: [
+    { id: 'tip_new_task', target: '.lumiere-empty__btn', title: 'Adicionar Tarefa', text: 'Toca aqui para criares um novo item. Podes definir prazos e prioridades.' },
+    { id: 'tip_filters', target: '#tasks-filters', title: 'Filtrar a Lista', text: 'Usa estes filtros para encontrares rapidamente as tarefas pendentes ou esconder as concluídas.' },
+    { id: 'tip_task_menu', target: '.task-item__actions', title: 'Gerir Tarefa', text: 'Aqui podes editar, apagar ou guardar a tarefa como um modelo reutilizável.' }
+  ],
+  faq: [
+    { q: 'Como crio uma tarefa recorrente?', a: 'No formulário de criação, seleciona a opção "Recorrência" e escolhe a opção desejada.' },
+    { q: 'Posso guardar uma tarefa como Template?', a: 'Sim! Toca no menu de três pontos (⋮) da tarefa e escolhe "Guardar como Template".' },
+    { q: 'Como vejo as tarefas atrasadas?', a: 'As tarefas atrasadas aparecem com uma etiqueta vermelha. Podes usar os filtros para organizar a lista.' }
+  ]
+};
+
 let _container = null;
 let _state = {
   activeFilter: 'all',
@@ -294,35 +317,26 @@ function renderHeader(isEmpty = false) {
   btnHelp.textContent = '?';
   btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
   btnHelp.addEventListener('click', () => {
-    const hasSeen = localStorage.getItem('lumiere_help_tasks_seen');
+    const hasSeen = localStorage.getItem('lumiere_help_tarefas_seen');
     if (!hasSeen) {
-      // Define os passos do tutorial do Eng. 9
-      const tutorialSteps = [
-        { target: '.tasks-btn--primary', title: 'Cria a tua primeira tarefa', text: 'Toca aqui para adicionares um novo item. Podes definir prazos, prioridades e categorias.' },
-        { target: '#tasks-filters', title: 'Encontra o que precisas', text: 'Usa estes filtros para veres apenas as tarefas pendentes ou as que já concluíste.' },
-        { target: '.task-item__actions', title: 'Gere as tuas tarefas', text: 'Toca nos três pontos para editares, apagares ou guardares a tarefa como um modelo reutilizável.' }
-      ];
-
       showHelpWelcome('Tarefas', () => {
-        console.log('[Tasks] A iniciar tutorial...');
-        try {
-          showHelpTutorial(tutorialSteps, () => {
-            localStorage.setItem('lumiere_help_tasks_seen', 'true');
-            eventBus.emit('toast:show', { type: 'success', text: 'Guia de Tarefas concluído!' });
-          });
-        } catch (err) {
-          console.error('[Tasks] Erro ao iniciar tutorial:', err);
-        }
-      });
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_tarefas_seen', 'true');
+          try { eventBus.emit('toast:show', { type: 'success', text: 'Guia de Tarefas concluído!' }); } catch (_) {}
+        });
+      }, HELP_CONFIG.welcome);
     } else {
-      showHelpPanel('tasks');
+      showHelpPanel('Tarefas', HELP_CONFIG);
     }
   });
   header.appendChild(btnHelp);
 
   // Dica Contextual: Botão Nova Tarefa
   setTimeout(() => {
-    const btnNewEl = document.querySelector('.tasks-header .tasks-btn--primary') || document.querySelector('.lumiere-empty__btn');
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) {
+      btnNewEl = document.querySelector('.tasks-header .tasks-btn--primary');
+    }
     if (btnNewEl) {
       console.log('[Tooltip] Alvo encontrado: Nova Tarefa');
       showHelpTooltip({

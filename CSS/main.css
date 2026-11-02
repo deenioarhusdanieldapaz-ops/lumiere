@@ -188,13 +188,14 @@ a:hover { color: var(--color-gold-hover); }
    ============================================================ */
 /* Quando a página tem um Empty State, o botão do header desaparece para não duplicar ações */
 
-.habits-page:has(.lumiere-empty) .habits-header__actions,
-.goals-page:has(.lumiere-empty) .goals-header__actions,
-.notes-page:has(.lumiere-empty) .notes-header__actions,
-.studies-page:has(.lumiere-empty) .studies-header__actions,
-.calendar-page:has(.lumiere-empty) .calendar-header__actions,
-.templates-page:has(.lumiere-empty) .templates-header__actions,
-.lumiere-page:has(.lumiere-empty) .lumiere-header__actions,
-.finances-page:has(.lumiere-empty) .finances-header__actions {
+/* Esconder apenas o botão principal (Novo) quando a lista está vazia, mas manter a barra de ações visível para o botão de ajuda */
+.habits-page:has(.lumiere-empty) .habits-header__actions .habits-btn--primary,
+.goals-page:has(.lumiere-empty) .goals-header__actions .goals-btn--primary,
+.notes-page:has(.lumiere-empty) .notes-header__actions .notes-btn--primary,
+.studies-page:has(.lumiere-empty) .studies-header__actions .studies-btn--primary,
+.calendar-page:has(.lumiere-empty) .calendar-header__actions .calendar-btn--primary,
+.templates-page:has(.lumiere-empty) .templates-header__actions .templates-btn--primary,
+.lumiere-page:has(.lumiere-empty) .lumiere-header__actions .lumiere-btn--primary,
+.finances-page:has(.lumiere-empty) .finances-header__actions .finances-btn--primary {
   display: none !important;
 }

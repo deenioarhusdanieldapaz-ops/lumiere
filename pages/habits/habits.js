@@ -5,6 +5,11 @@
  */
 import { dataManager } from '../../core/dataManager.js';
 import { createEmptyState } from '../../components/empty-state/emptyState.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
+
 import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
@@ -49,6 +54,29 @@ function emojiForHabit(name, category) {
   }
   return CATEGORY_EMOJI[category] || '\u{1F3AF}';
 }
+
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo aos teus Hábitos",
+    subtitle: "Pequenos passos, grandes mudanças. Constrói a tua rotina diária."
+  },
+  tutorial: [
+    { target: '.habits-btn--primary', title: 'Novo Hábito', text: 'Cria um novo hábito.' },
+    { target: '.habit-item__streak', title: 'Streak', text: 'Vê os teus dias consecutivos.' },
+    { target: '.habit-item__actions', title: 'Menu', text: 'Regista ou edita o teu hábito.' }
+  ],
+  tips: [
+    { id: 'tip_hab_new', target: '.habits-btn--primary', title: 'Novo Hábito', text: 'Toca aqui para criares uma nova rotina.' },
+    { id: 'tip_hab_streak', target: '.habit-item__streak', title: 'Progresso', text: 'Este é o teu progresso nos últimos 7 dias.' },
+    { id: 'tip_hab_menu', target: '.habit-item__actions', title: 'Menu', text: 'Clica aqui para fazeres o check-in diário ou editares.' }
+  ],
+  faq: [
+    { q: 'Como faço o check-in?', a: "Toca no menu ⋮ do hábito e escolhe 'Registar Hoje'." },
+    { q: 'O que é o streak?', a: 'É o número de dias consecutivos em que cumpriste o hábito.' },
+    { q: 'Posso pausar um hábito?', a: "Sim, no menu ⋮ escolhe 'Editar' e muda o estado para Pausado." }
+  ]
+};
 
 let _container = null;
 let _state = {
@@ -171,6 +199,20 @@ function render() {
   }
 
   _container.appendChild(page);
+
+  // Dica Contextual Automática: Novo Hábito (apenas se não dispensada)
+  setTimeout(() => {
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) {
+      btnNewEl = document.querySelector('.habits-btn--primary');
+    }
+    if (btnNewEl) {
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_hab_new', title: 'Novo Hábito',
+        text: 'Toca aqui para criares uma nova rotina.'
+      });
+    }
+  }, 1500);
 }
 
 function renderHeader(isEmpty = false) {
@@ -191,6 +233,25 @@ function renderHeader(isEmpty = false) {
   btnNew.textContent = 'Novo hábito';
   btnNew.addEventListener('click', () => openForm());
   actions.appendChild(btnNew);
+
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_habitos_seen');
+    if (!hasSeen) {
+      showHelpWelcome('Hábitos', () => {
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_habitos_seen', 'true');
+        });
+      }, HELP_CONFIG.welcome);
+    } else {
+      showHelpPanel('Hábitos', { tips: HELP_CONFIG.tips, faq: HELP_CONFIG.faq, tutorial: HELP_CONFIG.tutorial });
+    }
+  });
+  actions.appendChild(btnHelp);
 
   header.appendChild(actions);
   return header;

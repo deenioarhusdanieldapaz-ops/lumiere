@@ -6,6 +6,11 @@
  */
 import { dataManager } from '../../core/dataManager.js';
 import { createEmptyState } from '../../components/empty-state/emptyState.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
+
 import { stateManager } from '../../core/stateManager.js';
 import { requireAccess } from '../../core/auth.js';
 import { eventBus } from '../../core/eventBus.js';
@@ -67,6 +72,27 @@ function emojiForStudy(name, subject, category) {
   }
   return CATEGORY_EMOJI_STUDIES[category] || '\u{1F4D6}';
 }
+
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo aos teus Estudos",
+    subtitle: "Organiza o teu conhecimento, regista sessões e prepara-te para o sucesso."
+  },
+  tutorial: [
+    { target: '.studies-btn--primary', title: 'Adiciona uma matéria', text: 'Toca aqui para adicionares uma nova matéria ou tema.' },
+    { target: '.study-item', title: 'Detalhes do Estudo', text: 'Clica no card para veres os detalhes da matéria.' },
+    { target: '.study-item__actions', title: 'Registar Sessão', text: 'Aqui podes iniciar uma sessão de estudo, editar ou apagar.' }
+  ],
+  tips: [
+    { id: 'tip_study_new', target: '.lumiere-empty__btn', title: 'Nova Matéria', text: 'Toca aqui para adicionares uma nova matéria ou tema.' },
+    { id: 'tip_study_menu', target: '.study-item__actions', title: 'Menu de Estudo', text: 'Aqui podes iniciar uma sessão de estudo, editar ou apagar.' }
+  ],
+  faq: [
+    { q: 'Como registo o meu tempo de estudo?', a: "Toca no menu ⋮ do estudo e escolhe a opção de registar sessão." },
+    { q: 'Posso criar sub-temas?', a: "Sim, dentro de cada matéria podes adicionar os tópicos específicos que vais estudar." }
+  ]
+};
 
 let _container = null;
 let _state = {
@@ -191,6 +217,18 @@ function render() {
   }
 
   _container.appendChild(page);
+
+  // Dica Contextual Automática: Nova Matéria
+  setTimeout(() => {
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) btnNewEl = document.querySelector('.studies-btn--primary');
+    if (btnNewEl) {
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_study_new', title: 'Nova Matéria',
+        text: 'Toca aqui para adicionares uma nova matéria ou tema.'
+      });
+    }
+  }, 1500);
 }
 
 function renderHeader(isEmpty = false) {
@@ -211,6 +249,25 @@ function renderHeader(isEmpty = false) {
   btnNew.textContent = 'Novo estudo';
   btnNew.addEventListener('click', () => openForm());
   actions.appendChild(btnNew);
+
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_estudos_seen');
+    if (!hasSeen) {
+      showHelpWelcome('Estudos', () => {
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_estudos_seen', 'true');
+        });
+      }, HELP_CONFIG.welcome);
+    } else {
+      showHelpPanel('Estudos', HELP_CONFIG);
+    }
+  });
+  actions.appendChild(btnHelp);
 
   header.appendChild(actions);
   return header;

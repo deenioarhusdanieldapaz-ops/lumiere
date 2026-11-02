@@ -5,6 +5,11 @@
  */
 import { dataManager } from '../../core/dataManager.js';
 import { createEmptyState } from '../../components/empty-state/emptyState.js';
+import { showHelpWelcome } from '../../components/help-welcome/help-welcome.js';
+import { showHelpTutorial } from '../../components/help-tutorial/help-tutorial.js';
+import { showHelpPanel } from '../../components/help-panel/help-panel.js';
+import { showHelpTooltip } from '../../components/help-tooltip/help-tooltip.js';
+
 import { stateManager } from '../../core/stateManager.js';
 import { calculationsManager } from '../../core/calculationsManager.js';
 import { requireAccess } from '../../core/auth.js';
@@ -59,6 +64,28 @@ function emojiForGoal(name, category) {
   }
   return CATEGORY_EMOJI_GOALS[category] || '\u{1F3AF}';
 }
+
+
+const HELP_CONFIG = {
+  welcome: {
+    title: "Bem-vindo aos teus Objetivos",
+    subtitle: "Define o teu rumo. Cria metas, acompanha o progresso e alcança o que importa."
+  },
+  tutorial: [
+    { target: '.goals-btn--primary', title: 'Cria a tua primeira meta', text: 'Toca aqui para definires um novo objetivo de vida.' },
+    { target: '.goal-item__progress', title: 'Acompanha o progresso', text: 'Vê o quanto já avançaste em cada objetivo.' },
+    { target: '.goal-item__actions', title: 'Gere os teus objetivos', text: 'Conclui, edita ou define como principal através deste menu.' }
+  ],
+  tips: [
+    { id: 'tip_goal_new', target: '.lumiere-empty__btn', title: 'Novo Objetivo', text: 'Toca aqui para definires um novo objetivo de vida.' },
+    { id: 'tip_goal_progress', target: '.goal-item__progress', title: 'Progresso', text: 'Vê o quanto já avançaste em cada objetivo.' },
+    { id: 'tip_goal_menu', target: '.goal-item__actions', title: 'Menu de Ações', text: 'Usa este menu para marcares como concluído ou editares.' }
+  ],
+  faq: [
+    { q: 'Como marco um objetivo como concluído?', a: "Toca no menu ⋮ e escolhe 'Concluir'." },
+    { q: 'O que é o Objetivo Principal?', a: "É a meta que aparece em destaque no teu Dashboard. Só podes ter uma de cada vez." }
+  ]
+};
 
 let _container = null;
 let _state = {
@@ -167,6 +194,18 @@ function render() {
   }
 
   _container.appendChild(page);
+
+  // Dica Contextual Automática: Novo Objetivo
+  setTimeout(() => {
+    let btnNewEl = document.querySelector('.lumiere-empty__btn');
+    if (!btnNewEl) btnNewEl = document.querySelector('.goals-btn--primary');
+    if (btnNewEl) {
+      showHelpTooltip({
+        targetEl: btnNewEl, id: 'tip_goal_new', title: 'Novo Objetivo',
+        text: 'Toca aqui para definires um novo objetivo de vida.'
+      });
+    }
+  }, 1500);
 }
 
 function renderHeader(isEmpty = false) {
@@ -187,6 +226,25 @@ function renderHeader(isEmpty = false) {
   btnNew.textContent = 'Novo objetivo';
   btnNew.addEventListener('click', () => openForm());
   actions.appendChild(btnNew);
+
+  const btnHelp = document.createElement('button');
+  btnHelp.type = 'button';
+  btnHelp.className = 'lum-help-btn';
+  btnHelp.textContent = '?';
+  btnHelp.setAttribute('aria-label', 'Ajuda e Orientação');
+  btnHelp.addEventListener('click', () => {
+    const hasSeen = localStorage.getItem('lumiere_help_objetivos_seen');
+    if (!hasSeen) {
+      showHelpWelcome('Objetivos', () => {
+        showHelpTutorial(HELP_CONFIG.tutorial, () => {
+          localStorage.setItem('lumiere_help_objetivos_seen', 'true');
+        });
+      }, HELP_CONFIG.welcome);
+    } else {
+      showHelpPanel('Objetivos', HELP_CONFIG);
+    }
+  });
+  actions.appendChild(btnHelp);
 
   header.appendChild(actions);
   return header;
